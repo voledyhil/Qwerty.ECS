@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Qwerty.Unsafe.DataStructures.Runtime;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
 	public readonly struct EcsArchetypesAccessor

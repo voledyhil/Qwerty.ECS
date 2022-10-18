@@ -1,0 +1,17 @@
+{
+    "name": "Qwerty.ECS.Runtime",
+    "references": [
+        "Qwerty.Unsafe.Runtime",
+        "Qwerty.Unsafe.DataStructures.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

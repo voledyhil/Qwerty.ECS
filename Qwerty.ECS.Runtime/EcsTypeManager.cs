@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Qwerty.ECS.Runtime.Components;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
 	internal static class EcsTypeManager

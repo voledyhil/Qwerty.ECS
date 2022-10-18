@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Systems
 {
     /// <summary>

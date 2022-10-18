@@ -1,4 +1,5 @@
 *.meta
+!*.asmdef.meta
 /**/*.DS_STORE
 /**/obj
 /**/bin

@@ -1,3 +1,7 @@
+
+using System;
+
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
     public class EcsArchetypeManager
