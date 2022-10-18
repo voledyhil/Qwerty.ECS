@@ -1,0 +1,10 @@
+*.meta
+/**/*.DS_STORE
+/**/obj
+/**/bin
+/**/.vs
+/**/*.vspscc
+/**/*.user
+/**/*.snk
+/build
+.idea/

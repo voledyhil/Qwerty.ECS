@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.ECS.Runtime", "Qwerty.ECS.Runtime\Qwerty.ECS.Runtime.csproj", "{3C33A1E2-9C18-4FB9-A9B6-1967A04C4675}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.ECS.Tests", "Qwerty.ECS.Tests\Qwerty.ECS.Tests.csproj", "{186C0A61-F65C-49DB-807F-57F2CFC637D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.Unsafe.Runtime", "..\Qwerty.Unsafe\Qwerty.Unsafe.Runtime\Qwerty.Unsafe.Runtime.csproj", "{36C7956E-6C05-43BF-A06A-6C284A4B4183}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.Unsafe.DataStructures.Runtime", "..\Qwerty.Unsafe\Qwerty.Unsafe.DataStructures.Runtime\Qwerty.Unsafe.DataStructures.Runtime.csproj", "{D4EC231B-011F-4C20-9333-C9C92CD74E56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C33A1E2-9C18-4FB9-A9B6-1967A04C4675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C33A1E2-9C18-4FB9-A9B6-1967A04C4675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C33A1E2-9C18-4FB9-A9B6-1967A04C4675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C33A1E2-9C18-4FB9-A9B6-1967A04C4675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{186C0A61-F65C-49DB-807F-57F2CFC637D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{186C0A61-F65C-49DB-807F-57F2CFC637D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{186C0A61-F65C-49DB-807F-57F2CFC637D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{186C0A61-F65C-49DB-807F-57F2CFC637D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36C7956E-6C05-43BF-A06A-6C284A4B4183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36C7956E-6C05-43BF-A06A-6C284A4B4183}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36C7956E-6C05-43BF-A06A-6C284A4B4183}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36C7956E-6C05-43BF-A06A-6C284A4B4183}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4EC231B-011F-4C20-9333-C9C92CD74E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4EC231B-011F-4C20-9333-C9C92CD74E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4EC231B-011F-4C20-9333-C9C92CD74E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4EC231B-011F-4C20-9333-C9C92CD74E56}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
