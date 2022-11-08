@@ -1,3 +1,6 @@
+using System;
+
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
     public readonly struct EcsEntity : IEquatable<EcsEntity>
