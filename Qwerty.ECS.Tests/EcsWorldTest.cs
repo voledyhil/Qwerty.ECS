@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Components;
@@ -46,8 +45,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentType<ComponentD>.Register();
 
             m_world = new EcsWorld();
-            m_abd = m_world.CreateEntity(new ComponentA { value = 1 }, new ComponentB { value = 2 },
-                new ComponentD { value = 3 });
+            m_abd = m_world.CreateEntity(new ComponentA { value = 1 }, new ComponentB { value = 2 }, new ComponentD { value = 3 });
             m_ac = m_world.CreateEntity(new ComponentA { value = 4 }, new ComponentC { value = 5 });
             m_bd1 = m_world.CreateEntity(new ComponentB { value = 6 }, new ComponentD { value = 7 });
             m_bd2 = m_world.CreateEntity(new ComponentD { value = 8 }, new ComponentB { value = 8 });
@@ -84,54 +82,90 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(e1.Index, 1);
             Assert.AreEqual(e1.Version, 2);
         }
-        
+
         [Test]
-        public void GetSetRemoveComponentTest()
+        public void CreateEntityTest()
         {
             EcsWorld world = new EcsWorld();
-
-            ComponentB b = new ComponentB();
+            EcsEntity e = world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentC(), new ComponentD());
+            
+            Assert.IsTrue(world.HasComponent<ComponentA>(e));
+            Assert.IsTrue(world.HasComponent<ComponentB>(e));
+            Assert.IsTrue(world.HasComponent<ComponentC>(e));
+            Assert.IsTrue(world.HasComponent<ComponentD>(e));
+        }
+        
+        [Test]
+        public void RemoveComponentTest()
+        {
+            EcsWorld world = new EcsWorld();
             EcsEntity e = world.CreateEntity();
+            
+            Assert.IsFalse(world.HasComponent<ComponentA>(e));
+            
             world.AddComponent(e, new ComponentA());
-            world.AddComponent(e, b);
-            world.AddComponent(e, new ComponentC());
-
-            Assert.IsNotNull(world.GetComponent<ComponentA>(e));
-            Assert.IsNotNull(world.GetComponent<ComponentC>(e));
-            Assert.AreEqual(b, world.GetComponent<ComponentB>(e));
-            Assert.IsFalse(world.HasComponent<ComponentD>(e));
-
-            world.RemoveComponent<ComponentB>(e);
-            Assert.IsFalse(world.HasComponent<ComponentB>(e));
+            Assert.IsTrue(world.HasComponent<ComponentA>(e));
+            
+            world.RemoveComponent<ComponentA>(e);
+            Assert.IsFalse(world.HasComponent<ComponentA>(e));
+        }
+        
+        [Test]
+        public void GetComponentThrowExceptionTest()
+        {
+            EcsWorld world = new EcsWorld();
+            EcsEntity e  = world.CreateEntity();
+            Assert.That(() => world.GetComponent<ComponentA>(e), Throws.InvalidOperationException);
         }
 
         [Test]
         public void AddComponentThrowExceptionTest()
         {
             EcsWorld world = new EcsWorld();
-            EcsEntity entity = world.CreateEntity();
-            world.AddComponent(entity, new ComponentA());
+            EcsEntity e  = world.CreateEntity();
+            world.AddComponent(e, new ComponentA());
 
-            Assert.That(() => world.AddComponent(entity, new ComponentA()), Throws.InvalidOperationException);
-        }
-
-        [Test]
-        public void DestroyEntityThrowExceptionTest()
-        {
-            EcsWorld world = new EcsWorld();
-            EcsEntity entity = world.CreateEntity();
-            world.DestroyEntity(entity);
-
-            Assert.That(() => world.DestroyEntity(entity), Throws.InvalidOperationException);
+            Assert.That(() => world.AddComponent(e, new ComponentA()), Throws.InvalidOperationException);
         }
 
         [Test]
         public void RemoveComponentThrowExceptionTest()
         {
             EcsWorld world = new EcsWorld();
-            EcsEntity entity = world.CreateEntity();
+            EcsEntity e = world.CreateEntity();
 
-            Assert.That(() => world.RemoveComponent<ComponentA>(entity), Throws.InvalidOperationException);
+            Assert.That(() => world.RemoveComponent<ComponentA>(e), Throws.InvalidOperationException);
         }
+
+        [Test]
+        public void SetComponentTest()
+        {
+            EcsWorld world = new EcsWorld();
+            EcsEntity e = world.CreateEntity();
+            
+            world.AddComponent(e, new ComponentA());
+            world.SetComponent(e, new ComponentA { value = 1 });
+            
+            Assert.AreEqual(1, world.GetComponent<ComponentA>(e).value);
+        }
+        
+        [Test]
+        public void SetComponentThrowExceptionTest()
+        {
+            EcsWorld world = new EcsWorld();
+            EcsEntity e = world.CreateEntity();
+            Assert.That(() => world.SetComponent(e, new ComponentA()), Throws.InvalidOperationException);
+        }
+        
+        [Test]
+        public void DestroyEntityThrowExceptionTest()
+        {
+            EcsWorld world = new EcsWorld();
+            EcsEntity e = world.CreateEntity();
+            world.DestroyEntity(e);
+
+            Assert.That(() => world.DestroyEntity(e), Throws.InvalidOperationException);
+        }
+        
     }
 }

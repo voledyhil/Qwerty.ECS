@@ -177,6 +177,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
 
+        // Check A A B B (dublicate type)
         public EcsEntity CreateEntity<T0, T1, T2, T3>(T0 component0, T1 component1, T2 component2, T3 component3)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
@@ -355,6 +356,17 @@ namespace Qwerty.ECS.Runtime
             RemoveEntityFromArchetype(currentArchetype, entity);
             AddEntityToArchetype(newArchetype, entity);
         }
+        
+        public void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
+        {
+            byte componentTypeIndex = EcsComponentType<T>.Index;
+            if (!HasComponent(entity, componentTypeIndex))
+            {
+                throw new InvalidOperationException();
+            }
+            
+            ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.Index]).Write(entity.Index, component);
+        }
 
         public void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
@@ -371,7 +383,7 @@ namespace Qwerty.ECS.Runtime
             RemoveEntityFromArchetype(currentArchetype, entity);
             AddEntityToArchetype(newArchetype, entity);
         }
-        
+
         private void AddEntityToArchetype(EcsArchetype archetype, in EcsEntity entity)
         {
             EcsEntityCollection entities = archetype.Entities;
