@@ -32,6 +32,8 @@ namespace Qwerty.ECS.Tests
             world.DestroyEntity(entity2);
             Assert.AreEqual(2, world.ArchetypeCount); // empty, A
             Assert.AreEqual(0, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
+            
+            world.Dispose();
         }
         
         [Test]
@@ -83,6 +85,8 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
             Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
             Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
+            
+            world.Dispose();
         }
 
         [Test]
@@ -132,6 +136,8 @@ namespace Qwerty.ECS.Tests
             }
             Assert.AreEqual(2, sumA);
             Assert.AreEqual(2, sumB);
+            
+            world.Dispose();
         }
     }
 }

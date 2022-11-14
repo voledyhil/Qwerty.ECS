@@ -24,7 +24,7 @@ namespace Qwerty.ECS.Runtime
         /// <returns>Current filter</returns>
         public EcsFilter AnyOf<T0>() where T0 : struct, IEcsComponent
         {
-            return AnyOf(EcsComponentType<T0>.Index);
+            return AnyOf(EcsComponentType<T0>.index);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Qwerty.ECS.Runtime
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            return AnyOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index);
+            return AnyOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            return AnyOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index, EcsComponentType<T2>.Index);
+            return AnyOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
         }
 
 
@@ -73,7 +73,7 @@ namespace Qwerty.ECS.Runtime
         /// <returns>Current filter</returns>
         public EcsFilter AllOf<T0>() where T0 : struct, IEcsComponent
         {
-            return AllOf(EcsComponentType<T0>.Index);
+            return AllOf(EcsComponentType<T0>.index);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Qwerty.ECS.Runtime
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            return AllOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index);
+            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            return AllOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index, EcsComponentType<T2>.Index);
+            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Qwerty.ECS.Runtime
             where T2 : struct, IEcsComponent
             where T3 : struct, IEcsComponent
         {
-            return AllOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index, EcsComponentType<T2>.Index, EcsComponentType<T3>.Index);
+            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index);
         }
         
         /// <summary>
@@ -122,7 +122,7 @@ namespace Qwerty.ECS.Runtime
             where T3 : struct, IEcsComponent
             where T4 : struct, IEcsComponent
         {
-            return AllOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index, EcsComponentType<T2>.Index, EcsComponentType<T3>.Index, EcsComponentType<T4>.Index);
+            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index, EcsComponentType<T4>.index);
         }
         
         /// <summary>
@@ -137,7 +137,7 @@ namespace Qwerty.ECS.Runtime
             where T4 : struct, IEcsComponent
             where T5 : struct, IEcsComponent
         {
-            return AllOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index, EcsComponentType<T2>.Index, EcsComponentType<T3>.Index, EcsComponentType<T4>.Index, EcsComponentType<T5>.Index);
+            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index, EcsComponentType<T4>.index, EcsComponentType<T5>.index);
         }
 
 
@@ -163,7 +163,7 @@ namespace Qwerty.ECS.Runtime
         /// <returns>Current filter</returns>
         public EcsFilter NoneOf<T0>() where T0 : struct, IEcsComponent
         {
-            return NoneOf(EcsComponentType<T0>.Index);
+            return NoneOf(EcsComponentType<T0>.index);
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace Qwerty.ECS.Runtime
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            return NoneOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index);
+            return NoneOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            return NoneOf(EcsComponentType<T0>.Index, EcsComponentType<T1>.Index, EcsComponentType<T2>.Index);
+            return NoneOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
         }
 
         /// <summary>

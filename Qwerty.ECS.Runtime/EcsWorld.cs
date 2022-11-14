@@ -130,8 +130,8 @@ namespace Qwerty.ECS.Runtime
         {
             EcsEntity entity = InstantiateEntity();
             
-            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.Index]).Write(entity.Index, component0);
-            m_componentTypeIndices[0] = EcsComponentType<T0>.Index;
+            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.index]).Write(entity.Index, component0);
+            m_componentTypeIndices[0] = EcsComponentType<T0>.index;
 
             Array.Sort(m_componentTypeIndices, 0, 1);
             AddEntityToArchetype(m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 1), entity);
@@ -143,8 +143,8 @@ namespace Qwerty.ECS.Runtime
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            m_componentTypeIndices[0] = EcsComponentType<T0>.Index;
-            m_componentTypeIndices[1] = EcsComponentType<T1>.Index;
+            m_componentTypeIndices[0] = EcsComponentType<T0>.index;
+            m_componentTypeIndices[1] = EcsComponentType<T1>.index;
             Array.Sort(m_componentTypeIndices, 0, 2);
 
             if (!CheckIndices(m_componentTypeIndices, 2))
@@ -153,8 +153,8 @@ namespace Qwerty.ECS.Runtime
             }
             
             EcsEntity entity = InstantiateEntity();
-            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.Index]).Write(entity.Index, component0);
-            ((EcsComponentPool<T1>)m_componentPools[EcsComponentType<T1>.Index]).Write(entity.Index, component1);
+            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.index]).Write(entity.Index, component0);
+            ((EcsComponentPool<T1>)m_componentPools[EcsComponentType<T1>.index]).Write(entity.Index, component1);
             
             AddEntityToArchetype(m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 2), entity);
             
@@ -166,9 +166,9 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            m_componentTypeIndices[0] = EcsComponentType<T0>.Index;
-            m_componentTypeIndices[1] = EcsComponentType<T1>.Index;
-            m_componentTypeIndices[2] = EcsComponentType<T2>.Index;
+            m_componentTypeIndices[0] = EcsComponentType<T0>.index;
+            m_componentTypeIndices[1] = EcsComponentType<T1>.index;
+            m_componentTypeIndices[2] = EcsComponentType<T2>.index;
             Array.Sort(m_componentTypeIndices, 0, 3);
             
             if (!CheckIndices(m_componentTypeIndices, 3))
@@ -177,9 +177,9 @@ namespace Qwerty.ECS.Runtime
             }
             
             EcsEntity entity = InstantiateEntity();
-            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.Index]).Write(entity.Index, component0);
-            ((EcsComponentPool<T1>)m_componentPools[EcsComponentType<T1>.Index]).Write(entity.Index, component1);
-            ((EcsComponentPool<T2>)m_componentPools[EcsComponentType<T2>.Index]).Write(entity.Index, component2);
+            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.index]).Write(entity.Index, component0);
+            ((EcsComponentPool<T1>)m_componentPools[EcsComponentType<T1>.index]).Write(entity.Index, component1);
+            ((EcsComponentPool<T2>)m_componentPools[EcsComponentType<T2>.index]).Write(entity.Index, component2);
             
             AddEntityToArchetype(m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 3), entity);
 
@@ -192,10 +192,10 @@ namespace Qwerty.ECS.Runtime
             where T2 : struct, IEcsComponent
             where T3 : struct, IEcsComponent
         {
-            m_componentTypeIndices[0] = EcsComponentType<T0>.Index;
-            m_componentTypeIndices[1] = EcsComponentType<T1>.Index;
-            m_componentTypeIndices[2] = EcsComponentType<T2>.Index;
-            m_componentTypeIndices[3] = EcsComponentType<T3>.Index;
+            m_componentTypeIndices[0] = EcsComponentType<T0>.index;
+            m_componentTypeIndices[1] = EcsComponentType<T1>.index;
+            m_componentTypeIndices[2] = EcsComponentType<T2>.index;
+            m_componentTypeIndices[3] = EcsComponentType<T3>.index;
             Array.Sort(m_componentTypeIndices, 0, 4);
             
             if (!CheckIndices(m_componentTypeIndices, 4))
@@ -204,10 +204,10 @@ namespace Qwerty.ECS.Runtime
             }
             
             EcsEntity entity = InstantiateEntity();
-            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.Index]).Write(entity.Index, component0);
-            ((EcsComponentPool<T1>)m_componentPools[EcsComponentType<T1>.Index]).Write(entity.Index, component1);
-            ((EcsComponentPool<T2>)m_componentPools[EcsComponentType<T2>.Index]).Write(entity.Index, component2);
-            ((EcsComponentPool<T3>)m_componentPools[EcsComponentType<T3>.Index]).Write(entity.Index, component3);
+            ((EcsComponentPool<T0>)m_componentPools[EcsComponentType<T0>.index]).Write(entity.Index, component0);
+            ((EcsComponentPool<T1>)m_componentPools[EcsComponentType<T1>.index]).Write(entity.Index, component1);
+            ((EcsComponentPool<T2>)m_componentPools[EcsComponentType<T2>.index]).Write(entity.Index, component2);
+            ((EcsComponentPool<T3>)m_componentPools[EcsComponentType<T3>.index]).Write(entity.Index, component3);
             
             AddEntityToArchetype(m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 4), entity);
             
@@ -228,7 +228,7 @@ namespace Qwerty.ECS.Runtime
 
         public ref EcsComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
-            return ref ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.Index]).GetAccessor();
+            return ref ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.index]).GetAccessor();
         }
 
         public unsafe EcsComponentAccessor<T>* GetComponentAccessorPtr<T>() where T : struct, IEcsComponent
@@ -345,7 +345,7 @@ namespace Qwerty.ECS.Runtime
 
         public bool HasComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
-            return HasComponent(entity, EcsComponentType<T>.Index);
+            return HasComponent(entity, EcsComponentType<T>.index);
         }
         
         private bool HasComponent(EcsEntity entity, byte index)
@@ -360,12 +360,12 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
             
-            return ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.Index]).Read(entity.Index);
+            return ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.index]).Read(entity.Index);
         }
         
         public void AddComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            byte componentTypeIndex = EcsComponentType<T>.Index;
+            byte componentTypeIndex = EcsComponentType<T>.index;
             if (HasComponent(entity, componentTypeIndex))
             {
                 throw new InvalidOperationException();
@@ -373,7 +373,7 @@ namespace Qwerty.ECS.Runtime
             
             int entityIndex = entity.Index;
             
-            ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.Index]).Write(entityIndex, component);
+            ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.index]).Write(entityIndex, component);
             
             EcsArchetype currentArchetype = m_archetypeManager[m_entityToArchetype[entityIndex]];
             EcsArchetype newArchetype = m_archetypeManager.FindOrCreateNextArchetype(currentArchetype, componentTypeIndex);
@@ -384,18 +384,18 @@ namespace Qwerty.ECS.Runtime
         
         public void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            byte componentTypeIndex = EcsComponentType<T>.Index;
+            byte componentTypeIndex = EcsComponentType<T>.index;
             if (!HasComponent(entity, componentTypeIndex))
             {
                 throw new InvalidOperationException();
             }
             
-            ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.Index]).Write(entity.Index, component);
+            ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.index]).Write(entity.Index, component);
         }
 
         public void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
-            byte componentTypeIndex = EcsComponentType<T>.Index;
+            byte componentTypeIndex = EcsComponentType<T>.index;
             if (!HasComponent(entity, componentTypeIndex))
             {
                 throw new InvalidOperationException();

@@ -111,8 +111,9 @@ namespace Qwerty.ECS.Tests
             root.AddSystem(systemC);
             root.AddSystem(systemB);
             root.AddSystem(systemG);
-            
-            root.Update(0, new EcsWorld());
+
+            EcsWorld world = new EcsWorld();
+            root.Update(0, world);
 
             List<IEcsSystem> systems = new List<IEcsSystem>(root.Systems);
             Assert.AreEqual(1, systems.Count);
@@ -130,6 +131,10 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(systemC, systems[5]);
 
             Assert.That(()=> EcsSystemSorter.Sort(new List<IEcsSystem> {new SystemF(), new SystemG()}), Throws.InvalidOperationException);
+            
+            world.Dispose();
+            
+            
         }
     }
 }

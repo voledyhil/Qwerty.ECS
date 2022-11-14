@@ -24,42 +24,19 @@ namespace Qwerty.ECS.Tests
         public int value;
     }
 
+    public struct ComponentE : IEcsComponent { }
+
     [TestFixture]
     public partial class EcsWorldTest
     {
-        private EcsWorld m_world;
-        private EcsEntity m_ab;
-        private EcsEntity m_abd;
-        private EcsEntity m_ac;
-        private EcsEntity m_ad;
-        private EcsEntity m_bc;
-        private EcsEntity m_bd1;
-        private EcsEntity m_bd2;
-
-        [SetUp]
-        public void InitWorld()
+        [Test]
+        public void RegisterComponentThrowExceptionTest()
         {
-            EcsComponentType<ComponentA>.Register();
-            EcsComponentType<ComponentB>.Register();
-            EcsComponentType<ComponentC>.Register();
-            EcsComponentType<ComponentD>.Register();
-
-            m_world = new EcsWorld();
-            m_abd = m_world.CreateEntity(new ComponentA { value = 1 }, new ComponentB { value = 2 }, new ComponentD { value = 3 });
-            m_ac = m_world.CreateEntity(new ComponentA { value = 4 }, new ComponentC { value = 5 });
-            m_bd1 = m_world.CreateEntity(new ComponentB { value = 6 }, new ComponentD { value = 7 });
-            m_bd2 = m_world.CreateEntity(new ComponentD { value = 8 }, new ComponentB { value = 8 });
-            m_bc = m_world.CreateEntity(new ComponentC { value = 9 }, new ComponentB { value = 10 });
-            m_ab = m_world.CreateEntity(new ComponentB { value = 11 }, new ComponentA { value = 12 });
-            m_ad = m_world.CreateEntity(new ComponentA { value = 13 }, new ComponentD { value = 14 });
+            EcsWorld world = new EcsWorld();
+            Assert.That(() => world.CreateEntity(new ComponentE()), Throws.InvalidOperationException);
+            world.Dispose();
         }
-
-        [TearDown]
-        public void CleanWorld()
-        {
-            m_world.Dispose();
-        }
-
+        
         [Test]
         public void EntityVersionTest()
         {
@@ -81,6 +58,8 @@ namespace Qwerty.ECS.Tests
             e1 = world.CreateEntity();
             Assert.AreEqual(e1.Index, 1);
             Assert.AreEqual(e1.Version, 2);
+            
+            world.Dispose();
         }
 
         [Test]
@@ -93,6 +72,8 @@ namespace Qwerty.ECS.Tests
             Assert.IsTrue(world.HasComponent<ComponentB>(e));
             Assert.IsTrue(world.HasComponent<ComponentC>(e));
             Assert.IsTrue(world.HasComponent<ComponentD>(e));
+            
+            world.Dispose();
         }
 
         [Test]
@@ -102,6 +83,7 @@ namespace Qwerty.ECS.Tests
             Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentA()), Throws.ArgumentException);
             Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentB()), Throws.ArgumentException);
             Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentC(), new ComponentC()), Throws.ArgumentException);
+            world.Dispose();
         }
         
         [Test]
@@ -117,6 +99,8 @@ namespace Qwerty.ECS.Tests
             
             world.RemoveComponent<ComponentA>(e);
             Assert.IsFalse(world.HasComponent<ComponentA>(e));
+            
+            world.Dispose();
         }
         
         [Test]
@@ -125,6 +109,8 @@ namespace Qwerty.ECS.Tests
             EcsWorld world = new EcsWorld();
             EcsEntity e  = world.CreateEntity();
             Assert.That(() => world.GetComponent<ComponentA>(e), Throws.InvalidOperationException);
+            
+            world.Dispose();
         }
 
         [Test]
@@ -135,6 +121,8 @@ namespace Qwerty.ECS.Tests
             world.AddComponent(e, new ComponentA());
 
             Assert.That(() => world.AddComponent(e, new ComponentA()), Throws.InvalidOperationException);
+            
+            world.Dispose();
         }
 
         [Test]
@@ -144,6 +132,8 @@ namespace Qwerty.ECS.Tests
             EcsEntity e = world.CreateEntity();
 
             Assert.That(() => world.RemoveComponent<ComponentA>(e), Throws.InvalidOperationException);
+            
+            world.Dispose();
         }
 
         [Test]
@@ -156,6 +146,8 @@ namespace Qwerty.ECS.Tests
             world.SetComponent(e, new ComponentA { value = 1 });
             
             Assert.AreEqual(1, world.GetComponent<ComponentA>(e).value);
+            
+            world.Dispose();
         }
         
         [Test]
@@ -164,6 +156,8 @@ namespace Qwerty.ECS.Tests
             EcsWorld world = new EcsWorld();
             EcsEntity e = world.CreateEntity();
             Assert.That(() => world.SetComponent(e, new ComponentA()), Throws.InvalidOperationException);
+            
+            world.Dispose();
         }
         
         [Test]
@@ -174,6 +168,8 @@ namespace Qwerty.ECS.Tests
             world.DestroyEntity(e);
 
             Assert.That(() => world.DestroyEntity(e), Throws.InvalidOperationException);
+            
+            world.Dispose();
         }
         
     }
