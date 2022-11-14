@@ -94,6 +94,15 @@ namespace Qwerty.ECS.Tests
             Assert.IsTrue(world.HasComponent<ComponentC>(e));
             Assert.IsTrue(world.HasComponent<ComponentD>(e));
         }
+
+        [Test]
+        public void CreateEntityThrowExceptionTest()
+        {
+            EcsWorld world = new EcsWorld();
+            Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentA()), Throws.ArgumentException);
+            Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentB()), Throws.ArgumentException);
+            Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentC(), new ComponentC()), Throws.ArgumentException);
+        }
         
         [Test]
         public void RemoveComponentTest()
