@@ -36,9 +36,27 @@ namespace Qwerty.ECS.Tests
             Assert.That(() => world.CreateEntity(new ComponentE()), Throws.InvalidOperationException);
             world.Dispose();
         }
+
+        [Test]
+        public void EntityEqualsTest()
+        {
+            Assert.AreEqual(EcsEntity.Null, EcsEntity.Null);
+            Assert.IsTrue(EcsEntity.Null == EcsEntity.Null);
+            Assert.IsTrue(EcsEntity.Null.Equals(EcsEntity.Null));
+            Assert.IsTrue(EcsEntity.Null.Equals((object)EcsEntity.Null));
+            
+            Assert.AreNotEqual(EcsEntity.Null, new EcsEntity(1, 1));
+            Assert.AreNotEqual(EcsEntity.Null, new EcsEntity(0, 1));
+            Assert.AreNotEqual(EcsEntity.Null, new EcsEntity(1, 0));
+            Assert.IsTrue(EcsEntity.Null != new EcsEntity(1, 1));
+            Assert.IsTrue(EcsEntity.Null != new EcsEntity(0, 1));
+            Assert.IsTrue(EcsEntity.Null != new EcsEntity(1, 0));
+            
+            Assert.IsFalse(EcsEntity.Null.Equals(new object()));
+        }
         
         [Test]
-        public void EntityVersionTest()
+        public void EntityIncVersionTest()
         {
             EcsWorld world = new EcsWorld();
             
