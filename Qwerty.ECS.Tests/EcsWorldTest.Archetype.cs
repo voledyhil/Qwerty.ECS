@@ -8,6 +8,33 @@ namespace Qwerty.ECS.Tests
     public partial class EcsWorldTest
     {
         [Test]
+        public void ChangeArchetypeByCreateDestroyEntitiesTest()
+        {
+            EcsWorld world = new EcsWorld();
+            Assert.AreEqual(1, world.ArchetypeCount); // empty
+
+            EcsEntity entity1 = world.CreateEntity(new ComponentA());
+            EcsEntity entity2 = world.CreateEntity(new ComponentA());
+            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
+            Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
+            
+            world.DestroyEntity(entity1);
+            world.DestroyEntity(entity2);
+            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
+            Assert.AreEqual(0, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
+            
+            entity1 = world.CreateEntity(new ComponentA());
+            entity2 = world.CreateEntity(new ComponentA());
+            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
+            Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
+            
+            world.DestroyEntity(entity1);
+            world.DestroyEntity(entity2);
+            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
+            Assert.AreEqual(0, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
+        }
+        
+        [Test]
         public void ChangeArchetypeByAddRemoveComponentsTest()
         {
             EcsWorld world = new EcsWorld();
@@ -59,29 +86,37 @@ namespace Qwerty.ECS.Tests
         }
 
         [Test]
-        public unsafe void ChangeArchetypeAndReadFromAccessorPtrTest()
+        public unsafe void ComponentAccessorTest()
         {
             EcsWorld world = new EcsWorld();
-            EcsComponentAccessor<ComponentB> componentsB = world.GetComponentAccessor<ComponentB>();
+            EcsComponentAccessor<ComponentA> compsA = world.GetComponentAccessor<ComponentA>();
+            EcsComponentAccessor<ComponentB> compsB = world.GetComponentAccessor<ComponentB>();
             
-            world.CreateEntity(new ComponentB { value = 1});
+            world.CreateEntity(new ComponentA(), new ComponentB { value = 1});
+            int sumA = 0;
             int sumB = 0;
-            
-            EcsArchetypeGroup archetypeGroup = world.Filter(new EcsFilter().AllOf<ComponentB>());
+
+            EcsArchetypeGroup archetypeGroup = world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>());
             EcsArchetypesAccessor accessor = *archetypeGroup.GetArchetypeAccessorPtr();
             for (int i = 0; i < accessor.ArchetypeCount; i++)
             {
+                
                 EcsEntityCollection entities = accessor.GetEntityArray(i);
                 for (int j = 0; j < entities.count; j++)
                 {
-                    EcsEntity entity = entities[j];
-                    sumB += componentsB[entity].value;
+                    EcsEntity e = entities[j];
+                    sumA += compsA[e].value;
+                    sumB += compsB[e].value;
+                    compsA[e] = new ComponentA { value = 1 };
                 }
             }
+            
+            Assert.AreEqual(0, sumA);
             Assert.AreEqual(1, sumB);
             
-            world.CreateEntity(new ComponentB { value = 1});
-            
+            world.CreateEntity(new ComponentA {value = 1}, new ComponentB { value = 1});
+
+            sumA = 0;
             sumB = 0;
             archetypeGroup = world.Filter(new EcsFilter().AllOf<ComponentB>());
             accessor = *archetypeGroup.GetArchetypeAccessorPtr();
@@ -90,38 +125,13 @@ namespace Qwerty.ECS.Tests
                 EcsEntityCollection entities = accessor.GetEntityArray(i);
                 for (int j = 0; j < entities.count; j++)
                 {
-                    EcsEntity entity = entities[j];
-                    sumB += componentsB[entity].value;
+                    EcsEntity e = entities[j];
+                    sumA += compsA[e].value;
+                    sumB += compsB[e].value;
                 }
             }
+            Assert.AreEqual(2, sumA);
             Assert.AreEqual(2, sumB);
-        } 
-
-        [Test]
-        public void ChangeArchetypeByCreateDestroyEntitiesTest()
-        {
-            EcsWorld world = new EcsWorld();
-            Assert.AreEqual(1, world.ArchetypeCount); // empty
-
-            EcsEntity entity1 = world.CreateEntity(new ComponentA());
-            EcsEntity entity2 = world.CreateEntity(new ComponentA());
-            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
-            Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-            
-            world.DestroyEntity(entity1);
-            world.DestroyEntity(entity2);
-            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
-            Assert.AreEqual(0, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-            
-            entity1 = world.CreateEntity(new ComponentA());
-            entity2 = world.CreateEntity(new ComponentA());
-            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
-            Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-            
-            world.DestroyEntity(entity1);
-            world.DestroyEntity(entity2);
-            Assert.AreEqual(2, world.ArchetypeCount); // empty, A
-            Assert.AreEqual(0, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
         }
     }
 }
