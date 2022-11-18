@@ -102,7 +102,7 @@ namespace Qwerty.ECS.Tests
 
             EcsArchetypeGroup archetypeGroup = world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>());
             EcsArchetypesAccessor accessor = *archetypeGroup.GetArchetypeAccessorPtr();
-            for (int i = 0; i < accessor.ArchetypeCount; i++)
+            for (int i = 0; i < accessor.archetypeCount; i++)
             {
                 
                 EcsEntityCollection entities = accessor.GetEntityArray(i);
@@ -124,7 +124,7 @@ namespace Qwerty.ECS.Tests
             sumB = 0;
             archetypeGroup = world.Filter(new EcsFilter().AllOf<ComponentB>());
             accessor = *archetypeGroup.GetArchetypeAccessorPtr();
-            for (int i = 0; i < accessor.ArchetypeCount; i++)
+            for (int i = 0; i < accessor.archetypeCount; i++)
             {
                 EcsEntityCollection entities = accessor.GetEntityArray(i);
                 for (int j = 0; j < entities.count; j++)

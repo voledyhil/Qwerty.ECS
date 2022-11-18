@@ -50,7 +50,7 @@ namespace Qwerty.ECS.Tests
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
             EcsComponentAccessor<ComponentB> compsB = m_world.GetComponentAccessor<ComponentB>();
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
                 int count = entities.count;
@@ -79,7 +79,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentAccessor<ComponentD> compsD = m_world.GetComponentAccessor<ComponentD>();
 
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
 
@@ -108,7 +108,7 @@ namespace Qwerty.ECS.Tests
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB>());
             EcsComponentAccessor<ComponentB> compsB = m_world.GetComponentAccessor<ComponentB>();
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
                 int count = entities.count;
@@ -132,7 +132,7 @@ namespace Qwerty.ECS.Tests
 
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB, ComponentD>());
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
                 int count = entities.count;
@@ -153,7 +153,7 @@ namespace Qwerty.ECS.Tests
 
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().NoneOf<ComponentB, ComponentD>());
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
                 int count = entities.count;
@@ -174,7 +174,7 @@ namespace Qwerty.ECS.Tests
 
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().NoneOf<ComponentB, ComponentB, ComponentD>());
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
                 int count = entities.count;
@@ -202,7 +202,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentAccessor<ComponentD> compsD = m_world.GetComponentAccessor<ComponentD>();
 
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
                 int count = entities.count;
@@ -234,7 +234,7 @@ namespace Qwerty.ECS.Tests
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentD, ComponentD>().AnyOf<ComponentB, ComponentC, ComponentC>());
             EcsComponentAccessor<ComponentD> compsD = m_world.GetComponentAccessor<ComponentD>();
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
                 int count = entities.count;
@@ -260,7 +260,7 @@ namespace Qwerty.ECS.Tests
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>().NoneOf<ComponentA>());
             EcsComponentAccessor<ComponentB> compsB = m_world.GetComponentAccessor<ComponentB>();
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
 
@@ -289,7 +289,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentAccessor<ComponentB> compsB = m_world.GetComponentAccessor<ComponentB>();
             EcsComponentAccessor<ComponentD> compsD = m_world.GetComponentAccessor<ComponentD>();
             EcsArchetypesAccessor chunks = archetypeGroup.GetArchetypeAccessor();
-            for (int i = 0; i < chunks.ArchetypeCount; i++)
+            for (int i = 0; i < chunks.archetypeCount; i++)
             {
                 EcsEntityCollection entities = chunks.GetEntityArray(i);
 
