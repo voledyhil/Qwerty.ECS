@@ -1,47 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
-    /// <summary>
-    /// Query defines the set of component types that an archetype must contain in
-    /// order for its entities to be included in the view.
-    /// You can also exclude archetypes that contain specific types of components.
-    /// </summary>
     public class EcsFilter : IEquatable<EcsFilter>
     {
         public HashSet<byte> Any;
         public HashSet<byte> All;
         public HashSet<byte> None;
-
-        /// <summary>
-        /// At least one of the component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter AnyOf<T0>() where T0 : struct, IEcsComponent
         {
             return AnyOf(EcsComponentType<T0>.index);
         }
-
-        /// <summary>
-        /// At least one of the component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns></returns>
+        
         public EcsFilter AnyOf<T0, T1>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
             return AnyOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
         }
-
-        /// <summary>
-        /// At least one of the component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter AnyOf<T0, T1, T2>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
@@ -49,12 +29,7 @@ namespace Qwerty.ECS.Runtime
         {
             return AnyOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
         }
-
-
-        /// <summary>
-        /// At least one of the component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         private EcsFilter AnyOf(params byte[] types)
         {
             Any ??= new HashSet<byte>();
@@ -66,31 +41,19 @@ namespace Qwerty.ECS.Runtime
 
             return this;
         }
-
-        /// <summary>
-        /// All component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter AllOf<T0>() where T0 : struct, IEcsComponent
         {
             return AllOf(EcsComponentType<T0>.index);
         }
-
-        /// <summary>
-        /// All component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter AllOf<T0, T1>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
             return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
         }
-
-        /// <summary>
-        /// All component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter AllOf<T0, T1, T2>()
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
@@ -98,11 +61,7 @@ namespace Qwerty.ECS.Runtime
         {
             return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
         }
-
-        /// <summary>
-        /// All component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter AllOf<T0, T1, T2, T3>() where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
@@ -111,10 +70,6 @@ namespace Qwerty.ECS.Runtime
             return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index);
         }
         
-        /// <summary>
-        /// All component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
         public EcsFilter AllOf<T0, T1, T2, T3, T4>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
@@ -125,10 +80,6 @@ namespace Qwerty.ECS.Runtime
             return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index, EcsComponentType<T4>.index);
         }
         
-        /// <summary>
-        /// All component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
         public EcsFilter AllOf<T0, T1, T2, T3, T4, T5>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
@@ -139,12 +90,7 @@ namespace Qwerty.ECS.Runtime
         {
             return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index, EcsComponentType<T4>.index, EcsComponentType<T5>.index);
         }
-
-
-        /// <summary>
-        /// All component types in this array must exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         private EcsFilter AllOf(params byte[] types)
         {
             All ??= new HashSet<byte>();
@@ -156,31 +102,19 @@ namespace Qwerty.ECS.Runtime
 
             return this;
         }
-
-        /// <summary>
-        /// None of the component types in this array can exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter NoneOf<T0>() where T0 : struct, IEcsComponent
         {
             return NoneOf(EcsComponentType<T0>.index);
         }
-
-        /// <summary>
-        /// None of the component types in this array can exist in the archetype 
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter NoneOf<T0, T1>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
             return NoneOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
         }
-
-        /// <summary>
-        /// None of the component types in this array can exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
+        
         public EcsFilter NoneOf<T0, T1, T2>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
@@ -189,10 +123,6 @@ namespace Qwerty.ECS.Runtime
             return NoneOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
         }
 
-        /// <summary>
-        /// None of the component types in this array can exist in the archetype
-        /// </summary>
-        /// <returns>Current filter</returns>
         private EcsFilter NoneOf(params byte[] types)
         {
             None ??= new HashSet<byte>();
@@ -204,11 +134,7 @@ namespace Qwerty.ECS.Runtime
 
             return this;
         }
-
-        /// <summary>
-        /// Creates a new filter with the same set of parameters
-        /// </summary>
-        /// <returns>New Filter</returns>
+        
         public EcsFilter Clone()
         {
             EcsFilter filter = new EcsFilter();
