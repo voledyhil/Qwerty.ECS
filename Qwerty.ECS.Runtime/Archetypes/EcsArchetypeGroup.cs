@@ -28,7 +28,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             int archetypesCount = archetypes.Count;
             for (int i = 0; i < archetypesCount; i++)
             {
-                entitiesCount += archetypes[i].Entities.count;
+                entitiesCount += archetypes[i].entities.count;
             }
             return entitiesCount;
         }

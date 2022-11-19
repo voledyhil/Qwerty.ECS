@@ -12,7 +12,7 @@ namespace Qwerty.ECS.Runtime
 
         private bool HasComponent(EcsEntity entity, byte index)
         {
-            return m_archetypeManager[m_entityToArchetype[entity.Index]].TypeIndicesSet.Contains(index);
+            return m_archetypeManager[m_entityToArchetype[entity.Index]].typeIndicesSet.Contains(index);
         }
 
         public T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent

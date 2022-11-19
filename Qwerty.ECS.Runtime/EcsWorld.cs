@@ -31,8 +31,8 @@ namespace Qwerty.ECS.Runtime
 
             m_archetypeManager = new EcsArchetypeManager(archetypeCapacity);
 
-            m_componentTypeIndices = new byte[EcsTypeManager.TypeCount];
-            m_componentPools = new IEcsComponentPool[EcsTypeManager.TypeCount];
+            m_componentTypeIndices = new byte[EcsTypeManager.typeCount];
+            m_componentPools = new IEcsComponentPool[EcsTypeManager.typeCount];
 
             foreach ((int, IEcsComponentPoolCreator) item in EcsTypeManager.componentsCreators)
             {
@@ -74,7 +74,7 @@ namespace Qwerty.ECS.Runtime
 
         private void AddEntityToArchetype(EcsArchetype archetype, in EcsEntity entity)
         {
-            EcsEntityCollection entities = archetype.Entities;
+            EcsEntityCollection entities = archetype.entities;
             int index = entities.count;
             if (index >= entities.length)
             {
@@ -84,12 +84,12 @@ namespace Qwerty.ECS.Runtime
             entities.IncCount();
             entities[index] = entity;
             m_entityInArchetype[entity.Index] = index;
-            m_entityToArchetype[entity.Index] = archetype.Index;
+            m_entityToArchetype[entity.Index] = archetype.index;
         }
 
         private void RemoveEntityFromArchetype(EcsArchetype archetype, in EcsEntity entity)
         {
-            EcsEntityCollection entities = archetype.Entities;
+            EcsEntityCollection entities = archetype.entities;
             int index = m_entityInArchetype[entity.Index];
             int lastIndex = entities.count - 1;
             if (index == lastIndex)

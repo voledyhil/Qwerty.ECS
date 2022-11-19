@@ -16,7 +16,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 			
 			for (int i = 0; i < archetypes.Count; i++)
 			{
-				m_items->Write(i, archetypes[i].Entities);
+				m_items->Write(i, archetypes[i].entities);
 			}
 		}
 

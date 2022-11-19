@@ -6,30 +6,29 @@ namespace Qwerty.ECS.Runtime.Archetypes
 {
     public class EcsArchetype : IDisposable
     {
-        public int Index { get; }
+        public readonly int index;
         
-        internal readonly byte[] TypeIndices;
-        internal readonly HashSet<byte> TypeIndicesSet;
-        internal readonly EcsArchetype[] Next;
-        internal readonly EcsArchetype[] Prior;
+        internal readonly byte[] typeIndices;
+        internal readonly HashSet<byte> typeIndicesSet;
+        internal readonly EcsArchetype[] next;
+        internal readonly EcsArchetype[] prior;
         
-        internal EcsEntityCollection Entities;
+        internal EcsEntityCollection entities;
 
         internal EcsArchetype(int index, byte[] typeIndices)
         {
-            Entities = new EcsEntityCollection(1024);
+            this.index = index;
+            this.typeIndices = typeIndices;
             
-            Next = new EcsArchetype[EcsTypeManager.TypeCount];
-            Prior = new EcsArchetype[EcsTypeManager.TypeCount];
-
-            Index = index;
-            TypeIndices = typeIndices;
-            TypeIndicesSet = new HashSet<byte>(typeIndices);
+            typeIndicesSet = new HashSet<byte>(typeIndices);
+            entities = new EcsEntityCollection(1024);
+            next = new EcsArchetype[EcsTypeManager.typeCount];
+            prior = new EcsArchetype[EcsTypeManager.typeCount];
         }
 
         public void Dispose()
         {
-            Entities.Dispose();
+            entities.Dispose();
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Qwerty.ECS.Runtime
             for (int i = group.Version; i < m_archetypeManager.archetypeCount; i++)
             {
                 EcsArchetype archetype = m_archetypeManager[i];
-                byte[] typeIndices = archetype.TypeIndices;
+                byte[] typeIndices = archetype.typeIndices;
                 
                 if (None(typeIndices, none) && Any(typeIndices, any) && All(typeIndices, all))
                 {

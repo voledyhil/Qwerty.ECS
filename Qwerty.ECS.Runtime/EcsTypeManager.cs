@@ -6,7 +6,7 @@ namespace Qwerty.ECS.Runtime
 {
 	internal static class EcsTypeManager
 	{
-		public static byte TypeCount => m_typeCount;
+		public static byte typeCount => m_typeCount;
 
 		internal static readonly List<(int, IEcsComponentPoolCreator)> componentsCreators = new List<(int, IEcsComponentPoolCreator)>();
 
