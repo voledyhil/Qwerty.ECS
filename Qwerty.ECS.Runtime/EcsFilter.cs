@@ -171,9 +171,11 @@ namespace Qwerty.ECS.Runtime
         public override int GetHashCode()
         {
             if (m_hashDirty)
+            {
                 return m_hash;
+            }
 
-            int hash = GetType().GetHashCode();
+            int hash = 97;
             hash = CalculateHash(hash, all, 3, 53);
             hash = CalculateHash(hash, any, 307, 367);
             hash = CalculateHash(hash, none, 647, 683);
@@ -188,10 +190,9 @@ namespace Qwerty.ECS.Runtime
         {
             byte[] indicesArray = indices.ToArray();
             Array.Sort(indicesArray);
-
-            foreach (byte b in indicesArray)
+            foreach (byte index in indicesArray)
             {
-                hash = hash ^ b * i1;
+                hash ^= index * i1;
             }
             hash ^= indices.Count * i2;
             return hash;
