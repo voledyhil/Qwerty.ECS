@@ -51,11 +51,13 @@ namespace Qwerty.ECS.Runtime
             int targetLength = target.Length;
             while (i < sourceLength && j < targetLength)
             {
-                if (source[i] < target[j])
+                byte s = source[i];
+                byte t = target[j];
+                if (s < t)
                 {
                     i++;
                 }
-                else if (target[j] < source[i])
+                else if (t < s)
                 {
                     j++;
                 }
@@ -75,11 +77,13 @@ namespace Qwerty.ECS.Runtime
             int targetLength = target.Length;
             while (i < sourceLength && j < targetLength)
             {
-                if (source[i] < target[j])
+                byte s = source[i];
+                byte t = target[j];
+                if (s < t)
                 {
                     i++;
                 }
-                else if (target[j] < source[i])
+                else if (t < s)
                 {
                     j++;
                 }
@@ -98,11 +102,13 @@ namespace Qwerty.ECS.Runtime
             int targetLength = target.Length;
             while (i < sourceLength && j < targetLength)
             {
-                if (source[i] < target[j])
+                byte s = source[i];
+                byte t = target[j];
+                if (s < t)
                 {
                     i++;
                 }
-                else if (target[j] < source[i])
+                else if (t < s)
                 {
                     j++;
                 }
