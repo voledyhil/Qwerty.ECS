@@ -53,19 +53,21 @@ namespace Qwerty.ECS.Runtime
             {
                 byte s = source[i];
                 byte t = target[j];
+                
                 if (s < t)
                 {
                     i++;
+                    continue;
                 }
-                else if (t < s)
+
+                if (t < s)
                 {
                     j++;
+                    continue;
                 }
-                else
-                {
-                    cnt++;
-                    i++;
-                }
+
+                cnt++;
+                i++;
             }
             return cnt == targetLength;
         }
@@ -79,18 +81,20 @@ namespace Qwerty.ECS.Runtime
             {
                 byte s = source[i];
                 byte t = target[j];
+                
                 if (s < t)
                 {
                     i++;
+                    continue;
                 }
-                else if (t < s)
+
+                if (t < s)
                 {
                     j++;
+                    continue;
                 }
-                else
-                {
-                    return true;
-                }
+                
+                return true;
             }
             return targetLength == 0;
         }
@@ -104,18 +108,20 @@ namespace Qwerty.ECS.Runtime
             {
                 byte s = source[i];
                 byte t = target[j];
+                
                 if (s < t)
                 {
                     i++;
+                    continue;
                 }
-                else if (t < s)
+                
+                if (t < s)
                 {
                     j++;
+                    continue;
                 }
-                else
-                {
-                    return false;
-                }
+                
+                return false;
             }
             return true;
         }
