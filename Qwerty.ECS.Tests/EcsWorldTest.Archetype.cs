@@ -46,18 +46,23 @@ namespace Qwerty.ECS.Tests
             EcsEntity entity1 = world.CreateEntity(new ComponentA(), new ComponentB());
             EcsEntity entity2 = world.CreateEntity(new ComponentA(), new ComponentB());
             EcsEntity entity3 = world.CreateEntity(new ComponentA(), new ComponentB());
+            /* [AB], [AB], [AB], [AB] */
             
             Assert.AreEqual(3, world.archetypeCount); // empty, A, AB
             Assert.AreEqual(4, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
             
             world.RemoveComponent<ComponentA>(entity1);
             world.RemoveComponent<ComponentA>(entity2);
+            /* [AB], [B], [B], [AB] */
+            
             Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
             Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
             Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
             Assert.AreEqual(4, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
             
             world.RemoveComponent<ComponentA>(entity0);
+            /* [B], [B], [B], [AB] */
+            
             Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
             Assert.AreEqual(1, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
             Assert.AreEqual(1, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
@@ -65,6 +70,8 @@ namespace Qwerty.ECS.Tests
             
             world.AddComponent(entity1, new ComponentA()); 
             world.AddComponent(entity2, new ComponentA());
+            /* [B], [AB], [AB], [AB] */
+            
             Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
             Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
             Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
@@ -72,6 +79,8 @@ namespace Qwerty.ECS.Tests
             
             world.RemoveComponent<ComponentA>(entity3);
             world.RemoveComponent<ComponentB>(entity3);
+            /* [B], [AB], [], [AB] */
+            
             Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
             Assert.AreEqual(1, world.Filter(new EcsFilter().NoneOf<ComponentA, ComponentB>()).CalculateCount());
             Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
@@ -79,8 +88,10 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
             
             world.AddComponent(entity3, new ComponentC());
+            /* [B], [AB], [C], [AB] */
+            
             Assert.AreEqual(5, world.archetypeCount); // empty, A, B, AB, C
-            Assert.AreEqual(2, world.Filter(new EcsFilter().NoneOf<ComponentA, ComponentB>()).CalculateCount());
+            Assert.AreEqual(1, world.Filter(new EcsFilter().NoneOf<ComponentA, ComponentB>()).CalculateCount());
             Assert.AreEqual(1, world.Filter(new EcsFilter().AllOf<ComponentC>()).CalculateCount());
             Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
             Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());

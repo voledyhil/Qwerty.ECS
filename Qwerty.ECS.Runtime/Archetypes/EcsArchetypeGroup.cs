@@ -7,34 +7,28 @@ namespace Qwerty.ECS.Runtime.Archetypes
     public class EcsArchetypeGroup : IDisposable
     {
         public int Version { get; private set; }
-        
-        private readonly List<EcsArchetype> m_archetypes;
+
+        internal readonly List<EcsArchetype> archetypes = new List<EcsArchetype>();
         private EcsArchetypesAccessor m_archetypesAccessor;
         
-        internal EcsArchetypeGroup(int version, IEnumerable<EcsArchetype> archetypes)
+        internal void ChangeVersion(int newVersion)
         {
-            Version = version;
-
-            m_archetypes = new List<EcsArchetype>(archetypes);
-            m_archetypesAccessor = new EcsArchetypesAccessor(m_archetypes);
-        }
-        
-        public void Update(int newVersion, IEnumerable<EcsArchetype> newArchetypes)
-        {
-            Version = newVersion;
-            m_archetypes.AddRange(newArchetypes);
+            if (Version > 0)
+            {
+                m_archetypesAccessor.Dispose();
+            }
             
-            m_archetypesAccessor.Dispose();
-            m_archetypesAccessor = new EcsArchetypesAccessor(m_archetypes);
+            m_archetypesAccessor = new EcsArchetypesAccessor(archetypes);
+            Version = newVersion;
         }
         
         public int CalculateCount()
         {
             int entitiesCount = 0;
-            int archetypesCount = m_archetypes.Count;
+            int archetypesCount = archetypes.Count;
             for (int i = 0; i < archetypesCount; i++)
             {
-                entitiesCount += m_archetypes[i].Entities.count;
+                entitiesCount += archetypes[i].Entities.count;
             }
             return entitiesCount;
         }

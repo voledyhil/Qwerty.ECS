@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Qwerty.ECS.Runtime.Archetypes;
 
 namespace Qwerty.ECS.Runtime
@@ -7,107 +6,108 @@ namespace Qwerty.ECS.Runtime
     {
         public EcsArchetypeGroup Filter(EcsFilter filter)
         {
-            int version = m_archetypeManager.archetypeCount - 1;
-            if (m_archetypeGroups.TryGetValue(filter, out EcsArchetypeGroup result))
+            int version = m_archetypeManager.archetypeCount;
+            if (m_archetypeGroups.TryGetValue(filter, out EcsArchetypeGroup group))
             {
-                if (result.Version >= version)
+                if (group.Version >= version)
                 {
-                    return result;
+                    return group;
                 }
             }
-
-            byte[] all = filter.All?.ToArray();
-            byte[] any = filter.Any?.ToArray();
-            byte[] none = filter.None?.ToArray();
-
-            if (result != null)
+            
+            if (group == null)
             {
-                result.Update(version, GetArchetypes(all, any, none, result.Version));
-                return result;
+                group = new EcsArchetypeGroup();
+                m_archetypeGroups.Add(filter.Clone(), group);
             }
-
-            result = new EcsArchetypeGroup(version, GetArchetypes(all, any, none, 0));
-            m_archetypeGroups.Add(filter.Clone(), result);
-            return result;
+            
+            byte[] all = filter.all.ToArray();
+            byte[] any = filter.any.ToArray();
+            byte[] none = filter.none.ToArray();
+            
+            Array.Sort(all);
+            Array.Sort(any);
+            Array.Sort(none);
+            
+            for (int i = group.Version; i < m_archetypeManager.archetypeCount; i++)
+            {
+                EcsArchetype archetype = m_archetypeManager[i];
+                byte[] typeIndices = archetype.TypeIndices;
+                
+                if (None(typeIndices, typeIndices.Length, none, none.Length) &&
+                    Any(typeIndices, typeIndices.Length, any, any.Length) &&
+                    All(typeIndices, typeIndices.Length, all, all.Length))
+                {
+                    group.archetypes.Add(archetype);
+                }
+            }
+            group.ChangeVersion(version);
+            
+            return group;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<EcsArchetype> GetArchetypes(byte[] all, byte[] any, byte[] none, int startId)
+        
+        private static bool All(byte[] source, int sourceLen, byte[] target, int targetLen)
         {
-            HashSet<EcsArchetype> buffer0 = null;
-            HashSet<EcsArchetype> buffer1 = null;
-
-            if (all != null || any != null)
+            int cnt = 0, i = 0, j = 0;
+            while (i < sourceLen && j < targetLen)
             {
-                if (all != null)
+                if (source[i] < target[j])
                 {
-                    IReadOnlyList<EcsArchetype>[] archetypes = new IReadOnlyList<EcsArchetype>[all.Length];
-                    for (int i = 0; i < all.Length; i++)
-                    {
-                        int len = m_archetypeManager.GetArchetypes(all[i], startId, m_archetypes);
-                        EcsArchetype[] items = new EcsArchetype[len];
-                        for (int j = 0; j < len; j++)
-                        {
-                            items[j] = m_archetypes[j];
-                        }
-
-                        archetypes[i] = items;
-                    }
-
-                    Array.Sort(archetypes, (a, b) => a.Count - b.Count);
-
-                    buffer0 = new HashSet<EcsArchetype>(archetypes[0]);
-                    for (int i = 1; i < all.Length; i++)
-                    {
-                        buffer0.IntersectWith(archetypes[i]);
-                    }
+                    i++;
                 }
-
-                if (any != null)
+                else if (target[j] < source[i])
                 {
-                    buffer1 = new HashSet<EcsArchetype>();
-                    foreach (byte typeIndex in any)
-                    {
-                        int len = m_archetypeManager.GetArchetypes(typeIndex, startId, m_archetypes);
-                        for (int j = 0; j < len; j++)
-                        {
-                            buffer1.Add(m_archetypes[j]);
-                        }
-                    }
+                    j++;
                 }
-
-                if (buffer0 != null && buffer1 != null)
+                else
                 {
-                    buffer0.IntersectWith(buffer1);
-                }
-                else if (buffer1 != null)
-                {
-                    buffer0 = buffer1;
+                    cnt++;
+                    i++;
                 }
             }
-            else
+            return cnt == targetLen;
+        }
+        
+        private static bool Any(byte[] source, int sourceLen, byte[] target, int targetLen)
+        {
+            int i = 0, j = 0;
+            while (i < sourceLen && j < targetLen)
             {
-                buffer0 = new HashSet<EcsArchetype>();
-                int len = m_archetypeManager.GetArchetypes(startId, m_archetypes);
-                for (int i = 0; i < len; i++)
+                if (source[i] < target[j])
                 {
-                    buffer0.Add(m_archetypes[i]);
+                    i++;
+                }
+                else if (target[j] < source[i])
+                {
+                    j++;
+                }
+                else
+                {
+                    return true;
                 }
             }
-
-            if (none != null)
+            return targetLen == 0;
+        }
+        
+        private static bool None(byte[] source, int sourceLen, byte[] target, int targetLen)
+        {
+            int i = 0, j = 0;
+            while (i < sourceLen && j < targetLen)
             {
-                foreach (byte type in none)
+                if (source[i] < target[j])
                 {
-                    int len = m_archetypeManager.GetArchetypes(type, startId, m_archetypes);
-                    for (int i = 0; i < len; i++)
-                    {
-                        buffer0.Remove(m_archetypes[i]);
-                    }
+                    i++;
+                }
+                else if (target[j] < source[i])
+                {
+                    j++;
+                }
+                else
+                {
+                    return false;
                 }
             }
-
-            return buffer0;
+            return true;
         }
     }
 }

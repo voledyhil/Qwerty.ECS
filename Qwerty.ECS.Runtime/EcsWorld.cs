@@ -19,7 +19,6 @@ namespace Qwerty.ECS.Runtime
         private readonly Dictionary<EcsFilter, EcsArchetypeGroup> m_archetypeGroups = new Dictionary<EcsFilter, EcsArchetypeGroup>();
 
         private readonly byte[] m_componentTypeIndices;
-        private readonly EcsArchetype[] m_archetypes;
         private readonly EcsArchetypeManager m_archetypeManager;
         private readonly IEcsComponentPool[] m_componentPools;
 
@@ -30,7 +29,6 @@ namespace Qwerty.ECS.Runtime
             m_entityInArchetype = new int[0x20000];
             m_entityToArchetype = new int[0x20000];
 
-            m_archetypes = new EcsArchetype[archetypeCapacity];
             m_archetypeManager = new EcsArchetypeManager(archetypeCapacity);
 
             m_componentTypeIndices = new byte[EcsTypeManager.TypeCount];

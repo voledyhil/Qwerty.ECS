@@ -15,57 +15,20 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly EcsArchetype[] m_archetypes;
         private int m_archetypesLen;
         
-        private readonly EcsArchetype[][] m_archetypeTypes;
-
-        private readonly int[] m_archetypeTypesLen;
         private readonly byte[] m_indicesBuffer;
 
         public EcsArchetypeManager(int archetypeCapacity)
         {
             m_indicesBuffer = new byte[EcsTypeManager.TypeCount];
-            m_archetypeTypes = new EcsArchetype[EcsTypeManager.TypeCount][];
-            
-            m_archetypeTypesLen = new int[archetypeCapacity];
+
             m_archetypes = new EcsArchetype[archetypeCapacity];
             
             m_emptyArchetype = new EcsArchetype(m_archetypeIndexCounter++, new byte[] { });
             m_archetypes[m_archetypesLen++] = m_emptyArchetype;
-
-            for (int i = 0; i < m_archetypeTypes.Length; i++)
-            {
-                m_archetypeTypes[i] = new EcsArchetype[archetypeCapacity];
-            }
         }
 
         internal EcsArchetype this[int index] => m_archetypes[index];
-        
-        internal int GetArchetypes(int startIndex, EcsArchetype[] buffer)
-        {
-            int len = 0;
-            for (int i = startIndex; i < m_archetypesLen; i++)
-            {
-                buffer[len++] = m_archetypes[i];
-            }
-            return len;
-        }
-        
-        internal int GetArchetypes(byte typeIndex, int archetypeIndex, EcsArchetype[] buffer)
-        {
-            int len = 0;
-            EcsArchetype[] archetypes = m_archetypeTypes[typeIndex];
-            int typeLen = m_archetypeTypesLen[typeIndex];
-            for (int i = typeLen - 1; i >= 0; i--)
-            {
-                EcsArchetype archetype = archetypes[i];
-                if (archetype.Index <= archetypeIndex)
-                {
-                    break;
-                }
-                buffer[len++] = archetype;
-            }
-            return len;
-        }
-        
+
         internal EcsArchetype FindOrCreateArchetype(byte[] typeIndicesBuffer, int typeIndicesLen)
         {
             EcsArchetype current = m_emptyArchetype;
@@ -83,13 +46,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
                     next = new EcsArchetype(m_archetypeIndexCounter++, archetypeIndices);
                     next.Prior[index] = current;
-                    
-                    byte[] typeIndices = next.TypeIndices;
-                    foreach (byte typeIndex in typeIndices)
-                    {
-                        m_archetypeTypes[typeIndex][m_archetypeTypesLen[typeIndex]++] = next;
-                    }
-
                     current.Next[index] = next;
                     
                     m_archetypes[m_archetypesLen++] = next;

@@ -1,118 +1,137 @@
-using System.Runtime.CompilerServices;
 using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
-    public class EcsFilter : IEquatable<EcsFilter>
+    public sealed class EcsFilter : IEquatable<EcsFilter>
     {
-        public HashSet<byte> Any;
-        public HashSet<byte> All;
-        public HashSet<byte> None;
+        public readonly HashSet<byte> any;
+        public readonly HashSet<byte> all;
+        public readonly HashSet<byte> none;
+
+        public EcsFilter()
+        {
+            any = new HashSet<byte>();
+            all = new HashSet<byte>();
+            none = new HashSet<byte>();
+        }
+
+        private EcsFilter(EcsFilter other)
+        {
+            any = new HashSet<byte>(other.any);
+            all = new HashSet<byte>(other.all);
+            none = new HashSet<byte>(other.none);
+        }
         
         public EcsFilter AnyOf<T0>() where T0 : struct, IEcsComponent
         {
-            return AnyOf(EcsComponentType<T0>.index);
-        }
-        
-        public EcsFilter AnyOf<T0, T1>() 
-            where T0 : struct, IEcsComponent
-            where T1 : struct, IEcsComponent
-        {
-            return AnyOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
-        }
-        
-        public EcsFilter AnyOf<T0, T1, T2>() 
-            where T0 : struct, IEcsComponent
-            where T1 : struct, IEcsComponent
-            where T2 : struct, IEcsComponent
-        {
-            return AnyOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
-        }
-        
-        private EcsFilter AnyOf(params byte[] types)
-        {
-            Any ??= new HashSet<byte>();
-            foreach (byte type in types)
-            {
-                Any.Add(type);
-                m_isCached = false;
-            }
+            any.Add(EcsComponentType<T0>.index);
+            m_hashDirty = false;
 
             return this;
         }
+        
+        public EcsFilter AnyOf<T0, T1>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent
+        {
+            any.Add(EcsComponentType<T0>.index);
+            any.Add(EcsComponentType<T1>.index);
+            m_hashDirty = false;
+
+            return this;
+        }
+        
+        public EcsFilter AnyOf<T0, T1, T2>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent where T2 : struct, IEcsComponent
+        {
+            any.Add(EcsComponentType<T0>.index);
+            any.Add(EcsComponentType<T1>.index);
+            any.Add(EcsComponentType<T2>.index);
+            m_hashDirty = false;
+
+            return this;
+        }
+        
+
         
         public EcsFilter AllOf<T0>() where T0 : struct, IEcsComponent
         {
-            return AllOf(EcsComponentType<T0>.index);
-        }
-        
-        public EcsFilter AllOf<T0, T1>() 
-            where T0 : struct, IEcsComponent
-            where T1 : struct, IEcsComponent
-        {
-            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
-        }
-        
-        public EcsFilter AllOf<T0, T1, T2>()
-            where T0 : struct, IEcsComponent
-            where T1 : struct, IEcsComponent
-            where T2 : struct, IEcsComponent
-        {
-            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
-        }
-        
-        public EcsFilter AllOf<T0, T1, T2, T3>() where T0 : struct, IEcsComponent
-            where T1 : struct, IEcsComponent
-            where T2 : struct, IEcsComponent
-            where T3 : struct, IEcsComponent
-        {
-            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index);
-        }
-        
-        public EcsFilter AllOf<T0, T1, T2, T3, T4>() 
-            where T0 : struct, IEcsComponent
-            where T1 : struct, IEcsComponent
-            where T2 : struct, IEcsComponent
-            where T3 : struct, IEcsComponent
-            where T4 : struct, IEcsComponent
-        {
-            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index, EcsComponentType<T4>.index);
-        }
-        
-        public EcsFilter AllOf<T0, T1, T2, T3, T4, T5>() 
-            where T0 : struct, IEcsComponent
-            where T1 : struct, IEcsComponent
-            where T2 : struct, IEcsComponent
-            where T3 : struct, IEcsComponent
-            where T4 : struct, IEcsComponent
-            where T5 : struct, IEcsComponent
-        {
-            return AllOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index, EcsComponentType<T3>.index, EcsComponentType<T4>.index, EcsComponentType<T5>.index);
-        }
-        
-        private EcsFilter AllOf(params byte[] types)
-        {
-            All ??= new HashSet<byte>();
-            foreach (byte type in types)
-            {
-                All.Add(type);
-                m_isCached = false;
-            }
+            all.Add(EcsComponentType<T0>.index);
+            m_hashDirty = false;
 
             return this;
         }
         
+        public EcsFilter AllOf<T0, T1>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent
+        {
+            all.Add(EcsComponentType<T0>.index);
+            all.Add(EcsComponentType<T1>.index);
+            m_hashDirty = false;
+
+            return this;
+        }
+        
+        public EcsFilter AllOf<T0, T1, T2>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent where T2 : struct, IEcsComponent
+        {
+            all.Add(EcsComponentType<T0>.index);
+            all.Add(EcsComponentType<T1>.index);
+            all.Add(EcsComponentType<T2>.index);
+            m_hashDirty = false;
+
+            return this;
+        }
+        
+        public EcsFilter AllOf<T0, T1, T2, T3>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent where T2 : struct, IEcsComponent where T3 : struct, IEcsComponent
+        {
+            all.Add(EcsComponentType<T0>.index);
+            all.Add(EcsComponentType<T1>.index);
+            all.Add(EcsComponentType<T2>.index);
+            all.Add(EcsComponentType<T3>.index);
+            m_hashDirty = false;
+
+            return this;
+        }
+        
+        public EcsFilter AllOf<T0, T1, T2, T3, T4>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent where T2 : struct, IEcsComponent where T3 : struct, IEcsComponent where T4 : struct, IEcsComponent
+        {
+            all.Add(EcsComponentType<T0>.index);
+            all.Add(EcsComponentType<T1>.index);
+            all.Add(EcsComponentType<T2>.index);
+            all.Add(EcsComponentType<T3>.index);
+            all.Add(EcsComponentType<T4>.index);
+            m_hashDirty = false;
+
+            return this;
+        }
+        
+        public EcsFilter AllOf<T0, T1, T2, T3, T4, T5>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent where T2 : struct, IEcsComponent where T3 : struct, IEcsComponent where T4 : struct, IEcsComponent where T5 : struct, IEcsComponent
+        {
+            all.Add(EcsComponentType<T0>.index);
+            all.Add(EcsComponentType<T1>.index);
+            all.Add(EcsComponentType<T2>.index);
+            all.Add(EcsComponentType<T3>.index);
+            all.Add(EcsComponentType<T4>.index);
+            all.Add(EcsComponentType<T5>.index);
+            m_hashDirty = false;
+
+            return this;
+        }
+
         public EcsFilter NoneOf<T0>() where T0 : struct, IEcsComponent
         {
-            return NoneOf(EcsComponentType<T0>.index);
+            none.Add(EcsComponentType<T0>.index);
+            m_hashDirty = false;
+
+            return this;
         }
         
         public EcsFilter NoneOf<T0, T1>() 
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            return NoneOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index);
+            none.Add(EcsComponentType<T0>.index);
+            none.Add(EcsComponentType<T1>.index);
+            m_hashDirty = false;
+
+            return this;
         }
         
         public EcsFilter NoneOf<T0, T1, T2>() 
@@ -120,80 +139,60 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            return NoneOf(EcsComponentType<T0>.index, EcsComponentType<T1>.index, EcsComponentType<T2>.index);
-        }
-
-        private EcsFilter NoneOf(params byte[] types)
-        {
-            None ??= new HashSet<byte>();
-            foreach (byte type in types)
-            {
-                None.Add(type);
-                m_isCached = false;
-            }
+            none.Add(EcsComponentType<T0>.index);
+            none.Add(EcsComponentType<T1>.index);
+            none.Add(EcsComponentType<T2>.index);
+            m_hashDirty = false;
 
             return this;
         }
-        
+
         public EcsFilter Clone()
         {
-            EcsFilter filter = new EcsFilter();
-
-            if (Any != null)
-                filter.Any = new HashSet<byte>(Any);
-
-            if (All != null)
-                filter.All = new HashSet<byte>(All);
-
-            if (None != null)
-                filter.None = new HashSet<byte>(None);
-
-            return filter;
+            return new EcsFilter(this);
         }
 
         public bool Equals(EcsFilter other)
         {
-            if (other == null || other.GetHashCode() != GetHashCode() || other.GetType() != GetType())
+            if (other == null || other.GetHashCode() != GetHashCode())
                 return false;
-
-            if (other.All != null && All != null && !other.All.SetEquals(All))
-                return false;
-
-            if (other.Any != null && Any != null && !other.Any.SetEquals(Any))
-                return false;
-
-            return other.None == null || None == null || other.None.SetEquals(None);
+ 
+            return other.all.SetEquals(all) && other.any.SetEquals(any) && other.none.SetEquals(none);
+        }
+        
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as EcsFilter);
         }
 
         private int m_hash;
-        private bool m_isCached;
+        private bool m_hashDirty;
 
         public override int GetHashCode()
         {
-            if (m_isCached)
+            if (m_hashDirty)
                 return m_hash;
 
             int hash = GetType().GetHashCode();
-            hash = CalculateHash(hash, All, 3, 53);
-            hash = CalculateHash(hash, Any, 307, 367);
-            hash = CalculateHash(hash, None, 647, 683);
+            hash = CalculateHash(hash, all, 3, 53);
+            hash = CalculateHash(hash, any, 307, 367);
+            hash = CalculateHash(hash, none, 647, 683);
 
             m_hash = hash;
-            m_isCached = true;
+            m_hashDirty = true;
 
             return m_hash;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         private static int CalculateHash(int hash, HashSet<byte> indices, int i1, int i2)
         {
-            if (indices == null)
-                return hash;
-
             byte[] indicesArray = indices.ToArray();
             Array.Sort(indicesArray);
 
-            hash = indicesArray.Aggregate(hash, (current, index) => current ^ index * i1);
+            foreach (byte b in indicesArray)
+            {
+                hash = hash ^ b * i1;
+            }
             hash ^= indices.Count * i2;
             return hash;
         }
