@@ -34,9 +34,7 @@ namespace Qwerty.ECS.Runtime
                 EcsArchetype archetype = m_archetypeManager[i];
                 byte[] typeIndices = archetype.TypeIndices;
                 
-                if (None(typeIndices, typeIndices.Length, none, none.Length) &&
-                    Any(typeIndices, typeIndices.Length, any, any.Length) &&
-                    All(typeIndices, typeIndices.Length, all, all.Length))
+                if (None(typeIndices, none) && Any(typeIndices, any) && All(typeIndices, all))
                 {
                     group.archetypes.Add(archetype);
                 }
@@ -46,10 +44,12 @@ namespace Qwerty.ECS.Runtime
             return group;
         }
         
-        private static bool All(byte[] source, int sourceLen, byte[] target, int targetLen)
+        private static bool All(byte[] source, byte[] target)
         {
             int cnt = 0, i = 0, j = 0;
-            while (i < sourceLen && j < targetLen)
+            int sourceLength = source.Length;
+            int targetLength = target.Length;
+            while (i < sourceLength && j < targetLength)
             {
                 if (source[i] < target[j])
                 {
@@ -65,13 +65,15 @@ namespace Qwerty.ECS.Runtime
                     i++;
                 }
             }
-            return cnt == targetLen;
+            return cnt == targetLength;
         }
         
-        private static bool Any(byte[] source, int sourceLen, byte[] target, int targetLen)
+        private static bool Any(byte[] source, byte[] target)
         {
             int i = 0, j = 0;
-            while (i < sourceLen && j < targetLen)
+            int sourceLength = source.Length;
+            int targetLength = target.Length;
+            while (i < sourceLength && j < targetLength)
             {
                 if (source[i] < target[j])
                 {
@@ -86,13 +88,15 @@ namespace Qwerty.ECS.Runtime
                     return true;
                 }
             }
-            return targetLen == 0;
+            return targetLength == 0;
         }
         
-        private static bool None(byte[] source, int sourceLen, byte[] target, int targetLen)
+        private static bool None(byte[] source, byte[] target)
         {
             int i = 0, j = 0;
-            while (i < sourceLen && j < targetLen)
+            int sourceLength = source.Length;
+            int targetLength = target.Length;
+            while (i < sourceLength && j < targetLength)
             {
                 if (source[i] < target[j])
                 {
