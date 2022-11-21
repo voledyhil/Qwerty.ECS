@@ -14,36 +14,29 @@ namespace Qwerty.ECS.Runtime
                     return group;
                 }
             }
-            
+
             if (group == null)
             {
                 group = new EcsArchetypeGroup();
                 m_archetypeGroups.Add(filter.Clone(), group);
             }
-            
-            byte[] all = filter.all.ToArray();
-            byte[] any = filter.any.ToArray();
-            byte[] none = filter.none.ToArray();
-            
-            Array.Sort(all);
-            Array.Sort(any);
-            Array.Sort(none);
-            
+
             for (int i = group.Version; i < m_archetypeManager.archetypeCount; i++)
             {
                 EcsArchetype archetype = m_archetypeManager[i];
                 byte[] typeIndices = archetype.typeIndices;
-                
-                if (None(typeIndices, none) && Any(typeIndices, any) && All(typeIndices, all))
+
+                if (None(typeIndices, filter.none) && Any(typeIndices, filter.any) && All(typeIndices, filter.all))
                 {
                     group.archetypes.Add(archetype);
                 }
             }
+
             group.ChangeVersion(version);
-            
+
             return group;
         }
-        
+
         private static bool All(byte[] source, byte[] target)
         {
             int cnt = 0, i = 0, j = 0;
@@ -53,7 +46,7 @@ namespace Qwerty.ECS.Runtime
             {
                 byte s = source[i];
                 byte t = target[j];
-                
+
                 if (s < t)
                 {
                     i++;
@@ -69,9 +62,10 @@ namespace Qwerty.ECS.Runtime
                 cnt++;
                 i++;
             }
+
             return cnt == targetLength;
         }
-        
+
         private static bool Any(byte[] source, byte[] target)
         {
             int i = 0, j = 0;
@@ -81,7 +75,7 @@ namespace Qwerty.ECS.Runtime
             {
                 byte s = source[i];
                 byte t = target[j];
-                
+
                 if (s < t)
                 {
                     i++;
@@ -93,12 +87,13 @@ namespace Qwerty.ECS.Runtime
                     j++;
                     continue;
                 }
-                
+
                 return true;
             }
+
             return targetLength == 0;
         }
-        
+
         private static bool None(byte[] source, byte[] target)
         {
             int i = 0, j = 0;
@@ -108,21 +103,22 @@ namespace Qwerty.ECS.Runtime
             {
                 byte s = source[i];
                 byte t = target[j];
-                
+
                 if (s < t)
                 {
                     i++;
                     continue;
                 }
-                
+
                 if (t < s)
                 {
                     j++;
                     continue;
                 }
-                
+
                 return false;
             }
+
             return true;
         }
     }

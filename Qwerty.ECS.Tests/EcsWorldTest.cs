@@ -24,7 +24,15 @@ namespace Qwerty.ECS.Tests
         public int value;
     }
 
-    public struct ComponentE : IEcsComponent { }
+    public struct ComponentE : IEcsComponent
+    {
+        public int value;
+    }
+    
+    public struct ComponentF : IEcsComponent
+    {
+        public int value;
+    }
 
     [TestFixture]
     public partial class EcsWorldTest
@@ -33,7 +41,7 @@ namespace Qwerty.ECS.Tests
         public void RegisterComponentThrowExceptionTest()
         {
             EcsWorld world = new EcsWorld();
-            Assert.That(() => world.CreateEntity(new ComponentE()), Throws.InvalidOperationException);
+            Assert.That(() => world.CreateEntity(new ComponentF()), Throws.InvalidOperationException);
             world.Dispose();
         }
 
