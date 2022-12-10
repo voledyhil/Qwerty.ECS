@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 

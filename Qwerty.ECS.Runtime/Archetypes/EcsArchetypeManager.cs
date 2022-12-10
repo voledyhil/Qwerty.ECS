@@ -1,6 +1,3 @@
-using System;
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {

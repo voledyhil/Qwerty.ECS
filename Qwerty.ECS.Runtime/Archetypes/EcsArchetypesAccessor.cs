@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Qwerty.Unsafe.Runtime;
 
 // ReSharper disable once CheckNamespace

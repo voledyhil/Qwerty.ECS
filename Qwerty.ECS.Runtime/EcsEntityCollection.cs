@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Qwerty.Unsafe.Runtime;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
 	public readonly unsafe struct EcsEntityCollection
