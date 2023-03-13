@@ -27,7 +27,7 @@ namespace Qwerty.ECS.Runtime
                 int newCapacity = 2 * entityIndex + 1;
                 Array.Resize(ref m_entities, newCapacity);
                 Array.Resize(ref m_freeEntities, newCapacity);
-                m_entityArchetypeInfo->Realloc<EcsArchetypeInfo>(newCapacity);
+                m_entityArchetypeInfo->Realloc<EcsArchetypeChunkInfo>(newCapacity);
             }
 
             EcsEntity entity = new EcsEntity(entityIndex, entityVersion + 1);
@@ -44,14 +44,11 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException(nameof(entity));
             }
 
-            EcsArchetypeInfo curEcsArchetypeInfo = m_entityArchetypeInfo->Read<EcsArchetypeInfo>(entity.Index);
-            int indexInChunk = curEcsArchetypeInfo.indexInChunk;
-            EcsArchetypeChunk* chunk = curEcsArchetypeInfo.chunk;
-            int archetypeIndex = curEcsArchetypeInfo.archetypeIndex;
+            EcsArchetypeChunkInfo curEcsArchetypeChunkInfo = m_entityArchetypeInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
+            int archetypeIndex = curEcsArchetypeChunkInfo.archetypeIndex;
             
             EcsArchetype archetype = m_archetypeManager[archetypeIndex];
-            archetype.Swap(indexInChunk, chunk, m_entityArchetypeInfo);
-            
+            Swap(archetype, curEcsArchetypeChunkInfo);
 
             m_entities[entityIndex] = EcsEntity.Null;
             
@@ -68,8 +65,8 @@ namespace Qwerty.ECS.Runtime
         {
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.empty;
-            EcsArchetypeChunk* chunk = archetype.PushEntity(entity, out int indexInChunk);
-            m_entityArchetypeInfo->Write(entity.Index, new EcsArchetypeInfo(archetype.archetypeIndex, indexInChunk, chunk));
+            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
+            m_entityArchetypeInfo->Write(entity.Index, archetypeChunkInfo);
             return entity;
         }
 
@@ -79,12 +76,15 @@ namespace Qwerty.ECS.Runtime
             m_componentTypeIndices[0] = EcsComponentType<T0>.index;
             
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 1);
-            EcsArchetypeChunk* chunk = archetype.PushEntity(entity, out int indexInChunk);
-            m_entityArchetypeInfo->Write(entity.Index, new EcsArchetypeInfo(archetype.archetypeIndex, indexInChunk, chunk));
+            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
+            m_entityArchetypeInfo->Write(entity.Index, archetypeChunkInfo);
 
-            int index = archetype.componentsMap->Get(EcsComponentType<T0>.index);
-            int offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component0);
+            EcsArchetypeComponentsMap* componentsMap = archetype.componentsMap;
+            UnsafeArray* componentsOffset = archetype.componentsOffset;
+            
+            int index = componentsMap->Get(EcsComponentType<T0>.index);
+            int offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component0);
             
             return entity;
         }
@@ -104,16 +104,19 @@ namespace Qwerty.ECS.Runtime
 
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 2);
-            EcsArchetypeChunk* chunk = archetype.PushEntity(entity, out int indexInChunk);
-            m_entityArchetypeInfo->Write(entity.Index, new EcsArchetypeInfo(archetype.archetypeIndex, indexInChunk, chunk));
+            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
+            m_entityArchetypeInfo->Write(entity.Index, archetypeChunkInfo);
 
-            int index = archetype.componentsMap->Get(EcsComponentType<T0>.index);
-            int offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component0);
+            EcsArchetypeComponentsMap* componentsMap = archetype.componentsMap;
+            UnsafeArray* componentsOffset = archetype.componentsOffset;
             
-            index = archetype.componentsMap->Get(EcsComponentType<T1>.index);
-            offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component1);
+            int index = componentsMap->Get(EcsComponentType<T0>.index);
+            int offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component0);
+            
+            index = componentsMap->Get(EcsComponentType<T1>.index);
+            offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component1);
             
             return entity;
         }
@@ -135,20 +138,23 @@ namespace Qwerty.ECS.Runtime
 
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 3);
-            EcsArchetypeChunk* chunk = archetype.PushEntity(entity, out int indexInChunk);
-            m_entityArchetypeInfo->Write(entity.Index, new EcsArchetypeInfo(archetype.archetypeIndex, indexInChunk, chunk));
+            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
+            m_entityArchetypeInfo->Write(entity.Index, archetypeChunkInfo);
 
-            int index = archetype.componentsMap->Get(EcsComponentType<T0>.index);
-            int offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component0);
+            EcsArchetypeComponentsMap* componentsMap = archetype.componentsMap;
+            UnsafeArray* componentsOffset = archetype.componentsOffset;
             
-            index = archetype.componentsMap->Get(EcsComponentType<T1>.index);
-            offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component1);
+            int index = componentsMap->Get(EcsComponentType<T0>.index);
+            int offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component0);
             
-            index = archetype.componentsMap->Get(EcsComponentType<T2>.index);
-            offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component2);
+            index = componentsMap->Get(EcsComponentType<T1>.index);
+            offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component1);
+            
+            index = componentsMap->Get(EcsComponentType<T2>.index);
+            offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component2);
 
             return entity;
         }
@@ -172,24 +178,27 @@ namespace Qwerty.ECS.Runtime
 
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 4);
-            EcsArchetypeChunk* chunk = archetype.PushEntity(entity, out int indexInChunk);
-            m_entityArchetypeInfo->Write(entity.Index, new EcsArchetypeInfo(archetype.archetypeIndex, indexInChunk, chunk));
+            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
+            m_entityArchetypeInfo->Write(entity.Index, archetypeChunkInfo);
 
-            int index = archetype.componentsMap->Get(EcsComponentType<T0>.index);
-            int offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component0);
+            EcsArchetypeComponentsMap* componentsMap = archetype.componentsMap;
+            UnsafeArray* componentsOffset = archetype.componentsOffset;
             
-            index = archetype.componentsMap->Get(EcsComponentType<T1>.index);
-            offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component1);
+            int index = componentsMap->Get(EcsComponentType<T0>.index);
+            int offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component0);
             
-            index = archetype.componentsMap->Get(EcsComponentType<T2>.index);
-            offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component2);
+            index = componentsMap->Get(EcsComponentType<T1>.index);
+            offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component1);
             
-            index = archetype.componentsMap->Get(EcsComponentType<T3>.index);
-            offset = archetype.componentsOffset->Read<int>(index);
-            chunk->WriteComponent(indexInChunk, offset, component3);
+            index = componentsMap->Get(EcsComponentType<T2>.index);
+            offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component2);
+            
+            index = componentsMap->Get(EcsComponentType<T3>.index);
+            offset = componentsOffset->Read<int>(index);
+            archetypeChunkInfo.chunk->WriteComponent(archetypeChunkInfo.index, offset, component3);
             
             return entity;
         }
