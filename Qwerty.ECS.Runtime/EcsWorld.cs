@@ -8,8 +8,7 @@ namespace Qwerty.ECS.Runtime
     {
         public int archetypeCount => m_archetypeManager.archetypeCount;
 
-        private readonly UnsafeArray* m_entityInArchetype;
-        private readonly UnsafeArray* m_entityToArchetype;
+        private readonly UnsafeArray* m_entityArchetypeInfo;
         private EcsEntity[] m_entities;
         private EcsEntity[] m_freeEntities;
 
@@ -27,11 +26,8 @@ namespace Qwerty.ECS.Runtime
             m_freeEntities = new EcsEntity[0x20000];
             m_entities = new EcsEntity[0x20000];
             
-            m_entityInArchetype = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-            m_entityInArchetype->Realloc<int>(0x20000);
-            
-            m_entityToArchetype = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-            m_entityToArchetype->Realloc<int>(0x20000);
+            m_entityArchetypeInfo = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
+            m_entityArchetypeInfo->Realloc<EcsArchetypeInfo>(0x20000);
 
             m_archetypeManager = new EcsArchetypeManager(setting);
 
@@ -95,8 +91,7 @@ namespace Qwerty.ECS.Runtime
                 archetypeGroup.Dispose();
             }
             
-            m_entityInArchetype->Dispose();
-            m_entityToArchetype->Dispose();
+            m_entityArchetypeInfo->Dispose();
         }
 
         // public ref EcsComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
