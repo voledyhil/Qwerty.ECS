@@ -4,6 +4,5 @@ namespace Qwerty.ECS.Runtime
     {
         public int archetypeCapacity = byte.MaxValue;
         public int archetypeChunkSizeInByte = 2 ^ 14;
-        public int archetypeMaxComponents = 89;
     }
 }

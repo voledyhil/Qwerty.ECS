@@ -13,7 +13,7 @@ namespace Qwerty.ECS.Runtime
             int entityVersion = 0;
             if (m_freeEntitiesLen > 0)
             {
-                EcsEntity freeEntity = m_freeEntities[--m_freeEntitiesLen];
+                EcsEntity freeEntity = m_freeEntities->Read<EcsEntity>(--m_freeEntitiesLen);
                 entityIndex = freeEntity.Index;
                 entityVersion = freeEntity.Version;
             }
@@ -22,16 +22,16 @@ namespace Qwerty.ECS.Runtime
                 entityIndex = ++m_entityCounter;
             }
 
-            if (entityIndex >= m_entities.Length)
+            if (entityIndex >= m_entities->length)
             {
                 int newCapacity = 2 * entityIndex + 1;
-                Array.Resize(ref m_entities, newCapacity);
-                Array.Resize(ref m_freeEntities, newCapacity);
+                m_entities->Realloc<EcsEntity>(newCapacity);
+                m_freeEntities->Realloc<EcsEntity>(newCapacity);
                 m_entitiesInfo->Realloc<EcsArchetypeChunkInfo>(newCapacity);
             }
 
             EcsEntity entity = new EcsEntity(entityIndex, entityVersion + 1);
-            m_entities[entityIndex] = entity;
+            m_entities->Write(entityIndex, entity);
 
             return entity;
         }
@@ -39,26 +39,18 @@ namespace Qwerty.ECS.Runtime
         public void DestroyEntity(EcsEntity entity)
         {
             int entityIndex = entity.Index;
-            if (m_entities[entityIndex] == EcsEntity.Null)
+            if (m_entities->Read<EcsEntity>(entityIndex) == EcsEntity.Null)
             {
                 throw new InvalidOperationException(nameof(entity));
             }
 
-            EcsArchetypeChunkInfo curEcsArchetypeChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            int archetypeIndex = curEcsArchetypeChunkInfo.archetypeIndex;
+            EcsArchetypeChunkInfo info = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
+            EcsArchetype archetype = m_archetypeManager[info.archetypeIndex];
             
-            EcsArchetype archetype = m_archetypeManager[archetypeIndex];
-            Swap(archetype, curEcsArchetypeChunkInfo);
+            Swap(archetype, info);
 
-            m_entities[entityIndex] = EcsEntity.Null;
-            
-            if (m_freeEntitiesLen >= m_freeEntities.Length)
-            {
-                Array.Resize(ref m_freeEntities, 2 * m_freeEntitiesLen + 1);
-            }
-
-            m_freeEntities[m_freeEntitiesLen++] = entity;
-
+            m_entities->Write(entityIndex, EcsEntity.Null);
+            m_freeEntities->Write(m_freeEntitiesLen++, entity);
         }
         
         public EcsEntity CreateEntity()

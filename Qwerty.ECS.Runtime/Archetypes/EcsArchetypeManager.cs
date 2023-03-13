@@ -2,7 +2,7 @@
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    public class EcsArchetypeManager
+    internal unsafe class EcsArchetypeManager
     {
         private readonly EcsWorldSetting m_setting;
         internal int archetypeCount => m_archetypesLen;
@@ -14,13 +14,18 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly EcsArchetype m_emptyArchetype;
         private readonly EcsArchetype[] m_archetypes;
         private readonly byte[] m_indicesBuffer;
+        
+        private readonly PrimeStorage* m_primeStorage;
 
         public EcsArchetypeManager(EcsWorldSetting setting)
         {
+            m_primeStorage = (PrimeStorage*)MemoryUtilities.Alloc<PrimeStorage>(1);
+            m_primeStorage->Alloc();
+            
             m_setting = setting;
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
             m_archetypes = new EcsArchetype[setting.archetypeCapacity];
-            m_emptyArchetype = new EcsArchetype(m_archetypeIndexCounter++, new byte[] { }, setting.archetypeChunkSizeInByte, setting.archetypeMaxComponents);
+            m_emptyArchetype = new EcsArchetype(m_archetypeIndexCounter++, new byte[] { }, setting.archetypeChunkSizeInByte, m_primeStorage);
             m_archetypes[m_archetypesLen++] = m_emptyArchetype;
         }
         
@@ -39,7 +44,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                         archetypeIndices[j] = typeIndicesBuffer[j];
                     }
 
-                    next = new EcsArchetype(m_archetypeIndexCounter++, archetypeIndices, m_setting.archetypeChunkSizeInByte, m_setting.archetypeMaxComponents);
+                    next = new EcsArchetype(m_archetypeIndexCounter++, archetypeIndices, m_setting.archetypeChunkSizeInByte, m_primeStorage);
                     next.prior[index] = current;
                     current.next[index] = next;
                     
@@ -99,6 +104,12 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 }
             }
             return FindOrCreateArchetype(m_indicesBuffer, length);
+        }
+
+        internal void Dispose()
+        {
+            m_primeStorage->Dispose();
+            MemoryUtilities.Free((IntPtr)m_primeStorage);
         }
     }
 }
