@@ -59,7 +59,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             prior = new EcsArchetype[EcsTypeManager.typeCount];
         }
 
-        internal int PushEntity(EcsEntity entity)
+        internal EcsArchetypeChunk* PushEntity(EcsEntity entity, out int indexInChunk)
         {
             if (*chunks->last->count == chunkCapacity)
             {
@@ -67,39 +67,27 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
             
             EcsArchetypeChunk* lastChunk = chunks->last;
-            int lastIndex = *lastChunk->start + *lastChunk->count;
-            lastChunk->WriteEntity(lastIndex % chunkCapacity, entity);
+            indexInChunk = *lastChunk->count;
+            lastChunk->WriteEntity(indexInChunk, entity);
             ++*lastChunk->count;
-            return lastIndex;
+            return lastChunk;
         }
         
-        internal bool TrySwapEntity(int currentIndex, out int swapEntityIndex)
+        internal void Swap(int currentIndexInChunk, EcsArchetypeChunk* currentChunk, UnsafeArray* entityArchetypeInfo)
         {
-            swapEntityIndex = -1;
             EcsArchetypeChunk* lastChunk = chunks->last;
-            int lastIndex = *lastChunk->start + *lastChunk->count - 1;
-            if (currentIndex == lastIndex)
+            int lastIndex = *lastChunk->count - 1;
+            if (currentChunk != chunks->last || currentIndexInChunk != lastIndex)
             {
-                return false;
+                EcsEntity swapEntity = lastChunk->ReadEntity(lastIndex);
+                void* sourcePtr = (void*)((IntPtr)lastChunk->body + rowCapacityInBytes * lastIndex);
+                void* targetPtr = (void*)((IntPtr)currentChunk->body + rowCapacityInBytes * currentIndexInChunk);
+                Buffer.MemoryCopy(sourcePtr, targetPtr, rowCapacityInBytes, rowCapacityInBytes);
+
+                entityArchetypeInfo->Write(swapEntity.Index, new EcsArchetypeInfo(archetypeIndex, currentIndexInChunk, currentChunk));
             }
             
-            EcsEntity swapEntity = lastChunk->ReadEntity(lastIndex % chunkCapacity);
-            swapEntityIndex = swapEntity.Index;
-            
-            EcsArchetypeChunk* targetChunk = GetChunkByIndex(currentIndex / chunkCapacity);
-            EcsArchetypeChunk* sourceChunk = GetChunkByIndex(lastIndex / chunkCapacity);
-            void* sourcePtr = (void*)((IntPtr)sourceChunk->body + rowCapacityInBytes * (lastIndex % chunkCapacity));
-            void* targetPtr = (void*)((IntPtr)targetChunk->body + rowCapacityInBytes * (currentIndex % chunkCapacity));
-            Buffer.MemoryCopy(sourcePtr, targetPtr, rowCapacityInBytes, rowCapacityInBytes);
-            
-            return true;
-        }
-
-
-        public void PopLastEntity()
-        {
             --*chunks->last->count;
-            EcsArchetypeChunk* lastChunk = chunks->last;
             if (*lastChunk->count != 0 || lastChunk->prior == null)
             {
                 return;
@@ -108,6 +96,55 @@ namespace Qwerty.ECS.Runtime.Archetypes
             chunks->last = lastChunk->prior;
             lastChunk->Dispose();
             MemoryUtilities.Free((IntPtr)lastChunk);
+        }
+        
+        
+        internal static void CopyRemove(int priorIndexInChunk, EcsArchetypeChunk* priorChunk, EcsArchetype priorArchetype, int nextIndexInChunk, EcsArchetypeChunk* nextChunk, int componentTypeIndex)
+        {
+            int priorRowCapacityInBytes = priorChunk->rowCapacityInBytes;
+            int nextRowCapacityInBytes = nextChunk->rowCapacityInBytes;
+            
+            int index = priorArchetype.componentsMap->Get(componentTypeIndex);
+            int sizeInBytes = priorArchetype.componentsOffset->Read<int>(index);
+            if (sizeInBytes > 0)
+            {
+                void* source = (void*)((IntPtr)priorChunk->body + priorRowCapacityInBytes * priorIndexInChunk);
+                void* target = (void*)((IntPtr)nextChunk->body + nextRowCapacityInBytes * nextIndexInChunk);
+                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
+            }
+            
+            if (++index < priorArchetype.typeIndices.Length)
+            {
+                int offset = priorArchetype.componentsOffset->Read<int>(index);
+                void* source = (void*)((IntPtr)priorChunk->body + priorRowCapacityInBytes * priorIndexInChunk + offset);
+                void* target = (void*)((IntPtr)nextChunk->body + nextRowCapacityInBytes * nextIndexInChunk + sizeInBytes);
+                sizeInBytes = priorRowCapacityInBytes - Unsafe.SizeOf<EcsEntity>() - sizeInBytes;
+                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
+            }
+        }
+        
+        internal static void CopyAdd(int priorIndexInChunk, EcsArchetypeChunk* priorChunk, int nextIndexInChunk, EcsArchetypeChunk* nextChunk, EcsArchetype nextArchetype, int componentTypeIndex)
+        {
+            int priorRowCapacityInBytes = priorChunk->rowCapacityInBytes;
+            int nextRowCapacityInBytes = nextChunk->rowCapacityInBytes;
+            
+            int index = nextArchetype.componentsMap->Get(componentTypeIndex);
+            int sizeInBytes = nextArchetype.componentsOffset->Read<int>(index);
+            if (sizeInBytes > 0)
+            {
+                void* source = (void*)((IntPtr)priorChunk->body + priorRowCapacityInBytes * priorIndexInChunk);
+                void* target = (void*)((IntPtr)nextChunk->body + nextRowCapacityInBytes * nextIndexInChunk);
+                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
+            }
+            
+            if (++index < nextArchetype.typeIndices.Length)
+            {
+                int offset = nextArchetype.componentsOffset->Read<int>(index);
+                void* source = (void*)((IntPtr)priorChunk->body + priorRowCapacityInBytes * priorIndexInChunk + sizeInBytes);
+                void* target = (void*)((IntPtr)nextChunk->body + nextRowCapacityInBytes * nextIndexInChunk + offset);
+                sizeInBytes = priorRowCapacityInBytes - Unsafe.SizeOf<EcsEntity>() - sizeInBytes;
+                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
+            }
         }
         
         internal EcsArchetypeChunk* GetChunkByIndex(int chunkIndex)
@@ -153,62 +190,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
             MemoryUtilities.Free((IntPtr)m_chunksCount);
             MemoryUtilities.Free((IntPtr)componentsOffset);
             MemoryUtilities.Free((IntPtr)componentsMap);
-        }
-
-        public static void CopyRemove(int sourceIndex, EcsArchetype sourceArchetype, int targetIndex, EcsArchetype targetArchetype, int index)
-        {
-            int sourceChunkCapacity = sourceArchetype.chunkCapacity;
-            int sourceRowCapacityInBytes = sourceArchetype.rowCapacityInBytes;
-            
-            int targetChunkCapacity = targetArchetype.chunkCapacity;
-            int targetRowCapacityInBytes = targetArchetype.rowCapacityInBytes;
-            
-            EcsArchetypeChunk* sourceChunk = sourceArchetype.GetChunkByIndex(sourceIndex / sourceChunkCapacity);
-            EcsArchetypeChunk* targetChunk = targetArchetype.GetChunkByIndex(targetIndex / targetChunkCapacity);
-            int sizeInBytes = sourceArchetype.componentsOffset->Read<int>(index);
-            if (sizeInBytes > 0)
-            {
-                void* source = (void*)((IntPtr)sourceChunk->body + sourceRowCapacityInBytes * (sourceIndex % sourceChunkCapacity));
-                void* target = (void*)((IntPtr)targetChunk->body + targetRowCapacityInBytes * (targetIndex % targetChunkCapacity));
-                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
-            }
-            
-            if (++index < sourceArchetype.typeIndices.Length)
-            {
-                int offset = sourceArchetype.componentsOffset->Read<int>(index);
-                void* source = (void*)((IntPtr)sourceChunk->body + sourceRowCapacityInBytes * (sourceIndex % sourceChunkCapacity) + offset);
-                void* target = (void*)((IntPtr)targetChunk->body + targetRowCapacityInBytes * (targetIndex % targetChunkCapacity) + sizeInBytes);
-                sizeInBytes = sourceRowCapacityInBytes - Unsafe.SizeOf<EcsEntity>() - sizeInBytes;
-                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
-            }
-        }
-        
-        public static void CopyAdd(int sourceIndex, EcsArchetype sourceArchetype, int targetIndex, EcsArchetype targetArchetype, int index)
-        {
-            int sourceChunkCapacity = sourceArchetype.chunkCapacity;
-            int sourceRowCapacityInBytes = sourceArchetype.rowCapacityInBytes;
-            
-            int targetChunkCapacity = targetArchetype.chunkCapacity;
-            int targetRowCapacityInBytes = targetArchetype.rowCapacityInBytes;
-            
-            EcsArchetypeChunk* sourceChunk = sourceArchetype.GetChunkByIndex(sourceIndex / sourceChunkCapacity);
-            EcsArchetypeChunk* targetChunk = targetArchetype.GetChunkByIndex(targetIndex / targetChunkCapacity);
-            int sizeInBytes = targetArchetype.componentsOffset->Read<int>(index);
-            if (sizeInBytes > 0)
-            {
-                void* source = (void*)((IntPtr)sourceChunk->body + sourceRowCapacityInBytes * (sourceIndex % sourceChunkCapacity));
-                void* target = (void*)((IntPtr)targetChunk->body + targetRowCapacityInBytes * (targetIndex % targetChunkCapacity));
-                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
-            }
-            
-            if (++index < targetArchetype.typeIndices.Length)
-            {
-                int offset = targetArchetype.componentsOffset->Read<int>(index);
-                void* source = (void*)((IntPtr)sourceChunk->body + sourceRowCapacityInBytes * (sourceIndex % sourceChunkCapacity) + sizeInBytes);
-                void* target = (void*)((IntPtr)targetChunk->body + targetRowCapacityInBytes * (targetIndex % targetChunkCapacity) + offset);
-                sizeInBytes = sourceRowCapacityInBytes - Unsafe.SizeOf<EcsEntity>() - sizeInBytes;
-                Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
-            }
         }
     }
 }

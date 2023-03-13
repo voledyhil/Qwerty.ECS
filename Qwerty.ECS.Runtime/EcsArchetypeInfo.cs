@@ -1,8 +1,18 @@
+using Qwerty.ECS.Runtime.Archetypes;
+
 namespace Qwerty.ECS.Runtime
 {
-    internal struct EcsArchetypeInfo
+    internal unsafe readonly struct EcsArchetypeInfo
     {
-        public int archetypeIndex;
-        public int indexInArchetype;
+        public readonly int archetypeIndex;
+        public readonly int indexInChunk;
+        public readonly EcsArchetypeChunk* chunk;
+
+        public EcsArchetypeInfo(int archetypeIndex, int indexInChunk, EcsArchetypeChunk* chunk)
+        {
+            this.archetypeIndex = archetypeIndex;
+            this.indexInChunk = indexInChunk;
+            this.chunk = chunk;
+        }
     }
 }

@@ -5,12 +5,14 @@ namespace Qwerty.ECS.Runtime.Archetypes
 {
     internal unsafe struct EcsArchetypeChunk
     {
+        public int sizeInBytes => m_sizeInBytes;
         public int rowCapacityInBytes => m_rowCapacityInBytes;
         public EcsArchetypeChunk* prior;
         public byte* body;
         public int* start;
         public int* count;
 
+        private int m_sizeInBytes;
         private int m_rowCapacityInBytes;
         public EcsArchetypeComponentsMap* map;
         public UnsafeArray* offsets;
@@ -20,6 +22,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
             body = (byte*)MemoryUtilities.Alloc(sizeInBytes, true);
             start = (int*)MemoryUtilities.Alloc<int>(1);
             count = (int*)MemoryUtilities.Alloc<int>(1);
+            
+            m_sizeInBytes = sizeInBytes;
             m_rowCapacityInBytes = rowCapacityInBytes;
             this.map = map;
             this.offsets = offsets;
