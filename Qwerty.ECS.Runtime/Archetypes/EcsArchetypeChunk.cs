@@ -12,10 +12,10 @@ namespace Qwerty.ECS.Runtime.Archetypes
         public int* count;
         
         private int m_rowCapacityInBytes;
-        public EcsArchetypeComponentsMap* map;
+        public IntMap* map;
         public UnsafeArray* offsets;
 
-        public void Alloc(int sizeInBytes, int rowCapacityInBytes, EcsArchetypeComponentsMap* map, UnsafeArray* offsets)
+        public void Alloc(int sizeInBytes, int rowCapacityInBytes, IntMap* map, UnsafeArray* offsets)
         {
             body = (byte*)MemoryUtilities.Alloc(sizeInBytes, true);
             start = (int*)MemoryUtilities.Alloc<int>(1);

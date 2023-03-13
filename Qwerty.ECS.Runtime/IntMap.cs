@@ -2,7 +2,7 @@
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
-	public unsafe struct EcsArchetypeComponentsMap
+	internal unsafe struct IntMap
 	{
 		private struct Entry 
 		{
@@ -44,22 +44,21 @@ namespace Qwerty.ECS.Runtime
 			MemoryUtilities.Free((IntPtr)m_entries);
 		}
 		
-		public int Get(int key) 
+		public bool Contains(int key)
 		{
-			int hashCode = key.GetHashCode() & Lower31BitMask;
-			int bucketsLen = m_buckets->length;
-			int target = hashCode % bucketsLen;
-			for (int i = m_buckets->Read<int>(target); i >= 0; i = m_entries->Read<Entry>(i).next)
+			return FindEntry(key) >= 0;
+		}
+		
+		public int Get(int key)
+		{
+			int value = FindEntry(key);
+			if (value >= 0)
 			{
-				Entry entry = m_entries->Read<Entry>(i);
-				if (entry.hashCode == hashCode && entry.key.Equals(key))
-				{
-					return m_entries->Read<Entry>(i).value;
-				}
+				return value;
 			}
 			throw new ArgumentException(nameof(Get));
 		}
-
+		
 		public void Set(int key, int value)
 		{
 			int index = (*m_count)++;
@@ -75,6 +74,24 @@ namespace Qwerty.ECS.Runtime
 			
 			m_entries->Write(index, entry);
 			m_buckets->Write(target, index);
+		}
+
+		private int FindEntry(int key) 
+		{
+			int hashCode = key.GetHashCode() & Lower31BitMask;
+			int bucketsLen = m_buckets->length;
+			int target = hashCode % bucketsLen;
+			
+			for (int i = m_buckets->Read<int>(target); i >= 0; i = m_entries->Read<Entry>(i).next)
+			{
+				Entry entry = m_entries->Read<Entry>(i);
+				if (entry.hashCode != hashCode || !entry.key.Equals(key))
+				{
+					continue;
+				}
+				return i;
+			}
+			return -1;
 		}
 	}
 }

@@ -13,7 +13,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal readonly int archetypeIndex;
         internal readonly byte[] typeIndices;
-        internal readonly HashSet<byte> typeIndicesSet;
         internal readonly EcsArchetype[] next;
         internal readonly EcsArchetype[] prior;
 
@@ -25,17 +24,16 @@ namespace Qwerty.ECS.Runtime.Archetypes
         internal readonly int rowCapacityInBytes;
         
         internal readonly UnsafeArray* componentsOffset;
-        internal readonly EcsArchetypeComponentsMap* componentsMap;
+        internal readonly IntMap* componentsMap;
         internal EcsArchetype(int archetypeIndex, byte[] typeIndices, int chunkSizeInBytes, PrimeStorage* primeStorage)
         {
             m_chunkSizeInBytes = chunkSizeInBytes;
             this.typeIndices = typeIndices;
-            typeIndicesSet = new HashSet<byte>(typeIndices);
 
             componentsOffset = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
             componentsOffset->Realloc<int>(typeIndices.Length + 1);
 
-            componentsMap = (EcsArchetypeComponentsMap*)MemoryUtilities.Alloc<EcsArchetypeComponentsMap>(1);
+            componentsMap = (IntMap*)MemoryUtilities.Alloc<IntMap>(1);
             componentsMap->Alloc(primeStorage->GetPrime(typeIndices.Length));
             
             int index = 0;

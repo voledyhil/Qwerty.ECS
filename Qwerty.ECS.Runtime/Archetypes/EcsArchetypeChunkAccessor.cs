@@ -9,9 +9,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly int m_count;
         private readonly int m_rowCapacityInBytes;
         private readonly UnsafeArray* m_offsets;
-        private readonly EcsArchetypeComponentsMap* m_map;
+        private readonly IntMap* m_map;
 
-        internal EcsArchetypeChunkAccessor(byte* bodyPtr, int count, int rowCapacityInBytes, EcsArchetypeComponentsMap* map, UnsafeArray* offsets)
+        internal EcsArchetypeChunkAccessor(byte* bodyPtr, int count, int rowCapacityInBytes, IntMap* map, UnsafeArray* offsets)
         {
             m_bodyPtr = bodyPtr;
             m_count = count;

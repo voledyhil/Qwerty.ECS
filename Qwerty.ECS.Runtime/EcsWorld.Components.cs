@@ -14,7 +14,7 @@ namespace Qwerty.ECS.Runtime
         {
             EcsArchetypeChunkInfo curEcsArchetypeChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
             int curArchetypeIndex = curEcsArchetypeChunkInfo.archetypeIndex;
-            return m_archetypeManager[curArchetypeIndex].typeIndicesSet.Contains(index);
+            return m_archetypeManager[curArchetypeIndex].componentsMap->Contains(index);
         }
 
         public T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent

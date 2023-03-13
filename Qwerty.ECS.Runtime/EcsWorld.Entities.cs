@@ -71,7 +71,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
             m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
 
-            EcsArchetypeComponentsMap map = *archetype.componentsMap;
+            IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;
             EcsArchetypeChunk chunk = *archetypeChunkInfo.chunk;
             chunk.Write(archetypeChunkInfo.index, offsets.Read<int>(map.Get(EcsComponentType<T0>.index)), c0);
@@ -97,7 +97,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
             m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
 
-            EcsArchetypeComponentsMap map = *archetype.componentsMap;
+            IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;
             EcsArchetypeChunk chunk = *archetypeChunkInfo.chunk;
             chunk.Write(archetypeChunkInfo.index, offsets.Read<int>(map.Get(EcsComponentType<T0>.index)), c0);
@@ -126,7 +126,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
             m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
 
-            EcsArchetypeComponentsMap map = *archetype.componentsMap;
+            IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;
             EcsArchetypeChunk chunk = *archetypeChunkInfo.chunk;
             chunk.Write(archetypeChunkInfo.index, offsets.Read<int>(map.Get(EcsComponentType<T0>.index)), c0);
@@ -158,7 +158,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
             m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
 
-            EcsArchetypeComponentsMap map = *archetype.componentsMap;
+            IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;
             EcsArchetypeChunk chunk = *archetypeChunkInfo.chunk;
             chunk.Write(archetypeChunkInfo.index, offsets.Read<int>(map.Get(EcsComponentType<T0>.index)), c0);
