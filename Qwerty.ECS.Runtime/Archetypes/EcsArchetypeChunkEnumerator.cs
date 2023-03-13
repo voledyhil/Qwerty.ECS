@@ -25,7 +25,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                     return true;
                 }
 
-                if (++m_archetypeIndex >= m_archetypes->Length)
+                if (++m_archetypeIndex >= m_archetypes->length)
                 {
                     return false;
                 }

@@ -71,7 +71,7 @@ namespace Qwerty.ECS.Runtime
 			}
 			else
 			{
-				int entLen = m_entries->Length;
+				int entLen = m_entries->length;
 				if (*m_count >= entLen)
 				{
 					throw new ArgumentOutOfRangeException();
@@ -80,7 +80,7 @@ namespace Qwerty.ECS.Runtime
 			}
 
 			int hashCode = key.GetHashCode() & Lower31BitMask;
-			int bucketsLen = m_buckets->Length;
+			int bucketsLen = m_buckets->length;
 			int target = hashCode % bucketsLen;
 			
 			Entry entry = m_entries->Read<Entry>(index);
@@ -96,7 +96,7 @@ namespace Qwerty.ECS.Runtime
 		private int FindEntry(int key) 
 		{
 			int hashCode = key.GetHashCode() & Lower31BitMask;
-			int bucketsLen = m_buckets->Length;
+			int bucketsLen = m_buckets->length;
 			int target = hashCode % bucketsLen;
 			
 			for (int i = m_buckets->Read<int>(target); i >= 0; i = m_entries->Read<Entry>(i).next)

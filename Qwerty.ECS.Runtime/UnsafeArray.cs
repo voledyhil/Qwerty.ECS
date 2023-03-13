@@ -6,7 +6,7 @@ namespace Qwerty.ECS.Runtime
 {
 	public unsafe struct UnsafeArray
 	{
-		public int Length => m_length;
+		public int length => m_length;
 
 		public byte* Ptr;
 		private int m_capacityInBytes;
