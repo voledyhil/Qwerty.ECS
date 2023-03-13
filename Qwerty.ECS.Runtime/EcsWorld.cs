@@ -139,7 +139,7 @@ namespace Qwerty.ECS.Runtime
             {
                 return;
             }
-            --*archetype.m_chunksCount;
+            archetype.chunksCnt--;
             archetype.chunks->last = lastChunk->prior;
             lastChunk->Dispose();
             MemoryUtilities.Free((IntPtr)lastChunk);
