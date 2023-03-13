@@ -5,9 +5,9 @@ using Qwerty.ECS.Runtime.Components;
 
 namespace Qwerty.ECS.Runtime
 {
-    public unsafe partial class EcsWorld
+    public partial class EcsWorld
     {
-        private EcsEntity InstantiateEntity()
+        private unsafe EcsEntity InstantiateEntity()
         {
             int entityIndex;
             int entityVersion = 0;
@@ -36,7 +36,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
         
-        public void DestroyEntity(EcsEntity entity)
+        public unsafe void DestroyEntity(EcsEntity entity)
         {
             int entityIndex = entity.Index;
             if (m_entities->Read<EcsEntity>(entityIndex) == EcsEntity.Null)
@@ -47,7 +47,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetypeChunkInfo info = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
             EcsArchetype archetype = m_archetypeManager[info.archetypeIndex];
             
-            Swap(archetype, info);
+            SwapEntity(archetype, info);
 
             m_entities->Write(entityIndex, EcsEntity.Null);
             m_freeEntities->Write(m_freeEntitiesLen++, entity);
@@ -55,21 +55,20 @@ namespace Qwerty.ECS.Runtime
         
         public EcsEntity CreateEntity()
         {
+            
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.empty;
-            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
-            m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
+            PushEntity(archetype, entity, out _);
             return entity;
         }
 
-        public EcsEntity CreateEntity<T0>(T0 c0) where T0 : struct, IEcsComponent
+        public unsafe EcsEntity CreateEntity<T0>(T0 c0) where T0 : struct, IEcsComponent
         {
             EcsEntity entity = InstantiateEntity();
             m_componentTypeIndices[0] = EcsComponentType<T0>.index;
             
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 1);
-            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
-            m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
+            PushEntity(archetype, entity, out EcsArchetypeChunkInfo archetypeChunkInfo);
 
             IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;
@@ -79,7 +78,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
 
-        public EcsEntity CreateEntity<T0, T1>(T0 c0, T1 c1)
+        public unsafe EcsEntity CreateEntity<T0, T1>(T0 c0, T1 c1)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
@@ -94,8 +93,7 @@ namespace Qwerty.ECS.Runtime
 
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 2);
-            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
-            m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
+            PushEntity(archetype, entity, out EcsArchetypeChunkInfo archetypeChunkInfo);
 
             IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;
@@ -106,7 +104,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
 
-        public EcsEntity CreateEntity<T0, T1, T2>(T0 c0, T1 c1, T2 c2)
+        public unsafe EcsEntity CreateEntity<T0, T1, T2>(T0 c0, T1 c1, T2 c2)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
@@ -123,8 +121,7 @@ namespace Qwerty.ECS.Runtime
 
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 3);
-            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
-            m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
+            PushEntity(archetype, entity, out EcsArchetypeChunkInfo archetypeChunkInfo);
 
             IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;
@@ -136,7 +133,9 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
 
-        public EcsEntity CreateEntity<T0, T1, T2, T3>(T0 c0, T1 c1, T2 c2, T3 c3)
+        public unsafe 
+            
+            EcsEntity CreateEntity<T0, T1, T2, T3>(T0 c0, T1 c1, T2 c2, T3 c3)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
@@ -155,8 +154,7 @@ namespace Qwerty.ECS.Runtime
 
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 4);
-            EcsArchetypeChunkInfo archetypeChunkInfo = archetype.PushEntity(entity);
-            m_entitiesInfo->Write(entity.Index, archetypeChunkInfo);
+            PushEntity(archetype, entity, out EcsArchetypeChunkInfo archetypeChunkInfo);
 
             IntMap map = *archetype.componentsMap;
             UnsafeArray offsets = *archetype.componentsOffset;

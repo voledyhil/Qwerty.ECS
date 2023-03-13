@@ -3,14 +3,14 @@ using System.Runtime.CompilerServices;
 
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    public unsafe class EcsArchetype : IDisposable
+    public class EcsArchetype : IDisposable
     {
+        public int chunksCount => chunksCnt;
+        
         internal struct Chunks
         {
-            internal EcsArchetypeChunk* last;
+            internal unsafe EcsArchetypeChunk* last;
         }
-        
-        public int chunksCount => chunksCnt;
         
         internal readonly int archetypeIndex;
         internal readonly byte[] typeIndices;
@@ -20,16 +20,17 @@ namespace Qwerty.ECS.Runtime.Archetypes
         internal int chunksCnt;
         internal readonly int rowCapacityInBytes;
         
-        internal readonly Chunks* chunks;
-        internal readonly UnsafeArray* componentsOffset;
-        internal readonly IntMap* componentsMap;
+        internal readonly unsafe Chunks* chunks;
+        internal readonly unsafe UnsafeArray* componentsOffset;
+        internal readonly unsafe IntMap* componentsMap;
+
+        internal readonly int chunkCapacity;
+        internal readonly int chunkSizeInBytes;
         
-        private readonly int m_chunkCapacity;
-        private readonly int m_chunkSizeInBytes;
-        
-        internal EcsArchetype(int index, byte[] indices, int chunkSizeInBytes, PrimeStorage* primeStorage)
+        internal unsafe EcsArchetype(int index, byte[] indices, int chunkSizeInBytes, PrimeStorage* primeStorage)
         {
-            m_chunkSizeInBytes = chunkSizeInBytes;
+            archetypeIndex = index;
+            this.chunkSizeInBytes = chunkSizeInBytes;
             typeIndices = indices;
 
             componentsOffset = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
@@ -38,8 +39,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
             componentsMap = (IntMap*)MemoryUtilities.Alloc<IntMap>(1);
             componentsMap->Alloc(primeStorage->GetPrime(indices.Length));
             
-            int i = 0;
-            for (; i < indices.Length; i++)
+            chunks = (Chunks*)MemoryUtilities.Alloc<Chunks>(1);
+            
+            for (int i = 0; i < indices.Length; i++)
             {
                 int typeIndex = indices[i];
                 componentsOffset->Write(i, rowCapacityInBytes);
@@ -47,50 +49,31 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 rowCapacityInBytes += EcsTypeManager.Sizes[typeIndex];
             }
             rowCapacityInBytes += Unsafe.SizeOf<EcsEntity>();
+            chunkCapacity = chunkSizeInBytes / rowCapacityInBytes;
             
-            m_chunkCapacity = chunkSizeInBytes / rowCapacityInBytes;
-            archetypeIndex = index;
-            chunks = (Chunks*)MemoryUtilities.Alloc<Chunks>(1);
-
-            CreateNextChunk(0);
-
             next = new EcsArchetype[EcsTypeManager.typeCount];
             prior = new EcsArchetype[EcsTypeManager.typeCount];
         }
 
-        internal EcsArchetypeChunkInfo PushEntity(EcsEntity entity)
+        public EcsArchetypeChunkAccessor GetChunkAccessor(int chunkIndex)
         {
-            if (*chunks->last->count == m_chunkCapacity)
+            unsafe
             {
-                CreateNextChunk(chunksCnt * m_chunkCapacity);
+                EcsArchetypeChunk* chunk = chunks->last;
+                int cnt = chunksCnt;
+                while (chunk != null && --cnt > chunkIndex)
+                {
+                    chunk = chunk->prior;
+                }
+                if (chunk == null)
+                {
+                    throw new IndexOutOfRangeException(nameof(GetChunkAccessor));
+                }
+                return new EcsArchetypeChunkAccessor(chunk->body, *chunk->count, rowCapacityInBytes, componentsMap, componentsOffset);
             }
-            EcsArchetypeChunk* chunk = chunks->last;
-            int indexInChunk = (*chunk->count)++;
-            chunk->WriteEntity(indexInChunk, entity);
-            return new EcsArchetypeChunkInfo(archetypeIndex, indexInChunk, chunk);
         }
 
-        public EcsArchetypeChunkAccessor GetChunk(int chunkIndex)
-        {
-            EcsArchetypeChunk* chunk = chunks->last;
-            int cnt = chunksCnt;
-            while (--cnt > chunkIndex) chunk = chunk->prior;
-            return new EcsArchetypeChunkAccessor(chunk->body, *chunk->count, rowCapacityInBytes, componentsMap, componentsOffset);
-        }
-        
-        private void CreateNextChunk(int startIndex)
-        {
-            EcsArchetypeChunk* lastChunk = (EcsArchetypeChunk*)MemoryUtilities.Alloc<EcsArchetypeChunk>(1);
-            lastChunk->Alloc(m_chunkSizeInBytes, rowCapacityInBytes, componentsMap, componentsOffset);
-            lastChunk->prior = chunks->last;
-            *lastChunk->start = startIndex;
-            *lastChunk->count = 0;
-            
-            chunks->last = lastChunk;
-            chunksCnt++;
-        }
-
-        public void Dispose()
+        public unsafe void Dispose()
         {
             EcsArchetypeChunk* chunk = chunks->last;
             while (chunk != null)

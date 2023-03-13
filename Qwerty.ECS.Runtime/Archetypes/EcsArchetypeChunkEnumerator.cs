@@ -32,7 +32,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 
                 m_chunk = ((EcsArchetype.Chunks*)m_archetypes->Get<IntPtr>(m_archetypeIndex))->last;
                 
-                if (*m_chunk->count > 0)
+                if (m_chunk != null)
                 {
                     return true;
                 }

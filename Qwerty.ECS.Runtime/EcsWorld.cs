@@ -5,13 +5,13 @@ using Qwerty.ECS.Runtime.Components;
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
-    public unsafe partial class EcsWorld : IDisposable
+    public partial class EcsWorld : IDisposable
     {
         public int archetypeCount => m_archetypeManager.archetypeCount;
 
-        private readonly UnsafeArray* m_entitiesInfo;
-        private readonly UnsafeArray* m_entities;
-        private readonly UnsafeArray* m_freeEntities;
+        private readonly unsafe UnsafeArray* m_entitiesInfo;
+        private readonly unsafe UnsafeArray* m_entities;
+        private readonly unsafe UnsafeArray* m_freeEntities;
 
         private int m_entityCounter;
         private int m_freeEntitiesLen;
@@ -22,7 +22,7 @@ namespace Qwerty.ECS.Runtime
         private readonly EcsArchetypeManager m_archetypeManager;
         //private readonly IEcsComponentPool[] m_componentPools;
 
-        public EcsWorld(EcsWorldSetting setting)
+        public unsafe EcsWorld(EcsWorldSetting setting)
         {
             m_freeEntities = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
             m_freeEntities->Realloc<EcsEntity>(0x20000);
@@ -78,7 +78,7 @@ namespace Qwerty.ECS.Runtime
             return m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 3);
         }
 
-        public void Dispose()
+        public unsafe void Dispose()
         {
             for (int i = 0; i < m_archetypeManager.archetypeCount; i++)
             {
@@ -119,7 +119,31 @@ namespace Qwerty.ECS.Runtime
         //     }
         // }
         
-        private void Swap(EcsArchetype archetype, EcsArchetypeChunkInfo info)
+        private unsafe void PushEntity(EcsArchetype archetype, EcsEntity entity, out EcsArchetypeChunkInfo chunkInfo)
+        {
+            EcsArchetype.Chunks* chunks = archetype.chunks;
+            EcsArchetypeChunk* chunk = chunks->last;
+            int chunkCapacity = archetype.chunkCapacity;
+            if (chunk == null || *chunk->count == chunkCapacity)
+            {
+                EcsArchetypeChunk* lastChunk = (EcsArchetypeChunk*)MemoryUtilities.Alloc<EcsArchetypeChunk>(1);
+                lastChunk->Alloc(archetype.chunkSizeInBytes, archetype.rowCapacityInBytes, archetype.componentsMap, archetype.componentsOffset);
+                lastChunk->prior = chunks->last;
+                *lastChunk->start = archetype.chunksCnt * chunkCapacity;
+                *lastChunk->count = 0;
+            
+                chunks->last = lastChunk;
+                archetype.chunksCnt++;
+            }
+            chunk = chunks->last;
+            int indexInChunk = (*chunk->count)++;
+            chunk->WriteEntity(indexInChunk, entity);
+            
+            chunkInfo = new EcsArchetypeChunkInfo(archetype.archetypeIndex, indexInChunk, chunk);
+            m_entitiesInfo->Write(entity.Index, chunkInfo);
+        }
+        
+        private unsafe void SwapEntity(EcsArchetype archetype, EcsArchetypeChunkInfo info)
         {
             EcsArchetypeChunk* toChunk = info.chunk;
             EcsArchetypeChunk* lastChunk = archetype.chunks->last;
@@ -135,17 +159,19 @@ namespace Qwerty.ECS.Runtime
             }
             
             --*lastChunk->count;
-            if (*lastChunk->count != 0 || lastChunk->prior == null)
+            if (*lastChunk->count > 0)
             {
                 return;
             }
+            
             archetype.chunksCnt--;
             archetype.chunks->last = lastChunk->prior;
+            
             lastChunk->Dispose();
             MemoryUtilities.Free((IntPtr)lastChunk);
         }
 
-        private static void Copy(EcsArchetype fromArchetype, EcsArchetypeChunkInfo fromChunkInfo, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
+        private static unsafe void CopyEntity(EcsArchetype fromArchetype, EcsArchetypeChunkInfo fromChunkInfo, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
         {
             EcsArchetypeChunk* fromChunk = fromChunkInfo.chunk;
             EcsArchetypeChunk* toChunk = toChunkInfo.chunk;
@@ -172,7 +198,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
         
-        private static void Copy(EcsArchetypeChunkInfo fromChunkInfo, EcsArchetype toArchetype, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
+        private static unsafe void CopyEntity(EcsArchetypeChunkInfo fromChunkInfo, EcsArchetype toArchetype, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
         {
             EcsArchetypeChunk* fromChunk = fromChunkInfo.chunk;
             EcsArchetypeChunk* toChunk = toChunkInfo.chunk;

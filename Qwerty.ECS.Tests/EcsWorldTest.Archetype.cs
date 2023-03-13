@@ -20,7 +20,7 @@ namespace Qwerty.ECS.Tests
             EcsArchetype archetype = world.GetArchetype<ComponentA, ComponentB, ComponentC>();
             Assert.AreEqual(2, archetype.chunksCount);
             
-            EcsArchetypeChunkAccessor chunk = archetype.GetChunk(0);
+            EcsArchetypeChunkAccessor chunk = archetype.GetChunkAccessor(0);
             EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
             EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
@@ -39,7 +39,7 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[2]);
             Assert.AreEqual(new ComponentC { value = 8 }, compCAccessor[2]);
             
-            chunk = archetype.GetChunk(1);
+            chunk = archetype.GetChunkAccessor(1);
             entityAccessor = chunk.GetEntityAccessor();
             compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             compBAccessor = chunk.GetComponentAccessor<ComponentB>();
@@ -79,7 +79,7 @@ namespace Qwerty.ECS.Tests
             EcsArchetype archetype = world.GetArchetype<ComponentA, ComponentB, ComponentC>();
             Assert.AreEqual(1, archetype.chunksCount);
             
-            EcsArchetypeChunkAccessor chunk = archetype.GetChunk(0);
+            EcsArchetypeChunkAccessor chunk = archetype.GetChunkAccessor(0);
             EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
             EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
@@ -119,7 +119,7 @@ namespace Qwerty.ECS.Tests
             EcsArchetype archetype = world.GetArchetype<ComponentA, ComponentB, ComponentC>();
             Assert.AreEqual(1, archetype.chunksCount);
             
-            EcsArchetypeChunkAccessor chunk = archetype.GetChunk(0);
+            EcsArchetypeChunkAccessor chunk = archetype.GetChunkAccessor(0);
             EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
             EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
@@ -142,7 +142,7 @@ namespace Qwerty.ECS.Tests
             archetype = world.GetArchetype<ComponentB, ComponentC>();
             Assert.AreEqual(1, archetype.chunksCount);
             
-            chunk = archetype.GetChunk(0);
+            chunk = archetype.GetChunkAccessor(0);
             entityAccessor = chunk.GetEntityAccessor();
             compBAccessor = chunk.GetComponentAccessor<ComponentB>();
             compCAccessor = chunk.GetComponentAccessor<ComponentC>();
@@ -154,7 +154,7 @@ namespace Qwerty.ECS.Tests
             
             archetype = world.GetArchetype<ComponentA, ComponentC>();
             Assert.AreEqual(1, archetype.chunksCount);
-            chunk = archetype.GetChunk(0);
+            chunk = archetype.GetChunkAccessor(0);
             entityAccessor = chunk.GetEntityAccessor();
             compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             compCAccessor = chunk.GetComponentAccessor<ComponentC>();
@@ -166,7 +166,7 @@ namespace Qwerty.ECS.Tests
             
             archetype = world.GetArchetype<ComponentA, ComponentB>();
             Assert.AreEqual(1, archetype.chunksCount);
-            chunk = archetype.GetChunk(0);
+            chunk = archetype.GetChunkAccessor(0);
             entityAccessor = chunk.GetEntityAccessor();
             compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             compBAccessor = chunk.GetComponentAccessor<ComponentB>();
@@ -191,8 +191,8 @@ namespace Qwerty.ECS.Tests
 
             EcsArchetype archetype = world.GetArchetype<ComponentA, ComponentC>();
             Assert.AreEqual(2, archetype.chunksCount);
-            Assert.AreEqual(4, archetype.GetChunk(0).count);
-            Assert.AreEqual(2, archetype.GetChunk(1).count);
+            Assert.AreEqual(4, archetype.GetChunkAccessor(0).count);
+            Assert.AreEqual(2, archetype.GetChunkAccessor(1).count);
             
             world.AddComponent(entity0, new ComponentB { value = 1 });
             world.AddComponent(entity1, new ComponentB { value = 4 });
@@ -202,13 +202,11 @@ namespace Qwerty.ECS.Tests
             world.AddComponent(entity5, new ComponentB { value = 16 });
             
             archetype = world.GetArchetype<ComponentA, ComponentC>();
-            Assert.AreEqual(1, archetype.chunksCount);
-            Assert.AreEqual(0, archetype.GetChunk(0).count);
-
+            Assert.AreEqual(0, archetype.chunksCount);
 
             archetype = world.GetArchetype<ComponentA, ComponentB, ComponentC>();
             Assert.AreEqual(2, archetype.chunksCount);
-            EcsArchetypeChunkAccessor chunk = archetype.GetChunk(0);
+            EcsArchetypeChunkAccessor chunk = archetype.GetChunkAccessor(0);
             EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
             EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
@@ -227,7 +225,7 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[2]);
             Assert.AreEqual(new ComponentC { value = 8 }, compCAccessor[2]);
             
-            chunk = archetype.GetChunk(1);
+            chunk = archetype.GetChunkAccessor(1);
             entityAccessor = chunk.GetEntityAccessor();
             compAAccessor = chunk.GetComponentAccessor<ComponentA>();
             compBAccessor = chunk.GetComponentAccessor<ComponentB>();

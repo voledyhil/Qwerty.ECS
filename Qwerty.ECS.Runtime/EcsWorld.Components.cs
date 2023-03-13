@@ -3,40 +3,36 @@ using Qwerty.ECS.Runtime.Components;
 
 namespace Qwerty.ECS.Runtime
 {
-    public unsafe partial class EcsWorld
+    public partial class EcsWorld
     {
         public bool HasComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
             return HasComponent(entity, EcsComponentType<T>.index);
         }
 
-        private bool HasComponent(EcsEntity entity, byte index)
+        private unsafe bool HasComponent(EcsEntity entity, byte index)
         {
             EcsArchetypeChunkInfo curEcsArchetypeChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
             int curArchetypeIndex = curEcsArchetypeChunkInfo.archetypeIndex;
             return m_archetypeManager[curArchetypeIndex].componentsMap->Contains(index);
         }
 
-        public T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
+        public unsafe T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
             if (!HasComponent<T>(entity))
             {
                 throw new InvalidOperationException();
             }
 
-            EcsArchetypeChunkInfo curEcsArchetypeChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            int indexInChunk = curEcsArchetypeChunkInfo.index;
-            EcsArchetypeChunk* chunk = curEcsArchetypeChunkInfo.chunk;
-            int archetypeIndex = curEcsArchetypeChunkInfo.archetypeIndex;
-            
-            EcsArchetype archetype = m_archetypeManager[archetypeIndex];
+            EcsArchetypeChunkInfo chunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
+            EcsArchetype archetype = m_archetypeManager[chunkInfo.archetypeIndex];
             
             int index = archetype.componentsMap->Get(EcsComponentType<T>.index);
             int offset = archetype.componentsOffset->Read<int>(index);
-            return chunk->ReadComponent<T>(indexInChunk, offset);
+            return chunkInfo.chunk->ReadComponent<T>(chunkInfo.index, offset);
         }
         
-        public void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
+        public unsafe void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
             byte componentTypeIndex = EcsComponentType<T>.index;
             if (!HasComponent(entity, componentTypeIndex))
@@ -44,19 +40,15 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
             
-            EcsArchetypeChunkInfo curEcsArchetypeChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            int indexInChunk = curEcsArchetypeChunkInfo.index;
-            EcsArchetypeChunk* chunk = curEcsArchetypeChunkInfo.chunk;
-            int archetypeIndex = curEcsArchetypeChunkInfo.archetypeIndex;
-            
-            EcsArchetype archetype = m_archetypeManager[archetypeIndex];
+            EcsArchetypeChunkInfo chunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
+            EcsArchetype archetype = m_archetypeManager[chunkInfo.archetypeIndex];
             
             int index = archetype.componentsMap->Get(componentTypeIndex);
             int offset = archetype.componentsOffset->Read<int>(index);
-            chunk->Write<T>(indexInChunk, offset, component);
+            chunkInfo.chunk->Write<T>(chunkInfo.index, offset, component);
         }
 
-        public void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
+        public unsafe void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
             byte componentTypeIndex = EcsComponentType<T>.index;
             if (!HasComponent(entity, componentTypeIndex))
@@ -65,18 +57,16 @@ namespace Qwerty.ECS.Runtime
             }
 
             EcsArchetypeChunkInfo fromChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
+            
             EcsArchetype fromArchetype = m_archetypeManager[fromChunkInfo.archetypeIndex];
-
             EcsArchetype toArchetype = m_archetypeManager.FindOrCreatePriorArchetype(fromArchetype, componentTypeIndex);
-            EcsArchetypeChunkInfo toChunkInfo = toArchetype.PushEntity(entity);
             
-            Copy(fromArchetype, fromChunkInfo, toChunkInfo, componentTypeIndex);
-            Swap(fromArchetype, fromChunkInfo);
-            
-            m_entitiesInfo->Write(entity.Index, toChunkInfo);
+            PushEntity(toArchetype, entity, out EcsArchetypeChunkInfo toChunkInfo);
+            CopyEntity(fromArchetype, fromChunkInfo, toChunkInfo, componentTypeIndex);
+            SwapEntity(fromArchetype, fromChunkInfo);
         }
         
-        public void AddComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
+        public unsafe void AddComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
             byte componentTypeIndex = EcsComponentType<T>.index;
             if (HasComponent(entity, componentTypeIndex))
@@ -88,16 +78,13 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype fromArchetype = m_archetypeManager[fromChunkInfo.archetypeIndex];
             
             EcsArchetype toArchetype = m_archetypeManager.FindOrCreateNextArchetype(fromArchetype, componentTypeIndex);
-            EcsArchetypeChunkInfo toChunkInfo = toArchetype.PushEntity(entity);
+            PushEntity(toArchetype, entity, out EcsArchetypeChunkInfo toChunkInfo);
+            CopyEntity(fromChunkInfo, toArchetype, toChunkInfo, componentTypeIndex);
+            SwapEntity(fromArchetype, fromChunkInfo);
             
             int index = toArchetype.componentsMap->Get(componentTypeIndex);
             int offset = toArchetype.componentsOffset->Read<int>(index);
             toChunkInfo.chunk->Write(toChunkInfo.index, offset, component);
-            
-            Copy(fromChunkInfo, toArchetype, toChunkInfo, componentTypeIndex);
-            Swap(fromArchetype, fromChunkInfo);
-
-            m_entitiesInfo->Write(entity.Index, toChunkInfo);
         }
     }
 }
