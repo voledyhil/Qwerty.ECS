@@ -39,5 +39,10 @@ namespace Qwerty.ECS.Runtime
         {
             return lhs.Index != rhs.Index || lhs.Version != rhs.Version;
         }
+
+        public override string ToString()
+        {
+            return $"({Index}; {Version})";
+        }
     }
 }

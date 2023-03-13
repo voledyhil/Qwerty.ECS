@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Qwerty.Unsafe\Qwerty.Unsafe.Runtime\Qwerty.Unsafe.Runtime.csproj" />
     <ProjectReference Include="..\Qwerty.ECS.Runtime\Qwerty.ECS.Runtime.csproj" />
   </ItemGroup>
 

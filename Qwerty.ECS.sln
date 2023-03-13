@@ -4,10 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.ECS.Runtime", "Qwert
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.ECS.Tests", "Qwerty.ECS.Tests\Qwerty.ECS.Tests.csproj", "{186C0A61-F65C-49DB-807F-57F2CFC637D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.Unsafe.Runtime", "..\Qwerty.Unsafe\Qwerty.Unsafe.Runtime\Qwerty.Unsafe.Runtime.csproj", "{36C7956E-6C05-43BF-A06A-6C284A4B4183}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qwerty.Unsafe.DataStructures.Runtime", "..\Qwerty.Unsafe\Qwerty.Unsafe.DataStructures.Runtime\Qwerty.Unsafe.DataStructures.Runtime.csproj", "{D4EC231B-011F-4C20-9333-C9C92CD74E56}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

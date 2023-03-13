@@ -1,11 +1,10 @@
-using System;
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
     public class EcsArchetypeManager
     {
+        private readonly EcsWorldSetting m_setting;
         internal int archetypeCount => m_archetypesLen;
         internal EcsArchetype empty => m_emptyArchetype;
         internal EcsArchetype this[int index] => m_archetypes[index];
@@ -16,11 +15,12 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly EcsArchetype[] m_archetypes;
         private readonly byte[] m_indicesBuffer;
 
-        public EcsArchetypeManager(int archetypeCapacity)
+        public EcsArchetypeManager(EcsWorldSetting setting)
         {
+            m_setting = setting;
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
-            m_archetypes = new EcsArchetype[archetypeCapacity];
-            m_emptyArchetype = new EcsArchetype(m_archetypeIndexCounter++, new byte[] { });
+            m_archetypes = new EcsArchetype[setting.archetypeCapacity];
+            m_emptyArchetype = new EcsArchetype(m_archetypeIndexCounter++, new byte[] { }, setting.archetypeChunkSizeInByte, setting.archetypeMaxComponents);
             m_archetypes[m_archetypesLen++] = m_emptyArchetype;
         }
         
@@ -39,7 +39,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                         archetypeIndices[j] = typeIndicesBuffer[j];
                     }
 
-                    next = new EcsArchetype(m_archetypeIndexCounter++, archetypeIndices);
+                    next = new EcsArchetype(m_archetypeIndexCounter++, archetypeIndices, m_setting.archetypeChunkSizeInByte, m_setting.archetypeMaxComponents);
                     next.prior[index] = current;
                     current.next[index] = next;
                     
@@ -88,18 +88,16 @@ namespace Qwerty.ECS.Runtime.Archetypes
             {
                 return prior;
             }
-
             int length = 0;
-            
             byte[] typeIndices = archetype.typeIndices;
-            foreach (byte typeIndex in typeIndices)
+            for (int index = 0; index < typeIndices.Length; index++)
             {
+                byte typeIndex = typeIndices[index];
                 if (typeIndex != priorIndex)
                 {
                     m_indicesBuffer[length++] = typeIndex;
                 }
             }
-
             return FindOrCreateArchetype(m_indicesBuffer, length);
         }
     }

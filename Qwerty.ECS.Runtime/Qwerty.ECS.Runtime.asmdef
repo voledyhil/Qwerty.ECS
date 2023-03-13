@@ -1,7 +1,6 @@
 {
     "name": "Qwerty.ECS.Runtime",
     "references": [
-        "Qwerty.Unsafe.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

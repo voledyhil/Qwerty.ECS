@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
@@ -9,38 +7,41 @@ namespace Qwerty.ECS.Runtime.Archetypes
         public int Version { get; private set; }
 
         internal readonly List<EcsArchetype> archetypes = new List<EcsArchetype>();
-        private EcsArchetypesAccessor m_archetypesAccessor;
+        private EcsArchetypeAccessor m_archetypeAccessor;
         
         internal void ChangeVersion(int newVersion)
         {
             if (Version > 0)
             {
-                m_archetypesAccessor.Dispose();
+                m_archetypeAccessor.Dispose();
             }
             
-            m_archetypesAccessor = new EcsArchetypesAccessor(archetypes);
+            m_archetypeAccessor = new EcsArchetypeAccessor(archetypes);
             Version = newVersion;
         }
-        
+
         public int CalculateCount()
         {
-            int entitiesCount = 0;
-            int archetypesCount = archetypes.Count;
-            for (int i = 0; i < archetypesCount; i++)
+            unsafe
             {
-                entitiesCount += archetypes[i].entities.count;
+                int count = 0;
+                foreach (EcsArchetype archetype in archetypes)
+                {
+                    EcsArchetypeChunk* chunk = archetype.chunks->last;
+                    count += *chunk->start + *chunk->count;
+                }
+                return count;
             }
-            return entitiesCount;
         }
 
-        public ref EcsArchetypesAccessor GetArchetypeAccessor()
+        public ref EcsArchetypeAccessor GetEntityAccessor()
         {
-            return ref m_archetypesAccessor;
+            return ref m_archetypeAccessor;
         }
         
-        public unsafe EcsArchetypesAccessor* GetArchetypeAccessorPtr()
+        public unsafe EcsArchetypeAccessor* GetEntityAccessorPtr()
         {
-            fixed (EcsArchetypesAccessor* accessor = &m_archetypesAccessor)
+            fixed (EcsArchetypeAccessor* accessor = &m_archetypeAccessor)
             {
                 return accessor;
             }
@@ -48,7 +49,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         public void Dispose()
         {
-            m_archetypesAccessor.Dispose();
+            m_archetypeAccessor.Dispose();
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Systems;
@@ -112,7 +111,7 @@ namespace Qwerty.ECS.Tests
             root.AddSystem(systemB);
             root.AddSystem(systemG);
 
-            EcsWorld world = new EcsWorld();
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32});
             root.Update(0, world);
 
             List<IEcsSystem> systems = new List<IEcsSystem>(root.Systems);

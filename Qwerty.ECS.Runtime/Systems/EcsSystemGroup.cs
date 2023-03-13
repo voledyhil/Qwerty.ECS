@@ -62,14 +62,12 @@ namespace Qwerty.ECS.Runtime.Systems
         private static Stack<Type> GetSystemGroupHierarchy(Type type)
         {
             Stack<Type> groupsType = new Stack<Type>();
-            EcsUpdateInGroupAttribute attribute =
-                (EcsUpdateInGroupAttribute) Attribute.GetCustomAttribute(type, typeof(EcsUpdateInGroupAttribute));
+            EcsUpdateInGroupAttribute attribute = (EcsUpdateInGroupAttribute) Attribute.GetCustomAttribute(type, typeof(EcsUpdateInGroupAttribute));
 
             while (attribute != null)
             {
                 groupsType.Push(attribute.Type);
-                attribute = (EcsUpdateInGroupAttribute) Attribute.GetCustomAttribute(attribute.Type,
-                    typeof(EcsUpdateInGroupAttribute));
+                attribute = (EcsUpdateInGroupAttribute) Attribute.GetCustomAttribute(attribute.Type, typeof(EcsUpdateInGroupAttribute));
             }
 
             return groupsType;
