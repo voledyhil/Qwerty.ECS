@@ -70,19 +70,16 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype currentArchetype = m_archetypeManager[curArchetypeIndex];
 
             EcsArchetype newArchetype = m_archetypeManager.FindOrCreatePriorArchetype(currentArchetype, componentTypeIndex);
-            newArchetype.CreateNextChunkIfNeed();
             int newIndexInArchetype = newArchetype.PushEntity(entity);
             
             int index = currentArchetype.componentsMap->Get(componentTypeIndex);
             EcsArchetype.CopyRemove(curIndexInArchetype, currentArchetype, newIndexInArchetype, newArchetype, index);
 
-            if (currentArchetype.TrySwapEntity(curIndexInArchetype, out int swapEntityIndex, out int lastIndex))
+            if (currentArchetype.TrySwapEntity(curIndexInArchetype, out int swapEntityIndex))
             {
-                EcsArchetype.CopySwap(lastIndex, curIndexInArchetype, currentArchetype);
                 m_entityArchetypeInfo->Write(swapEntityIndex, curEcsArchetypeInfo);
             }
             currentArchetype.PopLastEntity();
-            currentArchetype.DestroyLastChunkIfNeed();
             
             m_entityArchetypeInfo->Write(entity.Index, new EcsArchetypeInfo {archetypeIndex = newArchetype.archetypeIndex, indexInArchetype = newIndexInArchetype});
         }
@@ -101,7 +98,6 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype currentArchetype = m_archetypeManager[curArchetypeIndex];
             
             EcsArchetype newArchetype = m_archetypeManager.FindOrCreateNextArchetype(currentArchetype, componentTypeIndex);
-            newArchetype.CreateNextChunkIfNeed();
             int newIndexInArchetype = newArchetype.PushEntity(entity);
             
             int index = newArchetype.componentsMap->Get(componentTypeIndex);
@@ -111,13 +107,11 @@ namespace Qwerty.ECS.Runtime
             chunk->WriteComponent(newIndexInArchetype % newArchetype.chunkCapacity, offset, component);
             EcsArchetype.CopyAdd(curIndexInArchetype, currentArchetype, newIndexInArchetype, newArchetype, index);
 
-            if (currentArchetype.TrySwapEntity(curIndexInArchetype, out int swapEntityIndex, out int lastIndex))
+            if (currentArchetype.TrySwapEntity(curIndexInArchetype, out int swapEntityIndex))
             {
-                EcsArchetype.CopySwap(lastIndex, curIndexInArchetype, currentArchetype);
                 m_entityArchetypeInfo->Write(swapEntityIndex, curEcsArchetypeInfo);
             }
             currentArchetype.PopLastEntity();
-            currentArchetype.DestroyLastChunkIfNeed();
             
             m_entityArchetypeInfo->Write(entity.Index, new EcsArchetypeInfo {archetypeIndex = newArchetype.archetypeIndex, indexInArchetype = newIndexInArchetype});
         }
