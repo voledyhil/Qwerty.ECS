@@ -86,7 +86,7 @@ namespace Qwerty.ECS.Runtime
             m_componentTypeIndices[1] = EcsComponentType<T1>.index;
             Array.Sort(m_componentTypeIndices, 0, 2);
 
-            if (!CheckIndices(m_componentTypeIndices, 2))
+            if (!ValidateIndices(m_componentTypeIndices, 2))
             {
                 throw new ArgumentException(nameof(CreateEntity));
             }
@@ -114,7 +114,7 @@ namespace Qwerty.ECS.Runtime
             m_componentTypeIndices[2] = EcsComponentType<T2>.index;
             Array.Sort(m_componentTypeIndices, 0, 3);
 
-            if (!CheckIndices(m_componentTypeIndices, 3))
+            if (!ValidateIndices(m_componentTypeIndices, 3))
             {
                 throw new ArgumentException(nameof(CreateEntity));
             }
@@ -147,7 +147,7 @@ namespace Qwerty.ECS.Runtime
             m_componentTypeIndices[3] = EcsComponentType<T3>.index;
             Array.Sort(m_componentTypeIndices, 0, 4);
 
-            if (!CheckIndices(m_componentTypeIndices, 4))
+            if (!ValidateIndices(m_componentTypeIndices, 4))
             {
                 throw new ArgumentException(nameof(CreateEntity));
             }
@@ -167,7 +167,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
 
-        private static bool CheckIndices(byte[] indices, int len)
+        private static bool ValidateIndices(byte[] indices, int len)
         {
             for (int i = 0; i < len - 1; i++)
             {

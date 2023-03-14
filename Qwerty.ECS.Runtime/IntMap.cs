@@ -35,16 +35,6 @@ namespace Qwerty.ECS.Runtime
 				m_buckets->Write(i, -1);
 			}
 		}
-
-		public void Resize(int newCapacity)
-		{
-			m_entries->Realloc<EcsEntity>(newCapacity);
-			m_buckets->Realloc<Entry>(newCapacity);
-			for (int i = *m_count; i < newCapacity; i++)
-			{
-				m_buckets->Write(i, -1);
-			}
-		}
 		
 		public void Dispose()
 		{
@@ -78,11 +68,6 @@ namespace Qwerty.ECS.Runtime
 			{
 				m_entries->Get<Entry>(index).value = value;
 				return;
-			}
-			
-			if (*m_count >= m_entries->length)
-			{
-				throw new ArgumentOutOfRangeException();
 			}
 			
 			index = (*m_count)++;

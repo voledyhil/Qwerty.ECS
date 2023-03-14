@@ -3,10 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    public class EcsArchetype : IDisposable
+    internal class EcsArchetype : IDisposable
     {
-        public int chunksCount => chunksCnt;
-        
         internal struct Chunks
         {
             internal unsafe EcsArchetypeChunk* last;
@@ -17,7 +15,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         internal readonly Dictionary<int, int> next = new Dictionary<int, int>();
         internal readonly Dictionary<int, int> prior = new Dictionary<int, int>();
 
-        internal int chunksCnt;
+        internal int chunksCount;
         internal readonly int rowCapacityInBytes;
         
         internal readonly unsafe Chunks* chunks;
@@ -50,24 +48,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
             rowCapacityInBytes += Unsafe.SizeOf<EcsEntity>();
             chunkCapacity = chunkSizeInBytes / rowCapacityInBytes;
-        }
-
-        public EcsArchetypeChunkAccessor GetChunkAccessor(int chunkIndex)
-        {
-            unsafe
-            {
-                EcsArchetypeChunk* chunk = chunks->last;
-                int cnt = chunksCnt;
-                while (chunk != null && --cnt > chunkIndex)
-                {
-                    chunk = chunk->prior;
-                }
-                if (chunk == null)
-                {
-                    throw new IndexOutOfRangeException(nameof(GetChunkAccessor));
-                }
-                return new EcsArchetypeChunkAccessor(chunk->body, *chunk->count, rowCapacityInBytes, componentsMap, componentsOffset);
-            }
         }
 
         public unsafe void Dispose()

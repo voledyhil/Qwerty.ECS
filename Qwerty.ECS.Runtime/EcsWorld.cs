@@ -44,40 +44,7 @@ namespace Qwerty.ECS.Runtime
             //     m_componentPools[typeIndex] = creator.Instantiate(1024);
             // }
         }
-
-        public EcsArchetype GetArchetype<T0>() where T0 : struct, IEcsComponent
-        {
-            m_componentTypeIndices[0] = EcsComponentType<T0>.index;
-            return m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 1);
-        }
         
-        public EcsArchetype GetArchetype<T0, T1>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent
-        {
-            m_componentTypeIndices[0] = EcsComponentType<T0>.index;
-            m_componentTypeIndices[1] = EcsComponentType<T1>.index;
-            Array.Sort(m_componentTypeIndices, 0, 2);
-
-            if (!CheckIndices(m_componentTypeIndices, 2))
-            {
-                throw new ArgumentException(nameof(GetArchetype));
-            }
-            return m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 2);
-        }
-        
-        public EcsArchetype GetArchetype<T0, T1, T2>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent where T2 : struct, IEcsComponent
-        {
-            m_componentTypeIndices[0] = EcsComponentType<T0>.index;
-            m_componentTypeIndices[1] = EcsComponentType<T1>.index;
-            m_componentTypeIndices[2] = EcsComponentType<T2>.index;
-            Array.Sort(m_componentTypeIndices, 0, 3);
-
-            if (!CheckIndices(m_componentTypeIndices, 3))
-            {
-                throw new ArgumentException(nameof(GetArchetype));
-            }
-            return m_archetypeManager.FindOrCreateArchetype(m_componentTypeIndices, 3);
-        }
-
         public unsafe void Dispose()
         {
             for (int i = 0; i < m_archetypeManager.archetypeCounter; i++)
@@ -129,11 +96,11 @@ namespace Qwerty.ECS.Runtime
                 EcsArchetypeChunk* lastChunk = (EcsArchetypeChunk*)MemoryUtilities.Alloc<EcsArchetypeChunk>(1);
                 lastChunk->Alloc(archetype.chunkSizeInBytes, archetype.rowCapacityInBytes, archetype.componentsMap, archetype.componentsOffset);
                 lastChunk->prior = chunks->last;
-                *lastChunk->start = archetype.chunksCnt * chunkCapacity;
+                *lastChunk->start = archetype.chunksCount * chunkCapacity;
                 *lastChunk->count = 0;
             
                 chunks->last = lastChunk;
-                archetype.chunksCnt++;
+                archetype.chunksCount++;
             }
             chunk = chunks->last;
             int indexInChunk = (*chunk->count)++;
@@ -164,7 +131,7 @@ namespace Qwerty.ECS.Runtime
                 return;
             }
             
-            archetype.chunksCnt--;
+            archetype.chunksCount--;
             archetype.chunks->last = lastChunk->prior;
             
             lastChunk->Dispose();

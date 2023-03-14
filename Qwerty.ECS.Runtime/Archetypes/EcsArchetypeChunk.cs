@@ -38,7 +38,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             Unsafe.Write((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset), entity);
         }
         
-        public T ReadComponent<T>(int index, int offset) where T : struct, IEcsComponent
+        public T Read<T>(int index, int offset) where T : struct, IEcsComponent
         {
             return Unsafe.Read<T>((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset));
         }

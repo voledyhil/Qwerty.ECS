@@ -12,9 +12,8 @@ namespace Qwerty.ECS.Runtime
 
         private unsafe bool HasComponent(EcsEntity entity, byte index)
         {
-            EcsArchetypeChunkInfo curEcsArchetypeChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            int curArchetypeIndex = curEcsArchetypeChunkInfo.archetypeIndex;
-            return m_archetypeManager[curArchetypeIndex].componentsMap->Contains(index);
+            EcsArchetypeChunkInfo chunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
+            return m_archetypeManager[chunkInfo.archetypeIndex].componentsMap->Contains(index);
         }
 
         public unsafe T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
@@ -29,7 +28,7 @@ namespace Qwerty.ECS.Runtime
             
             int index = archetype.componentsMap->Get(EcsComponentType<T>.index);
             int offset = archetype.componentsOffset->Read<int>(index);
-            return chunkInfo.chunk->ReadComponent<T>(chunkInfo.index, offset);
+            return chunkInfo.chunk->Read<T>(chunkInfo.index, offset);
         }
         
         public unsafe void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent

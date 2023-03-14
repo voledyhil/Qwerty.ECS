@@ -19,8 +19,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
             m_archetypeAccessor = new EcsArchetypeAccessor(archetypes);
             Version = newVersion;
         }
-
-        public int CalculateCount()
+        
+        public int CalculateEntitiesCount()
         {
             unsafe
             {
