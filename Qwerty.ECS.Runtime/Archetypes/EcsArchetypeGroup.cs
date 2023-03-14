@@ -7,16 +7,16 @@ namespace Qwerty.ECS.Runtime.Archetypes
         public int Version { get; private set; }
 
         internal readonly List<EcsArchetype> archetypes = new List<EcsArchetype>();
-        private EcsArchetypeAccessor m_archetypeAccessor;
+        private EcsArchetypeGroupAccessor m_archetypeGroupAccessor;
         
         internal void ChangeVersion(int newVersion)
         {
             if (Version > 0)
             {
-                m_archetypeAccessor.Dispose();
+                m_archetypeGroupAccessor.Dispose();
             }
             
-            m_archetypeAccessor = new EcsArchetypeAccessor(archetypes);
+            m_archetypeGroupAccessor = new EcsArchetypeGroupAccessor(archetypes);
             Version = newVersion;
         }
         
@@ -27,7 +27,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 int count = 0;
                 foreach (EcsArchetype archetype in archetypes)
                 {
-                    EcsArchetypeChunk* chunk = archetype.chunks->last;
+                    EcsChunk* chunk = archetype.chunks->last;
                     if (chunk != null)
                     {
                         count += *chunk->start + *chunk->count;
@@ -37,14 +37,14 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
         }
 
-        public ref EcsArchetypeAccessor GetEntityAccessor()
+        public ref EcsArchetypeGroupAccessor GetEntityAccessor()
         {
-            return ref m_archetypeAccessor;
+            return ref m_archetypeGroupAccessor;
         }
         
-        public unsafe EcsArchetypeAccessor* GetEntityAccessorPtr()
+        public unsafe EcsArchetypeGroupAccessor* GetEntityAccessorPtr()
         {
-            fixed (EcsArchetypeAccessor* accessor = &m_archetypeAccessor)
+            fixed (EcsArchetypeGroupAccessor* accessor = &m_archetypeGroupAccessor)
             {
                 return accessor;
             }
@@ -52,7 +52,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         public void Dispose()
         {
-            m_archetypeAccessor.Dispose();
+            m_archetypeGroupAccessor.Dispose();
         }
     }
 }

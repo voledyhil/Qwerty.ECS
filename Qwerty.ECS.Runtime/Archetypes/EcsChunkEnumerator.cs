@@ -2,13 +2,13 @@ using System.Collections;
 
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    public unsafe struct EcsArchetypeChunkEnumerator : IEnumerator<EcsArchetypeChunkAccessor>
+    public unsafe struct EcsChunkEnumerator : IEnumerator<EcsChunkAccessor>
     {
         private int m_archetypeIndex;
-        private EcsArchetypeChunk* m_chunk;
+        private EcsChunk* m_chunk;
         private readonly UnsafeArray* m_archetypes;
 
-        public EcsArchetypeChunkEnumerator(UnsafeArray* archetypes)
+        public EcsChunkEnumerator(UnsafeArray* archetypes)
         {
             m_archetypes = archetypes;
             m_archetypeIndex = -1;
@@ -45,7 +45,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             m_chunk = null;
         }
 
-        public EcsArchetypeChunkAccessor Current => new EcsArchetypeChunkAccessor(m_chunk->body, *m_chunk->count, m_chunk->rowCapacityInBytes, m_chunk->map, m_chunk->offsets);
+        public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk->body, *m_chunk->count, m_chunk->rowCapacityInBytes, m_chunk->map, m_chunk->offsets);
         object IEnumerator.Current => Current;
 
         public void Dispose()

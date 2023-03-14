@@ -88,11 +88,11 @@ namespace Qwerty.ECS.Runtime
         private unsafe void PushEntity(EcsArchetype archetype, EcsEntity entity, out EcsEntityInfo info)
         {
             EcsArchetype.Chunks* chunks = archetype.chunks;
-            EcsArchetypeChunk* chunk = chunks->last;
+            EcsChunk* chunk = chunks->last;
             int chunkCapacity = archetype.chunkCapacity;
             if (chunk == null || *chunk->count == chunkCapacity)
             {
-                EcsArchetypeChunk* lastChunk = (EcsArchetypeChunk*)MemoryUtilities.Alloc<EcsArchetypeChunk>(1);
+                EcsChunk* lastChunk = (EcsChunk*)MemoryUtilities.Alloc<EcsChunk>(1);
                 lastChunk->Alloc(m_setting.archetypeChunkSizeInByte, archetype.rowCapacityInBytes, archetype.componentsMap, archetype.componentsOffset);
                 lastChunk->prior = chunks->last;
                 *lastChunk->start = archetype.chunksCount * chunkCapacity;
@@ -111,8 +111,8 @@ namespace Qwerty.ECS.Runtime
         
         private unsafe void SwapRow(EcsArchetype archetype, EcsEntityInfo info)
         {
-            EcsArchetypeChunk* toChunk = info.chunk;
-            EcsArchetypeChunk* lastChunk = archetype.chunks->last;
+            EcsChunk* toChunk = info.chunk;
+            EcsChunk* lastChunk = archetype.chunks->last;
             int lastIndex = *lastChunk->count - 1;
             if (toChunk != lastChunk || info.chunkIndex != lastIndex)
             {
@@ -139,8 +139,8 @@ namespace Qwerty.ECS.Runtime
 
         private static unsafe void CopyRow(EcsArchetype fromArchetype, EcsEntityInfo fromInfo, EcsEntityInfo toInfo, int componentTypeIndex)
         {
-            EcsArchetypeChunk* fromChunk = fromInfo.chunk;
-            EcsArchetypeChunk* toChunk = toInfo.chunk;
+            EcsChunk* fromChunk = fromInfo.chunk;
+            EcsChunk* toChunk = toInfo.chunk;
             
             int fromRowCapacityInBytes = fromChunk->rowCapacityInBytes;
             int toRowCapacityInBytes = toChunk->rowCapacityInBytes;
@@ -166,8 +166,8 @@ namespace Qwerty.ECS.Runtime
         
         private static unsafe void CopyRow(EcsEntityInfo fromInfo, EcsArchetype toArchetype, EcsEntityInfo toInfo, int componentTypeIndex)
         {
-            EcsArchetypeChunk* fromChunk = fromInfo.chunk;
-            EcsArchetypeChunk* toChunk = toInfo.chunk;
+            EcsChunk* fromChunk = fromInfo.chunk;
+            EcsChunk* toChunk = toInfo.chunk;
 
             int fromRowCapacityInBytes = fromChunk->rowCapacityInBytes;
             int toRowCapacityInBytes = toChunk->rowCapacityInBytes;

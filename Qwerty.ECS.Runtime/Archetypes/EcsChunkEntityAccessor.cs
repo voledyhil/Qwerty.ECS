@@ -2,13 +2,13 @@ using System.Runtime.CompilerServices;
 
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    public unsafe readonly struct EcsArchetypeEntityAccessor
+    public unsafe readonly struct EcsChunkEntityAccessor
     {
         private readonly byte* m_bodyPtr;
         private readonly int m_rowCapacityInBytes;
         private readonly int m_offset;
 
-        public EcsArchetypeEntityAccessor(byte* bodyPtr, int rowCapacityInBytes)
+        public EcsChunkEntityAccessor(byte* bodyPtr, int rowCapacityInBytes)
         {
             m_bodyPtr = bodyPtr;
             m_rowCapacityInBytes = rowCapacityInBytes;

@@ -2,10 +2,10 @@
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-	public readonly unsafe struct EcsArchetypeAccessor
+	public readonly unsafe struct EcsArchetypeGroupAccessor
 	{
 		private readonly UnsafeArray* m_items;
-		internal EcsArchetypeAccessor(IReadOnlyList<EcsArchetype> archetypes)
+		internal EcsArchetypeGroupAccessor(IReadOnlyList<EcsArchetype> archetypes)
 		{
 			m_items = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
 			m_items->Realloc<IntPtr>(archetypes.Count);
@@ -16,7 +16,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 			}
 		}
 
-		public EcsArchetypeChunkEnumerator GetEnumerator() => new EcsArchetypeChunkEnumerator(m_items);
+		public EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_items);
 
 		internal void Dispose()
 		{

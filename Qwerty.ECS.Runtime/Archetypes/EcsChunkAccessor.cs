@@ -2,7 +2,7 @@ using Qwerty.ECS.Runtime.Components;
 
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    public unsafe readonly struct EcsArchetypeChunkAccessor
+    public unsafe readonly struct EcsChunkAccessor
     {
         public int count => m_count;
         private readonly byte* m_bodyPtr;
@@ -11,7 +11,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly UnsafeArray* m_offsets;
         private readonly IntMap* m_map;
 
-        internal EcsArchetypeChunkAccessor(byte* bodyPtr, int count, int rowCapacityInBytes, IntMap* map, UnsafeArray* offsets)
+        internal EcsChunkAccessor(byte* bodyPtr, int count, int rowCapacityInBytes, IntMap* map, UnsafeArray* offsets)
         {
             m_bodyPtr = bodyPtr;
             m_count = count;
@@ -20,15 +20,15 @@ namespace Qwerty.ECS.Runtime.Archetypes
             m_rowCapacityInBytes = rowCapacityInBytes;
         }
 
-        public EcsArchetypeEntityAccessor GetEntityAccessor()
+        public EcsChunkEntityAccessor GetEntityAccessor()
         {
-            return new EcsArchetypeEntityAccessor(m_bodyPtr, m_rowCapacityInBytes);
+            return new EcsChunkEntityAccessor(m_bodyPtr, m_rowCapacityInBytes);
         }
         
-        public EcsArchetypeComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
+        public EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
             int offset = m_offsets->Read<int>(m_map->Get(EcsComponentType<T>.index));
-            return new EcsArchetypeComponentAccessor<T>(m_bodyPtr, m_rowCapacityInBytes, offset);
+            return new EcsChunkComponentAccessor<T>(m_bodyPtr, m_rowCapacityInBytes, offset);
         }
     }
 }

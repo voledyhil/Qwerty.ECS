@@ -1,15 +1,16 @@
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Archetypes;
+using Qwerty.ECS.Runtime.Components;
 
 namespace Qwerty.ECS.Tests
 {
     internal static class EcsArchetypeAccessorExtension
     {
-        public static List<EcsArchetypeChunkAccessor> ToChunkAccessorsList(this EcsArchetypeAccessor accessor)
+        public static List<EcsChunkAccessor> ToChunkAccessorsList(this EcsArchetypeGroupAccessor accessor)
         {
-            List<EcsArchetypeChunkAccessor> result = new List<EcsArchetypeChunkAccessor>();
-            using EcsArchetypeChunkEnumerator en = accessor.GetEnumerator();
+            List<EcsChunkAccessor> result = new List<EcsChunkAccessor>();
+            using EcsChunkEnumerator en = accessor.GetEnumerator();
             while (en.MoveNext())
             {
                 result.Add(en.Current);
@@ -34,15 +35,15 @@ namespace Qwerty.ECS.Tests
 
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            List<EcsArchetypeChunkAccessor> chunkAccessors = group.GetEntityAccessor().ToChunkAccessorsList();
+            List<EcsChunkAccessor> chunkAccessors = group.GetEntityAccessor().ToChunkAccessorsList();
             Assert.AreEqual(2, chunkAccessors.Count);
             Assert.AreEqual(6, group.CalculateEntitiesCount());
 
-            EcsArchetypeChunkAccessor chunk = chunkAccessors[0];
-            EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsArchetypeComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkAccessor chunk = chunkAccessors[0];
+            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity0, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
@@ -96,15 +97,15 @@ namespace Qwerty.ECS.Tests
         
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            List<EcsArchetypeChunkAccessor> chunkAccessors = group.GetEntityAccessor().ToChunkAccessorsList();
+            List<EcsChunkAccessor> chunkAccessors = group.GetEntityAccessor().ToChunkAccessorsList();
             Assert.AreEqual(1, chunkAccessors.Count);
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
-            EcsArchetypeChunkAccessor chunk = chunkAccessors[0];
-            EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsArchetypeComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkAccessor chunk = chunkAccessors[0];
+            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity5, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
@@ -139,15 +140,15 @@ namespace Qwerty.ECS.Tests
         
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            List<EcsArchetypeChunkAccessor> chunkAccessors = group.GetEntityAccessor().ToChunkAccessorsList();
+            List<EcsChunkAccessor> chunkAccessors = group.GetEntityAccessor().ToChunkAccessorsList();
             Assert.AreEqual(1, chunkAccessors.Count);
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
-            EcsArchetypeChunkAccessor chunk = chunkAccessors[0];
-            EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsArchetypeComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkAccessor chunk = chunkAccessors[0];
+            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity5, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
@@ -217,7 +218,7 @@ namespace Qwerty.ECS.Tests
             EcsEntity entity5 = world.CreateEntity(new ComponentA { value = 15 }, new ComponentC {value = 17});
         
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentC>().NoneOf<ComponentB>();
-            List<EcsArchetypeChunkAccessor> chunkAccessors = world.Filter(filter).GetEntityAccessor().ToChunkAccessorsList();
+            List<EcsChunkAccessor> chunkAccessors = world.Filter(filter).GetEntityAccessor().ToChunkAccessorsList();
             Assert.AreEqual(2, chunkAccessors.Count);
             
             world.AddComponent(entity0, new ComponentB { value = 1 });
@@ -239,11 +240,11 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(2, chunkAccessors.Count);
             Assert.AreEqual(6, group.CalculateEntitiesCount());
             
-            EcsArchetypeChunkAccessor chunk = chunkAccessors[0];
-            EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsArchetypeComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkAccessor chunk = chunkAccessors[0];
+            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity0, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
@@ -280,196 +281,71 @@ namespace Qwerty.ECS.Tests
             world.Dispose();
         }
 
-        // [Test]
-        // public void ChangeArchetypeByAddRemoveComponentsTest()
-        // {
-        //     EcsWorld world = new EcsWorld();
-        //     Assert.AreEqual(1, world.archetypeCount); // empty
-        //
-        //     EcsEntity entity0 = world.CreateEntity(new ComponentA { value = 1 }, new ComponentB { value = 5 });
-        //     EcsEntity entity1 = world.CreateEntity(new ComponentA { value = 2 }, new ComponentB { value = 6 });
-        //     EcsEntity entity2 = world.CreateEntity(new ComponentA { value = 3 }, new ComponentB { value = 7 });
-        //     EcsEntity entity3 = world.CreateEntity(new ComponentA { value = 4 }, new ComponentB { value = 8 });
-        //     /* [AB], [AB], [AB], [AB] */
-        //     
-        //     Assert.AreEqual(3, world.archetypeCount); // empty, A, AB
-        //     Assert.AreEqual(4, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
-        //     
-        //     EcsArchetype archetype = world.GetArchetype<ComponentA, ComponentB>();
-        //     Assert.AreEqual(2, archetype.chunksCount);
-        //     
-        //     EcsArchetypeChunkAccessor chunk = archetype.GetChunk(0);
-        //     EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-        //     EcsArchetypeComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-        //     EcsArchetypeComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-        //     Assert.AreEqual(2, chunk.count);
-        //     Assert.AreEqual(entity0, entityAccessor[0]);
-        //     Assert.AreEqual(new ComponentA { value = 1 }, compAAccessor[0]);
-        //     Assert.AreEqual(new ComponentB { value = 5 }, compBAccessor[0]);
-        //     Assert.AreEqual(entity1, entityAccessor[1]);
-        //     Assert.AreEqual(new ComponentA { value = 2 }, compAAccessor[1]);
-        //     Assert.AreEqual(new ComponentB { value = 6 }, compBAccessor[1]);
-        //     
-        //     chunk = archetype.GetChunk(1);
-        //     entityAccessor = chunk.GetEntityAccessor();
-        //     compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-        //     compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-        //     Assert.AreEqual(2, chunk.count);
-        //     Assert.AreEqual(entity2, entityAccessor[0]);
-        //     Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[0]);
-        //     Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[0]);
-        //     Assert.AreEqual(entity3, entityAccessor[1]);
-        //     Assert.AreEqual(new ComponentA { value = 4 }, compAAccessor[1]);
-        //     Assert.AreEqual(new ComponentB { value = 8 }, compBAccessor[1]);
-        //
-        //     
-        //     
-        //     world.RemoveComponent<ComponentA>(entity1);            
-        //     world.RemoveComponent<ComponentA>(entity2);
-        //     Assert.AreEqual(5, world.GetComponent<ComponentB>(entity0).value);
-        //     /* [AB], [B], [B], [AB] */
-        //     
-        //     
-        //     archetype = world.GetArchetype<ComponentA, ComponentB>();
-        //     Assert.AreEqual(1, archetype.chunksCount);
-        //     chunk = archetype.GetChunk(0);
-        //     entityAccessor = chunk.GetEntityAccessor();
-        //     compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-        //     compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-        //     Assert.AreEqual(2, chunk.count);
-        //     Assert.AreEqual(entity0, entityAccessor[0]);
-        //     Assert.AreEqual(new ComponentA { value = 1 }, compAAccessor[0]);
-        //     Assert.AreEqual(new ComponentB { value = 5 }, compBAccessor[0]);
-        //     // Assert.AreEqual(entity3, entityAccessor[1]);
-        //     // Assert.AreEqual(new ComponentA { value = 4 }, compAAccessor[1]);
-        //     // Assert.AreEqual(new ComponentB { value = 8 }, compBAccessor[1]);
-        //     
-        //     
-        //     
-        //     
-        //     archetype = world.GetArchetype<ComponentB>();
-        //     Assert.AreEqual(1, archetype.chunksCount);
-        //     
-        //     chunk = archetype.GetChunk(0);
-        //     entityAccessor = chunk.GetEntityAccessor();
-        //     compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-        //     Assert.AreEqual(2, chunk.count);
-        //     Assert.AreEqual(entity1, entityAccessor[0]);
-        //     Assert.AreEqual(new ComponentB { value = 6 }, compBAccessor[0]);
-        //     
-        //     // chunk = archetype.GetChunk(1);
-        //     // entityAccessor = chunk.GetEntityAccessor();
-        //     // compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-        //     // compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-        //     // Assert.AreEqual(2, chunk.count);
-        //     // Assert.AreEqual(entity2, entityAccessor[0]);
-        //     // Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[0]);
-        //     // Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[0]);
-        //     // Assert.AreEqual(entity3, entityAccessor[1]);
-        //     // Assert.AreEqual(new ComponentA { value = 4 }, compAAccessor[1]);
-        //     // Assert.AreEqual(new ComponentB { value = 8 }, compBAccessor[1]);
-        //     //
-        //     
-        //     
-        //     // Assert.AreEqual(5, world.GetComponent<ComponentB>(entity0).value);
-        //     // Assert.AreEqual(6, world.GetComponent<ComponentB>(entity1).value);
-        //     // Assert.AreEqual(7, world.GetComponent<ComponentB>(entity2).value);
-        //     // Assert.AreEqual(8, world.GetComponent<ComponentB>(entity3).value);
-        //     //
-        //     Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
-        //     Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
-        //     Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-        //     Assert.AreEqual(4, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
-        //     
-        //     world.RemoveComponent<ComponentA>(entity0);
-        //     /* [B], [B], [B], [AB] */
-        //     
-        //     Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
-        //     Assert.AreEqual(1, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
-        //     Assert.AreEqual(1, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-        //     Assert.AreEqual(4, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
-        //     
-        //     world.AddComponent(entity1, new ComponentA()); 
-        //     world.AddComponent(entity2, new ComponentA());
-        //     /* [B], [AB], [AB], [AB] */
-        //     
-        //     Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
-        //     Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
-        //     Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-        //     Assert.AreEqual(4, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
-        //     
-        //     world.RemoveComponent<ComponentA>(entity3);
-        //     world.RemoveComponent<ComponentB>(entity3);
-        //     /* [B], [AB], [], [AB] */
-        //     
-        //     Assert.AreEqual(4, world.archetypeCount); // empty, A, B, AB
-        //     Assert.AreEqual(1, world.Filter(new EcsFilter().NoneOf<ComponentA, ComponentB>()).CalculateCount());
-        //     Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
-        //     Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-        //     Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
-        //     
-        //     world.AddComponent(entity3, new ComponentC());
-        //     /* [B], [AB], [C], [AB] */
-        //     
-        //     Assert.AreEqual(5, world.archetypeCount); // empty, A, B, AB, C
-        //     Assert.AreEqual(1, world.Filter(new EcsFilter().NoneOf<ComponentA, ComponentB>()).CalculateCount());
-        //     Assert.AreEqual(1, world.Filter(new EcsFilter().AllOf<ComponentC>()).CalculateCount());
-        //     Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>()).CalculateCount());
-        //     Assert.AreEqual(2, world.Filter(new EcsFilter().AllOf<ComponentA>()).CalculateCount());
-        //     Assert.AreEqual(3, world.Filter(new EcsFilter().AllOf<ComponentB>()).CalculateCount());
-        //     
-        //     world.Dispose();
-        // }
+        [Test]
+        public void ChangeComponentsWithChunkAccessorTest()
+        {
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64, entitiesCapacity = 32});
+            world.CreateEntity(new ComponentB { value = 1 }, new ComponentC {value = 2});
+            world.CreateEntity(new ComponentB { value = 4 }, new ComponentC {value = 5});
+            world.CreateEntity(new ComponentA { value = 6 }, new ComponentB { value = 7 });
+            world.CreateEntity(new ComponentA { value = 9 }, new ComponentB { value = 10 });
+            world.CreateEntity(new ComponentA { value = 12 }, new ComponentB { value = 13 }, new ComponentC {value = 14});
+            world.CreateEntity(new ComponentA { value = 15 }, new ComponentB { value = 16 }, new ComponentC {value = 17});
+            
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor<ComponentB>();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    compsB[i] = new ComponentB { value = int.MaxValue };
+                }
+            }
+            
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor<ComponentB>();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    Assert.AreEqual(int.MaxValue, compsB[i].value);
+                }
+            }
+        }
+        
+        [Test]
+        public void ChangeComponentsWithComponentArrayAccessorTest()
+        {
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64, entitiesCapacity = 32});
+            world.CreateEntity(new ComponentB { value = 1 }, new ComponentC {value = 2});
+            world.CreateEntity(new ComponentB { value = 4 }, new ComponentC {value = 5});
+            world.CreateEntity(new ComponentA { value = 6 }, new ComponentB { value = 7 });
+            world.CreateEntity(new ComponentA { value = 9 }, new ComponentB { value = 10 });
+            world.CreateEntity(new ComponentA { value = 12 }, new ComponentB { value = 13 }, new ComponentC {value = 14});
+            world.CreateEntity(new ComponentA { value = 15 }, new ComponentB { value = 16 }, new ComponentC {value = 17});
 
-        // [Test]
-        // public unsafe void ComponentAccessorTest()
-        // {
-        //     EcsWorld world = new EcsWorld();
-        //     EcsComponentAccessor<ComponentA> compsA = world.GetComponentAccessor<ComponentA>();
-        //     EcsComponentAccessor<ComponentB> compsB = world.GetComponentAccessor<ComponentB>();
-        //     
-        //     world.CreateEntity(new ComponentA(), new ComponentB { value = 1});
-        //     int sumA = 0;
-        //     int sumB = 0;
-        //
-        //     EcsArchetypeGroup archetypeGroup = world.Filter(new EcsFilter().AllOf<ComponentA, ComponentB>());
-        //     EcsArchetypeAccessor archetypeAccessor = *archetypeGroup.GetEntityAccessorPtr();
-        //     foreach (EcsArchetypeChunkAccessor chunk in archetypeAccessor)
-        //     {
-        //         EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-        //         for (int i = 0; i < chunk.count; i++)
-        //         {
-        //             EcsEntity e = entityAccessor[i];
-        //             sumA += compsA[e].value;
-        //             sumB += compsB[e].value;
-        //             compsA[e] = new ComponentA { value = 1 };
-        //         }
-        //     }
-        //
-        //     Assert.AreEqual(0, sumA);
-        //     Assert.AreEqual(1, sumB);
-        //     
-        //     world.CreateEntity(new ComponentA {value = 1}, new ComponentB { value = 1});
-        //
-        //     sumA = 0;
-        //     sumB = 0;
-        //     archetypeGroup = world.Filter(new EcsFilter().AllOf<ComponentB>());
-        //     archetypeAccessor = *archetypeGroup.GetEntityAccessorPtr();
-        //     foreach (EcsArchetypeChunkAccessor chunk in archetypeAccessor)
-        //     {
-        //         EcsArchetypeEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-        //         for (int i = 0; i < chunk.count; i++)
-        //         {
-        //             EcsEntity e = entityAccessor[i];
-        //             sumA += compsA[e].value;
-        //             sumB += compsB[e].value;
-        //         }
-        //     }
-        //
-        //     Assert.AreEqual(2, sumA);
-        //     Assert.AreEqual(2, sumB);
-        //     
-        //     world.Dispose();
-        // }
+            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    compsB[entityAccessor[i]] = new ComponentB { value = int.MaxValue };
+                }
+            }
+            
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    Assert.AreEqual(int.MaxValue, compsB[entityAccessor[i]].value);
+                }
+            }
+        }
     }
 }

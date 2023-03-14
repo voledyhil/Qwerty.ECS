@@ -3,10 +3,10 @@ using Qwerty.ECS.Runtime.Components;
 
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    internal unsafe struct EcsArchetypeChunk
+    internal unsafe struct EcsChunk
     {
         public int rowCapacityInBytes => m_rowCapacityInBytes;
-        public EcsArchetypeChunk* prior;
+        public EcsChunk* prior;
         public byte* body;
         public int* start;
         public int* count;

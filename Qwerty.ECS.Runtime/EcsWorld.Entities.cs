@@ -68,7 +68,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_indicesBuffer, 1);
             PushEntity(archetype, entity, out EcsEntityInfo info);
 
-            EcsArchetypeChunk chunk = *info.chunk;
+            EcsChunk chunk = *info.chunk;
             chunk.WriteComponent(info.chunkIndex, c0);
             
             return entity;
@@ -91,7 +91,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_indicesBuffer, 2);
             PushEntity(archetype, entity, out EcsEntityInfo info);
             
-            EcsArchetypeChunk chunk = *info.chunk;
+            EcsChunk chunk = *info.chunk;
             chunk.WriteComponent(info.chunkIndex, c0);
             chunk.WriteComponent(info.chunkIndex, c1);
             
@@ -117,7 +117,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_indicesBuffer, 3);
             PushEntity(archetype, entity, out EcsEntityInfo info);
             
-            EcsArchetypeChunk chunk = *info.chunk;
+            EcsChunk chunk = *info.chunk;
             chunk.WriteComponent(info.chunkIndex, c0);
             chunk.WriteComponent(info.chunkIndex, c1);
             chunk.WriteComponent(info.chunkIndex, c2);
@@ -148,7 +148,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype archetype = m_archetypeManager.FindOrCreateArchetype(m_indicesBuffer, 4);
             PushEntity(archetype, entity, out EcsEntityInfo info);
             
-            EcsArchetypeChunk chunk = *info.chunk;
+            EcsChunk chunk = *info.chunk;
             chunk.WriteComponent(info.chunkIndex, c0);
             chunk.WriteComponent(info.chunkIndex, c1);
             chunk.WriteComponent(info.chunkIndex, c2);

@@ -7,7 +7,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
     {
         internal struct Chunks
         {
-            internal unsafe EcsArchetypeChunk* last;
+            internal unsafe EcsChunk* last;
         }
         
         internal readonly int index;
@@ -52,10 +52,10 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         public unsafe void Dispose()
         {
-            EcsArchetypeChunk* chunk = chunks->last;
+            EcsChunk* chunk = chunks->last;
             while (chunk != null)
             {
-                EcsArchetypeChunk* toDispose = chunk;
+                EcsChunk* toDispose = chunk;
                 chunk = chunk->prior;
                 toDispose->Dispose();
             }

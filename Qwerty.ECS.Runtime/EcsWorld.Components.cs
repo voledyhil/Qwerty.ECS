@@ -74,5 +74,10 @@ namespace Qwerty.ECS.Runtime
             
             toInfo.chunk->WriteComponent(toInfo.chunkIndex, component);
         }
+
+        public unsafe EcsComponentArrayAccessor<T> GetComponentArrayAccessor<T>() where T : struct, IEcsComponent
+        {
+            return new EcsComponentArrayAccessor<T>(m_entitiesInfo);
+        }
     }
 }
