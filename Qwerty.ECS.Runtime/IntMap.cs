@@ -11,13 +11,10 @@ namespace Qwerty.ECS.Runtime
 			public int key;        // Key of entry
 			public int value;    // Value of entry
 		}
-
-		public int count => *m_count;
 		
 		private UnsafeArray* m_buckets;
 		private UnsafeArray* m_entries;
 		private int* m_count;
-
 		private const int Lower31BitMask = 0x7FFFFFFF;
 		
 		public void Alloc(int capacity)
@@ -53,24 +50,12 @@ namespace Qwerty.ECS.Runtime
 		
 		public int Get(int key)
 		{
-			int index = FindEntry(key);
-			if (index >= 0)
-			{
-				return m_entries->Read<Entry>(index).value;
-			}
-			throw new KeyNotFoundException(nameof(Get));
+			return m_entries->Read<Entry>(FindEntry(key)).value;
 		}
 		
 		public void Set(int key, int value)
 		{
-			int index = FindEntry(key);
-			if (index >= 0)
-			{
-				m_entries->Get<Entry>(index).value = value;
-				return;
-			}
-			
-			index = (*m_count)++;
+			int index = (*m_count)++;
 			int hashCode = key.GetHashCode() & Lower31BitMask;
 			int bucketsLen = m_buckets->length;
 			int target = hashCode % bucketsLen;

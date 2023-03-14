@@ -12,8 +12,8 @@ namespace Qwerty.ECS.Runtime
 
         private unsafe bool HasComponent(EcsEntity entity, byte index)
         {
-            EcsArchetypeChunkInfo chunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            return m_archetypeManager[chunkInfo.archetypeIndex].componentsMap->Contains(index);
+            EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
+            return m_archetypeManager[info.archetypeIndex].componentsMap->Contains(index);
         }
 
         public unsafe T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
@@ -22,8 +22,8 @@ namespace Qwerty.ECS.Runtime
             {
                 throw new InvalidOperationException();
             }
-            EcsArchetypeChunkInfo chunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            return chunkInfo.chunk->ReadComponent<T>(chunkInfo.index);
+            EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
+            return info.chunk->ReadComponent<T>(info.chunkIndex);
         }
         
         public unsafe void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
@@ -34,8 +34,8 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
             
-            EcsArchetypeChunkInfo chunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            chunkInfo.chunk->WriteComponent<T>(chunkInfo.index, component);
+            EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
+            info.chunk->WriteComponent<T>(info.chunkIndex, component);
         }
 
         public unsafe void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
@@ -46,14 +46,14 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
 
-            EcsArchetypeChunkInfo fromChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
+            EcsEntityInfo fromInfo = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
             
-            EcsArchetype fromArchetype = m_archetypeManager[fromChunkInfo.archetypeIndex];
+            EcsArchetype fromArchetype = m_archetypeManager[fromInfo.archetypeIndex];
             EcsArchetype toArchetype = m_archetypeManager.FindOrCreatePriorArchetype(fromArchetype, componentTypeIndex);
             
-            PushEntity(toArchetype, entity, out EcsArchetypeChunkInfo toChunkInfo);
-            CopyRow(fromArchetype, fromChunkInfo, toChunkInfo, componentTypeIndex);
-            SwapRow(fromArchetype, fromChunkInfo);
+            PushEntity(toArchetype, entity, out EcsEntityInfo toInfo);
+            CopyRow(fromArchetype, fromInfo, toInfo, componentTypeIndex);
+            SwapRow(fromArchetype, fromInfo);
         }
         
         public unsafe void AddComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
@@ -64,15 +64,15 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
             
-            EcsArchetypeChunkInfo fromChunkInfo = m_entitiesInfo->Read<EcsArchetypeChunkInfo>(entity.Index);
-            EcsArchetype fromArchetype = m_archetypeManager[fromChunkInfo.archetypeIndex];
+            EcsEntityInfo fromInfo = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
+            EcsArchetype fromArchetype = m_archetypeManager[fromInfo.archetypeIndex];
             
             EcsArchetype toArchetype = m_archetypeManager.FindOrCreateNextArchetype(fromArchetype, componentTypeIndex);
-            PushEntity(toArchetype, entity, out EcsArchetypeChunkInfo toChunkInfo);
-            CopyRow(fromChunkInfo, toArchetype, toChunkInfo, componentTypeIndex);
-            SwapRow(fromArchetype, fromChunkInfo);
+            PushEntity(toArchetype, entity, out EcsEntityInfo toInfo);
+            CopyRow(fromInfo, toArchetype, toInfo, componentTypeIndex);
+            SwapRow(fromArchetype, fromInfo);
             
-            toChunkInfo.chunk->WriteComponent(toChunkInfo.index, component);
+            toInfo.chunk->WriteComponent(toInfo.chunkIndex, component);
         }
     }
 }

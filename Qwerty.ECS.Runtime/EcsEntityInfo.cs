@@ -2,16 +2,16 @@ using Qwerty.ECS.Runtime.Archetypes;
 
 namespace Qwerty.ECS.Runtime
 {
-    internal unsafe readonly struct EcsArchetypeChunkInfo
+    internal unsafe readonly struct EcsEntityInfo
     {
         public readonly int archetypeIndex;
-        public readonly int index;
+        public readonly int chunkIndex;
         public readonly EcsArchetypeChunk* chunk;
 
-        public EcsArchetypeChunkInfo(int archetypeIndex, int index, EcsArchetypeChunk* chunk)
+        public EcsEntityInfo(int archetypeIndex, int chunkIndex, EcsArchetypeChunk* chunk)
         {
             this.archetypeIndex = archetypeIndex;
-            this.index = index;
+            this.chunkIndex = chunkIndex;
             this.chunk = chunk;
         }
     }

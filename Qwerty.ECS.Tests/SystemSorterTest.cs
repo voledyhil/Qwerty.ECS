@@ -111,7 +111,7 @@ namespace Qwerty.ECS.Tests
             root.AddSystem(systemB);
             root.AddSystem(systemG);
 
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
             root.Update(0, world);
 
             List<IEcsSystem> systems = new List<IEcsSystem>(root.Systems);

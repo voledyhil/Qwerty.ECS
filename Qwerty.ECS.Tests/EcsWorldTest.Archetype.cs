@@ -24,7 +24,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void FillArchetypeTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64, entitiesCapacity = 32});
             EcsEntity entity0 = world.CreateEntity(new ComponentA { value = 0 }, new ComponentB { value = 1 }, new ComponentC {value = 2});
             EcsEntity entity1 = world.CreateEntity(new ComponentA { value = 3 }, new ComponentB { value = 4 }, new ComponentC {value = 5});
             EcsEntity entity2 = world.CreateEntity(new ComponentA { value = 6 }, new ComponentB { value = 7 }, new ComponentC {value = 8});
@@ -82,7 +82,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void ChangeArchetypeAfterDestroyEntityTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64, entitiesCapacity = 32});
             EcsEntity entity0 = world.CreateEntity(new ComponentA { value = 0 }, new ComponentB { value = 1 }, new ComponentC {value = 2});
             EcsEntity entity1 = world.CreateEntity(new ComponentA { value = 3 }, new ComponentB { value = 4 }, new ComponentC {value = 5});
             EcsEntity entity2 = world.CreateEntity(new ComponentA { value = 6 }, new ComponentB { value = 7 }, new ComponentC {value = 8});
@@ -125,7 +125,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void ChangeArchetypeAfterRemoveComponentTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64, entitiesCapacity = 32});
             EcsEntity entity0 = world.CreateEntity(new ComponentA { value = 0 }, new ComponentB { value = 1 }, new ComponentC {value = 2});
             EcsEntity entity1 = world.CreateEntity(new ComponentA { value = 3 }, new ComponentB { value = 4 }, new ComponentC {value = 5});
             EcsEntity entity2 = world.CreateEntity(new ComponentA { value = 6 }, new ComponentB { value = 7 }, new ComponentC {value = 8});
@@ -208,7 +208,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void ChangeArchetypeAfterAddComponentTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 64, entitiesCapacity = 32});
             EcsEntity entity0 = world.CreateEntity(new ComponentA { value = 0 }, new ComponentC {value = 2});
             EcsEntity entity1 = world.CreateEntity(new ComponentA { value = 3 }, new ComponentC {value = 5});
             EcsEntity entity2 = world.CreateEntity(new ComponentA { value = 6 }, new ComponentC {value = 8});

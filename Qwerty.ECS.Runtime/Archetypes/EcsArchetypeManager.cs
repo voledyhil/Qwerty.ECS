@@ -22,7 +22,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             
             m_setting = setting;
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
-            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<byte>(), setting.archetypeChunkSizeInByte, m_primeStorage);
+            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<byte>(), m_primeStorage, setting);
             m_archetypes.Add(m_emptyArchetype);
         }
         
@@ -36,7 +36,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 {
                     byte[] newIndices = new byte[i + 1];
                     Array.Copy(indicesBuffer, newIndices, i + 1);
-                    EcsArchetype next = new EcsArchetype(m_archetypes.Count, newIndices, m_setting.archetypeChunkSizeInByte, m_primeStorage);
+                    EcsArchetype next = new EcsArchetype(m_archetypes.Count, newIndices, m_primeStorage, m_setting);
                     m_archetypes.Add(next);
                     next.prior[index] = current.index;
                     current.next[index] = next.index;

@@ -30,7 +30,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentType<ComponentD>.Register();
             EcsComponentType<ComponentE>.Register();
 
-            m_world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32});
+            m_world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
             m_abd = m_world.CreateEntity(new ComponentA { value = 1 }, new ComponentB { value = 2 }, new ComponentD { value = 3 });
             m_ac = m_world.CreateEntity(new ComponentA { value = 4 }, new ComponentC { value = 5 });
             m_bd1 = m_world.CreateEntity(new ComponentB { value = 6 }, new ComponentD { value = 7 });
