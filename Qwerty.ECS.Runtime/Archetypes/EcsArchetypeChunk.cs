@@ -14,6 +14,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private int m_rowCapacityInBytes;
         public IntMap* map;
         public UnsafeArray* offsets;
+        private int m_entityOffset;
 
         public void Alloc(int sizeInBytes, int rowCapacityInBytes, IntMap* map, UnsafeArray* offsets)
         {
@@ -21,30 +22,32 @@ namespace Qwerty.ECS.Runtime.Archetypes
             start = (int*)MemoryUtilities.Alloc<int>(1);
             count = (int*)MemoryUtilities.Alloc<int>(1);
             
-            m_rowCapacityInBytes = rowCapacityInBytes;
             this.map = map;
             this.offsets = offsets;
+            
+            m_rowCapacityInBytes = rowCapacityInBytes;
+            m_entityOffset = offsets->Read<int>(offsets->length - 1);
         }
 
         public EcsEntity ReadEntity(int index)
-        { 
-            int offset = m_rowCapacityInBytes - Unsafe.SizeOf<EcsEntity>();
-            return Unsafe.Read<EcsEntity>((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset));
+        {
+            return Unsafe.Read<EcsEntity>((void*)((IntPtr)body + m_rowCapacityInBytes * index + m_entityOffset));
         }
         
         public void WriteEntity(int index, EcsEntity entity)
         {
-            int offset = m_rowCapacityInBytes - Unsafe.SizeOf<EcsEntity>();
-            Unsafe.Write((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset), entity);
+            Unsafe.Write((void*)((IntPtr)body + m_rowCapacityInBytes * index + m_entityOffset), entity);
         }
         
-        public T Read<T>(int index, int offset) where T : struct, IEcsComponent
+        public T ReadComponent<T>(int index) where T : struct, IEcsComponent
         {
+            int offset = offsets->Read<int>(map->Get(EcsComponentType<T>.index));
             return Unsafe.Read<T>((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset));
         }
 
-        public void Write<T>(int index, int offset, T component) where T : struct, IEcsComponent
+        public void WriteComponent<T>(int index, T component) where T : struct, IEcsComponent
         {
+            int offset = offsets->Read<int>(map->Get(EcsComponentType<T>.index));
             Unsafe.Write((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset), component);
         }
 

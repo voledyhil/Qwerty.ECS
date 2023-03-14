@@ -15,8 +15,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 				m_items->Write(i, (IntPtr)archetypes[i].chunks);
 			}
 		}
-		
-		
+
 		public EcsArchetypeChunkEnumerator GetEnumerator() => new EcsArchetypeChunkEnumerator(m_items);
 
 		internal void Dispose()

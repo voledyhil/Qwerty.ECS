@@ -11,7 +11,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         }
         
         internal readonly int index;
-        internal readonly byte[] typeIndices;
+        internal readonly byte[] indices;
         internal readonly Dictionary<int, int> next = new Dictionary<int, int>();
         internal readonly Dictionary<int, int> prior = new Dictionary<int, int>();
 
@@ -29,16 +29,16 @@ namespace Qwerty.ECS.Runtime.Archetypes
         {
             this.index = index;
             this.chunkSizeInBytes = chunkSizeInBytes;
-            typeIndices = indices;
+            this.indices = indices;
+
+            chunks = (Chunks*)MemoryUtilities.Alloc<Chunks>(1);
 
             componentsOffset = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
             componentsOffset->Realloc<int>(indices.Length + 1);
 
             componentsMap = (IntMap*)MemoryUtilities.Alloc<IntMap>(1);
             componentsMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
-            
-            chunks = (Chunks*)MemoryUtilities.Alloc<Chunks>(1);
-            
+
             for (int i = 0; i < indices.Length; i++)
             {
                 int typeIndex = indices[i];
@@ -46,6 +46,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 componentsMap->Set(typeIndex, i);
                 rowCapacityInBytes += EcsTypeManager.Sizes[typeIndex];
             }
+            
+            componentsOffset->Write(indices.Length, rowCapacityInBytes);
             rowCapacityInBytes += Unsafe.SizeOf<EcsEntity>();
             chunkCapacity = chunkSizeInBytes / rowCapacityInBytes;
         }

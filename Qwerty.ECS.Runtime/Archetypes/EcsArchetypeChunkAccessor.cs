@@ -27,8 +27,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         public EcsArchetypeComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
-            int index = m_map->Get(EcsComponentType<T>.index);
-            int offset = m_offsets->Read<int>(index);
+            int offset = m_offsets->Read<int>(m_map->Get(EcsComponentType<T>.index));
             return new EcsArchetypeComponentAccessor<T>(m_bodyPtr, m_rowCapacityInBytes, offset);
         }
     }

@@ -1,14 +1,10 @@
-using System.Runtime.CompilerServices;
 using Qwerty.ECS.Runtime.Archetypes;
-using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
     public partial class EcsWorld : IDisposable
     {
-        public int archetypeCount => m_archetypeManager.archetypeCounter;
-
         private readonly unsafe UnsafeArray* m_entitiesInfo;
         private readonly unsafe UnsafeArray* m_entities;
         private readonly unsafe UnsafeArray* m_freeEntities;
@@ -47,7 +43,8 @@ namespace Qwerty.ECS.Runtime
         
         public unsafe void Dispose()
         {
-            for (int i = 0; i < m_archetypeManager.archetypeCounter; i++)
+            int count = m_archetypeManager.archetypeCount;
+            for (int i = 0; i < count; i++)
             {
                 m_archetypeManager[i].Dispose();
             }
@@ -110,7 +107,7 @@ namespace Qwerty.ECS.Runtime
             m_entitiesInfo->Write(entity.Index, chunkInfo);
         }
         
-        private unsafe void SwapEntity(EcsArchetype archetype, EcsArchetypeChunkInfo info)
+        private unsafe void SwapRow(EcsArchetype archetype, EcsArchetypeChunkInfo info)
         {
             EcsArchetypeChunk* toChunk = info.chunk;
             EcsArchetypeChunk* lastChunk = archetype.chunks->last;
@@ -138,7 +135,7 @@ namespace Qwerty.ECS.Runtime
             MemoryUtilities.Free((IntPtr)lastChunk);
         }
 
-        private static unsafe void CopyEntity(EcsArchetype fromArchetype, EcsArchetypeChunkInfo fromChunkInfo, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
+        private static unsafe void CopyRow(EcsArchetype fromArchetype, EcsArchetypeChunkInfo fromChunkInfo, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
         {
             EcsArchetypeChunk* fromChunk = fromChunkInfo.chunk;
             EcsArchetypeChunk* toChunk = toChunkInfo.chunk;
@@ -146,8 +143,9 @@ namespace Qwerty.ECS.Runtime
             int fromRowCapacityInBytes = fromChunk->rowCapacityInBytes;
             int toRowCapacityInBytes = toChunk->rowCapacityInBytes;
             
+            UnsafeArray componentsOffset = *fromArchetype.componentsOffset;
             int index = fromArchetype.componentsMap->Get(componentTypeIndex);
-            int sizeInBytes = fromArchetype.componentsOffset->Read<int>(index);
+            int sizeInBytes = componentsOffset.Read<int>(index);
             if (sizeInBytes > 0)
             {
                 void* source = (void*)((IntPtr)fromChunk->body + fromRowCapacityInBytes * fromChunkInfo.index);
@@ -155,17 +153,16 @@ namespace Qwerty.ECS.Runtime
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
             
-            if (++index < fromArchetype.typeIndices.Length)
+            if (++index < fromArchetype.indices.Length)
             {
-                int offset = fromArchetype.componentsOffset->Read<int>(index);
-                void* source = (void*)((IntPtr)fromChunk->body + fromRowCapacityInBytes * fromChunkInfo.index + offset);
+                void* source = (void*)((IntPtr)fromChunk->body + fromRowCapacityInBytes * fromChunkInfo.index + componentsOffset.Read<int>(index));
                 void* target = (void*)((IntPtr)toChunk->body + toRowCapacityInBytes * toChunkInfo.index + sizeInBytes);
-                sizeInBytes = fromRowCapacityInBytes - Unsafe.SizeOf<EcsEntity>() - sizeInBytes;
+                sizeInBytes = componentsOffset.Read<int>(componentsOffset.length - 1) - sizeInBytes;
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
         }
         
-        private static unsafe void CopyEntity(EcsArchetypeChunkInfo fromChunkInfo, EcsArchetype toArchetype, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
+        private static unsafe void CopyRow(EcsArchetypeChunkInfo fromChunkInfo, EcsArchetype toArchetype, EcsArchetypeChunkInfo toChunkInfo, int componentTypeIndex)
         {
             EcsArchetypeChunk* fromChunk = fromChunkInfo.chunk;
             EcsArchetypeChunk* toChunk = toChunkInfo.chunk;
@@ -173,8 +170,9 @@ namespace Qwerty.ECS.Runtime
             int fromRowCapacityInBytes = fromChunk->rowCapacityInBytes;
             int toRowCapacityInBytes = toChunk->rowCapacityInBytes;
             
+            UnsafeArray componentsOffset = *toArchetype.componentsOffset;
             int index = toArchetype.componentsMap->Get(componentTypeIndex);
-            int sizeInBytes = toArchetype.componentsOffset->Read<int>(index);
+            int sizeInBytes = componentsOffset.Read<int>(index);
             if (sizeInBytes > 0)
             {
                 void* source = (void*)((IntPtr)fromChunk->body + fromRowCapacityInBytes * fromChunkInfo.index);
@@ -182,12 +180,11 @@ namespace Qwerty.ECS.Runtime
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
             
-            if (++index < toArchetype.typeIndices.Length)
+            if (++index < toArchetype.indices.Length)
             {
-                int offset = toArchetype.componentsOffset->Read<int>(index);
                 void* source = (void*)((IntPtr)fromChunk->body + fromRowCapacityInBytes * fromChunkInfo.index + sizeInBytes);
-                void* target = (void*)((IntPtr)toChunk->body + toRowCapacityInBytes * toChunkInfo.index + offset);
-                sizeInBytes = fromRowCapacityInBytes - Unsafe.SizeOf<EcsEntity>() - sizeInBytes;
+                void* target = (void*)((IntPtr)toChunk->body + toRowCapacityInBytes * toChunkInfo.index + componentsOffset.Read<int>(index));
+                sizeInBytes = componentsOffset.Read<int>(componentsOffset.length - 1) - sizeInBytes;
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
         }
