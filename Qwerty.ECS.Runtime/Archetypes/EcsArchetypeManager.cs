@@ -17,7 +17,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         public EcsArchetypeManager(EcsWorldSetting setting)
         {
-            m_primeStorage = (PrimeStorage*)MemoryUtilities.Alloc<PrimeStorage>(1);
+            m_primeStorage = (PrimeStorage*)MemoryUtil.Alloc<PrimeStorage>(1);
             m_primeStorage->Alloc();
             
             m_setting = setting;
@@ -97,7 +97,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         internal void Dispose()
         {
             m_primeStorage->Dispose();
-            MemoryUtilities.Free((IntPtr)m_primeStorage);
+            MemoryUtil.Free((IntPtr)m_primeStorage);
         }
     }
 }

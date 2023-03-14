@@ -22,14 +22,14 @@ namespace Qwerty.ECS.Runtime
         public unsafe EcsWorld(EcsWorldSetting setting)
         {
             m_setting = setting;
-            m_freeEntities = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-            m_freeEntities->Realloc<EcsEntity>(setting.entitiesCapacity);
+            m_freeEntities = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+            m_freeEntities->Alloc<EcsEntity>(setting.entitiesCapacity);
             
-            m_entities = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-            m_entities->Realloc<EcsEntity>(setting.entitiesCapacity);
+            m_entities = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+            m_entities->Alloc<EcsEntity>(setting.entitiesCapacity);
             
-            m_entitiesInfo = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-            m_entitiesInfo->Realloc<EcsEntityInfo>(setting.entitiesCapacity);
+            m_entitiesInfo = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+            m_entitiesInfo->Alloc<EcsEntityInfo>(setting.entitiesCapacity);
 
             m_archetypeManager = new EcsArchetypeManager(setting);
 
@@ -67,9 +67,9 @@ namespace Qwerty.ECS.Runtime
             m_entities->Dispose();
             m_freeEntities->Dispose();
             
-            MemoryUtilities.Free((IntPtr)m_entitiesInfo);
-            MemoryUtilities.Free((IntPtr)m_entities);
-            MemoryUtilities.Free((IntPtr)m_freeEntities);
+            MemoryUtil.Free((IntPtr)m_entitiesInfo);
+            MemoryUtil.Free((IntPtr)m_entities);
+            MemoryUtil.Free((IntPtr)m_freeEntities);
         }
 
         // public ref EcsComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
@@ -92,7 +92,7 @@ namespace Qwerty.ECS.Runtime
             int chunkCapacity = archetype.chunkCapacity;
             if (chunk == null || *chunk->count == chunkCapacity)
             {
-                EcsChunk* lastChunk = (EcsChunk*)MemoryUtilities.Alloc<EcsChunk>(1);
+                EcsChunk* lastChunk = (EcsChunk*)MemoryUtil.Alloc<EcsChunk>(1);
                 lastChunk->Alloc(m_setting.archetypeChunkSizeInByte, archetype.rowCapacityInBytes, archetype.componentsMap, archetype.componentsOffset);
                 lastChunk->prior = chunks->last;
                 *lastChunk->start = archetype.chunksCount * chunkCapacity;
@@ -134,7 +134,7 @@ namespace Qwerty.ECS.Runtime
             archetype.chunks->last = lastChunk->prior;
             
             lastChunk->Dispose();
-            MemoryUtilities.Free((IntPtr)lastChunk);
+            MemoryUtil.Free((IntPtr)lastChunk);
         }
 
         private static unsafe void CopyRow(EcsArchetype fromArchetype, EcsEntityInfo fromInfo, EcsEntityInfo toInfo, int componentTypeIndex)

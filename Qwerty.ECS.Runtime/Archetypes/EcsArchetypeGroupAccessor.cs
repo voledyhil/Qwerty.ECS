@@ -7,8 +7,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
 		private readonly UnsafeArray* m_items;
 		internal EcsArchetypeGroupAccessor(IReadOnlyList<EcsArchetype> archetypes)
 		{
-			m_items = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-			m_items->Realloc<IntPtr>(archetypes.Count);
+			m_items = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+			m_items->Alloc<IntPtr>(archetypes.Count);
 
 			for (int i = 0; i < archetypes.Count; i++)
 			{

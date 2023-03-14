@@ -7,8 +7,8 @@ namespace Qwerty.ECS.Runtime
 
         public void Alloc()
         {
-            m_primes = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-            m_primes->Realloc<int>(Capacity);
+            m_primes = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+            m_primes->Alloc<int>(Capacity);
             m_primes->Write(0, 3);
             m_primes->Write(1, 7);
             m_primes->Write(2, 11);
@@ -51,7 +51,7 @@ namespace Qwerty.ECS.Runtime
         public void Dispose()
         {
             m_primes->Dispose();
-            MemoryUtilities.Free((IntPtr)m_primes);
+            MemoryUtil.Free((IntPtr)m_primes);
         }
     }
 }

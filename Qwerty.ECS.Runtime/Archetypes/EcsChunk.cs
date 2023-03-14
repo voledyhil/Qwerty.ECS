@@ -18,9 +18,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         public void Alloc(int sizeInBytes, int rowCapacityInBytes, IntMap* map, UnsafeArray* offsets)
         {
-            body = (byte*)MemoryUtilities.Alloc(sizeInBytes, true);
-            start = (int*)MemoryUtilities.Alloc<int>(1);
-            count = (int*)MemoryUtilities.Alloc<int>(1);
+            body = (byte*)MemoryUtil.Alloc(sizeInBytes);
+            start = (int*)MemoryUtil.Alloc<int>(1);
+            count = (int*)MemoryUtil.Alloc<int>(1);
             
             this.map = map;
             this.offsets = offsets;
@@ -53,9 +53,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         internal void Dispose()
         {
-            MemoryUtilities.Free((IntPtr)body);
-            MemoryUtilities.Free((IntPtr)start);
-            MemoryUtilities.Free((IntPtr)count);
+            MemoryUtil.Free((IntPtr)body);
+            MemoryUtil.Free((IntPtr)start);
+            MemoryUtil.Free((IntPtr)count);
             prior = null;
         }
     }

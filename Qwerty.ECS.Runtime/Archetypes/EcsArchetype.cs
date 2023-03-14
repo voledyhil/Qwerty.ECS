@@ -29,12 +29,12 @@ namespace Qwerty.ECS.Runtime.Archetypes
             this.index = index;
             this.indices = indices;
 
-            chunks = (Chunks*)MemoryUtilities.Alloc<Chunks>(1);
+            chunks = (Chunks*)MemoryUtil.Alloc<Chunks>(1);
 
-            componentsOffset = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-            componentsOffset->Realloc<int>(indices.Length + 1);
+            componentsOffset = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+            componentsOffset->Alloc<int>(indices.Length + 1);
 
-            componentsMap = (IntMap*)MemoryUtilities.Alloc<IntMap>(1);
+            componentsMap = (IntMap*)MemoryUtil.Alloc<IntMap>(1);
             componentsMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
 
             for (int i = 0; i < indices.Length; i++)
@@ -63,9 +63,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
             componentsOffset->Dispose();
             componentsMap->Dispose();
             
-            MemoryUtilities.Free((IntPtr)chunks);
-            MemoryUtilities.Free((IntPtr)componentsOffset);
-            MemoryUtilities.Free((IntPtr)componentsMap);
+            MemoryUtil.Free((IntPtr)chunks);
+            MemoryUtil.Free((IntPtr)componentsOffset);
+            MemoryUtil.Free((IntPtr)componentsMap);
         }
     }
 }

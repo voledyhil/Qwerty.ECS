@@ -7,32 +7,21 @@ namespace Qwerty.ECS.Runtime
 	{
 		public int length => m_length;
 
-		public byte* Ptr;
-		private int m_capacityInBytes;
+		private byte* m_ptr;
 		private int m_length;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Realloc<T>(int newCapacity) where T : struct
+		
+		public void Alloc<T>(int capacity) where T : struct
 		{
 			int structSize = Unsafe.SizeOf<T>();
-			int newCapacityInBytes = structSize * newCapacity;
-			Ptr = Ptr != null
-				? (byte*)MemoryUtilities.Realloc((IntPtr)Ptr, newCapacityInBytes, m_capacityInBytes)
-				: (byte*)MemoryUtilities.Alloc(newCapacityInBytes, true);
-			m_capacityInBytes = newCapacityInBytes;
-			m_length = newCapacity;
+			int newCapacityInBytes = structSize * capacity;
+			m_ptr = (byte*)MemoryUtil.Alloc(newCapacityInBytes);
+			m_length = capacity;
 		}
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
-			if (Ptr == null)
-			{
-				throw new Exception("UnsafeArray: try to dispose an already disposed array");
-			}
-
-			MemoryUtilities.Free((IntPtr)Ptr);
-			Ptr = null;
+			MemoryUtil.Free((IntPtr)m_ptr);
+			m_ptr = null;
 		}
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -42,7 +31,7 @@ namespace Qwerty.ECS.Runtime
 			{
 				throw new IndexOutOfRangeException(nameof(Get));
 			}
-			return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Ptr, index));
+			return ref Unsafe.AsRef<T>(Unsafe.Add<T>(m_ptr, index));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -52,7 +41,7 @@ namespace Qwerty.ECS.Runtime
 			{
 				throw new IndexOutOfRangeException(nameof(Read));
 			}
-			return Unsafe.Read<T>(Unsafe.Add<T>(Ptr, index));
+			return Unsafe.Read<T>(Unsafe.Add<T>(m_ptr, index));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,7 +51,7 @@ namespace Qwerty.ECS.Runtime
 			{
 				throw new IndexOutOfRangeException(nameof(Write));
 			}
-			Unsafe.Write(Unsafe.Add<T>(Ptr, index), value);
+			Unsafe.Write(Unsafe.Add<T>(m_ptr, index), value);
 		}
 	}
 }

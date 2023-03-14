@@ -19,13 +19,13 @@ namespace Qwerty.ECS.Runtime
 		
 		public void Alloc(int capacity)
 		{
-			m_count = (int*)MemoryUtilities.Alloc<int>(1);
+			m_count = (int*)MemoryUtil.Alloc<int>(1);
 			
-			m_entries = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-			m_entries->Realloc<Entry>(capacity);
+			m_entries = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+			m_entries->Alloc<Entry>(capacity);
 			
-			m_buckets = (UnsafeArray*)MemoryUtilities.Alloc<UnsafeArray>(1);
-			m_buckets->Realloc<int>(capacity);
+			m_buckets = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+			m_buckets->Alloc<int>(capacity);
 			
 			for (int i = 0; i < capacity; i++)
 			{
@@ -38,9 +38,9 @@ namespace Qwerty.ECS.Runtime
 			m_buckets->Dispose();
 			m_entries->Dispose();
 			
-			MemoryUtilities.Free((IntPtr)m_count);
-			MemoryUtilities.Free((IntPtr)m_buckets);
-			MemoryUtilities.Free((IntPtr)m_entries);
+			MemoryUtil.Free((IntPtr)m_count);
+			MemoryUtil.Free((IntPtr)m_buckets);
+			MemoryUtil.Free((IntPtr)m_entries);
 		}
 		
 		public bool Contains(int key)
