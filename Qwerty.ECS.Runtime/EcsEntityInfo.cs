@@ -6,9 +6,9 @@ namespace Qwerty.ECS.Runtime
     {
         public readonly int archetypeIndex;
         public readonly int chunkIndex;
-        public readonly EcsArchetypeChunk* chunk;
+        public readonly EcsChunk* chunk;
 
-        public EcsEntityInfo(int archetypeIndex, int chunkIndex, EcsArchetypeChunk* chunk)
+        public EcsEntityInfo(int archetypeIndex, int chunkIndex, EcsChunk* chunk)
         {
             this.archetypeIndex = archetypeIndex;
             this.chunkIndex = chunkIndex;
