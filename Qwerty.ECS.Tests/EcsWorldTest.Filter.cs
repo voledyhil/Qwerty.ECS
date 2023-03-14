@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Tests
 {
     public partial class EcsWorldTest
