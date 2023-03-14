@@ -5,12 +5,11 @@ namespace Qwerty.ECS.Runtime.Archetypes
     internal unsafe class EcsArchetypeManager
     {
         private readonly EcsWorldSetting m_setting;
-        internal int archetypeCount => m_archetypesLen;
+        internal int archetypeCounter => m_indexCounter;
         internal EcsArchetype empty => m_emptyArchetype;
         internal EcsArchetype this[int index] => m_archetypes[index];
         
-        private int m_archetypeIndexCounter;
-        private int m_archetypesLen;
+        private int m_indexCounter;
         private readonly EcsArchetype m_emptyArchetype;
         private readonly EcsArchetype[] m_archetypes;
         private readonly byte[] m_indicesBuffer;
@@ -25,8 +24,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
             m_setting = setting;
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
             m_archetypes = new EcsArchetype[setting.archetypeCapacity];
-            m_emptyArchetype = new EcsArchetype(m_archetypeIndexCounter++, new byte[] { }, setting.archetypeChunkSizeInByte, m_primeStorage);
-            m_archetypes[m_archetypesLen++] = m_emptyArchetype;
+            m_emptyArchetype = new EcsArchetype(m_indexCounter, new byte[] { }, setting.archetypeChunkSizeInByte, m_primeStorage);
+            m_archetypes[m_indexCounter++] = m_emptyArchetype;
         }
         
         internal EcsArchetype FindOrCreateArchetype(byte[] typeIndicesBuffer, int typeIndicesLen)
@@ -35,20 +34,17 @@ namespace Qwerty.ECS.Runtime.Archetypes
             for (int i = 0; i < typeIndicesLen; i++)
             {
                 byte index = typeIndicesBuffer[i];
-                EcsArchetype next = current.next[index];
-                if (next == null)
+                if (!current.next.TryGetValue(index, out EcsArchetype next))
                 {
                     byte[] archetypeIndices = new byte[i + 1];
                     for (int j = 0; j < archetypeIndices.Length; j++)
                     {
                         archetypeIndices[j] = typeIndicesBuffer[j];
                     }
-
-                    next = new EcsArchetype(m_archetypeIndexCounter++, archetypeIndices, m_setting.archetypeChunkSizeInByte, m_primeStorage);
+                    next = new EcsArchetype(m_indexCounter, archetypeIndices, m_setting.archetypeChunkSizeInByte, m_primeStorage);
                     next.prior[index] = current;
                     current.next[index] = next;
-                    
-                    m_archetypes[m_archetypesLen++] = next;
+                    m_archetypes[m_indexCounter++] = next;
                 }
                 current = next;
             }
@@ -57,8 +53,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         internal EcsArchetype FindOrCreateNextArchetype(EcsArchetype archetype, byte nextIndex)
         {
-            EcsArchetype next = archetype.next[nextIndex];
-            if (next != null)
+            if (archetype.next.TryGetValue(nextIndex, out EcsArchetype next))
             {
                 return next;
             }
@@ -88,8 +83,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal EcsArchetype FindOrCreatePriorArchetype(EcsArchetype archetype, byte priorIndex)
         {
-            EcsArchetype prior = archetype.prior[priorIndex];
-            if (prior != null)
+            if (archetype.next.TryGetValue(priorIndex, out EcsArchetype prior))
             {
                 return prior;
             }

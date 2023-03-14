@@ -7,7 +7,7 @@ namespace Qwerty.ECS.Runtime
 {
     public partial class EcsWorld : IDisposable
     {
-        public int archetypeCount => m_archetypeManager.archetypeCount;
+        public int archetypeCount => m_archetypeManager.archetypeCounter;
 
         private readonly unsafe UnsafeArray* m_entitiesInfo;
         private readonly unsafe UnsafeArray* m_entities;
@@ -80,7 +80,7 @@ namespace Qwerty.ECS.Runtime
 
         public unsafe void Dispose()
         {
-            for (int i = 0; i < m_archetypeManager.archetypeCount; i++)
+            for (int i = 0; i < m_archetypeManager.archetypeCounter; i++)
             {
                 m_archetypeManager[i].Dispose();
             }

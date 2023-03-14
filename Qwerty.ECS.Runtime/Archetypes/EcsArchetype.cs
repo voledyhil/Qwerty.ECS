@@ -14,8 +14,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal readonly int archetypeIndex;
         internal readonly byte[] typeIndices;
-        internal readonly EcsArchetype[] next;
-        internal readonly EcsArchetype[] prior;
+        internal readonly Dictionary<int, EcsArchetype> next = new Dictionary<int, EcsArchetype>();
+        internal readonly Dictionary<int, EcsArchetype> prior = new Dictionary<int, EcsArchetype>();
 
         internal int chunksCnt;
         internal readonly int rowCapacityInBytes;
@@ -37,7 +37,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             componentsOffset->Realloc<int>(indices.Length + 1);
 
             componentsMap = (IntMap*)MemoryUtilities.Alloc<IntMap>(1);
-            componentsMap->Alloc(primeStorage->GetPrime(indices.Length));
+            componentsMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
             
             chunks = (Chunks*)MemoryUtilities.Alloc<Chunks>(1);
             
@@ -50,9 +50,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
             rowCapacityInBytes += Unsafe.SizeOf<EcsEntity>();
             chunkCapacity = chunkSizeInBytes / rowCapacityInBytes;
-            
-            next = new EcsArchetype[EcsTypeManager.typeCount];
-            prior = new EcsArchetype[EcsTypeManager.typeCount];
         }
 
         public EcsArchetypeChunkAccessor GetChunkAccessor(int chunkIndex)

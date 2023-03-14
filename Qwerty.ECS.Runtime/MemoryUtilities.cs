@@ -68,12 +68,5 @@ namespace Qwerty.ECS.Runtime
 		{
 			MemoryUnsafe.InitBlock((void*)destination, 0, (uint)sizeOfInBytes);
 		}
-		
-		public static unsafe void MemMove<T>(IntPtr source, int srcStartIndex, int targetStartIndex, int count) where T : struct
-		{
-			int sizeOf = MemoryUnsafe.SizeOf<T>();
-			uint sizeOfInBytes = (uint)(sizeOf * count);
-			Buffer.MemoryCopy((void*)(source + srcStartIndex * sizeOf), (void*)(source + targetStartIndex * sizeOf), sizeOfInBytes, sizeOfInBytes);
-		}
 	}
 }

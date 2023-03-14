@@ -11,6 +11,8 @@ namespace Qwerty.ECS.Runtime
 			public int key;        // Key of entry
 			public int value;    // Value of entry
 		}
+
+		public int count => *m_count;
 		
 		private UnsafeArray* m_buckets;
 		private UnsafeArray* m_entries;
@@ -33,6 +35,16 @@ namespace Qwerty.ECS.Runtime
 				m_buckets->Write(i, -1);
 			}
 		}
+
+		public void Resize(int newCapacity)
+		{
+			m_entries->Realloc<EcsEntity>(newCapacity);
+			m_buckets->Realloc<Entry>(newCapacity);
+			for (int i = *m_count; i < newCapacity; i++)
+			{
+				m_buckets->Write(i, -1);
+			}
+		}
 		
 		public void Dispose()
 		{
@@ -51,17 +63,29 @@ namespace Qwerty.ECS.Runtime
 		
 		public int Get(int key)
 		{
-			int value = FindEntry(key);
-			if (value >= 0)
+			int index = FindEntry(key);
+			if (index >= 0)
 			{
-				return value;
+				return m_entries->Read<Entry>(index).value;
 			}
-			throw new ArgumentException(nameof(Get));
+			throw new KeyNotFoundException(nameof(Get));
 		}
 		
 		public void Set(int key, int value)
 		{
-			int index = (*m_count)++;
+			int index = FindEntry(key);
+			if (index >= 0)
+			{
+				m_entries->Get<Entry>(index).value = value;
+				return;
+			}
+			
+			if (*m_count >= m_entries->length)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+			
+			index = (*m_count)++;
 			int hashCode = key.GetHashCode() & Lower31BitMask;
 			int bucketsLen = m_buckets->length;
 			int target = hashCode % bucketsLen;

@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using MemoryUnsafe = System.Runtime.CompilerServices.Unsafe;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
@@ -15,7 +14,7 @@ namespace Qwerty.ECS.Runtime
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Realloc<T>(int newCapacity) where T : struct
 		{
-			int structSize = MemoryUnsafe.SizeOf<T>();
+			int structSize = Unsafe.SizeOf<T>();
 			int newCapacityInBytes = structSize * newCapacity;
 			Ptr = Ptr != null
 				? (byte*)MemoryUtilities.Realloc((IntPtr)Ptr, newCapacityInBytes, m_capacityInBytes)
@@ -43,7 +42,7 @@ namespace Qwerty.ECS.Runtime
 			{
 				throw new IndexOutOfRangeException(nameof(Get));
 			}
-			return ref MemoryUnsafe.AsRef<T>(MemoryUnsafe.Add<T>(Ptr, index));
+			return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Ptr, index));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,7 +52,7 @@ namespace Qwerty.ECS.Runtime
 			{
 				throw new IndexOutOfRangeException(nameof(Read));
 			}
-			return MemoryUnsafe.Read<T>(MemoryUnsafe.Add<T>(Ptr, index));
+			return Unsafe.Read<T>(Unsafe.Add<T>(Ptr, index));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,7 +62,7 @@ namespace Qwerty.ECS.Runtime
 			{
 				throw new IndexOutOfRangeException(nameof(Write));
 			}
-			MemoryUnsafe.Write(MemoryUnsafe.Add<T>(Ptr, index), value);
+			Unsafe.Write(Unsafe.Add<T>(Ptr, index), value);
 		}
 	}
 }

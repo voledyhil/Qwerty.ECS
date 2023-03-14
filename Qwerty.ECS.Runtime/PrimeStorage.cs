@@ -2,7 +2,7 @@ namespace Qwerty.ECS.Runtime
 {
     public unsafe struct PrimeStorage
     {
-        private const int Capacity = 20;
+        private const int Capacity = 24;
         private UnsafeArray* m_primes;
 
         public void Alloc()
@@ -29,6 +29,10 @@ namespace Qwerty.ECS.Runtime
             m_primes->Write(17, 353);
             m_primes->Write(18, 431);
             m_primes->Write(19, 521);
+            m_primes->Write(20, 631);
+            m_primes->Write(21, 761);
+            m_primes->Write(22, 919);
+            m_primes->Write(23, 1103);
         }
 
         public int GetPrime(int min)
