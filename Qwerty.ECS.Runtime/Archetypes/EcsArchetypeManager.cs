@@ -34,28 +34,29 @@ namespace Qwerty.ECS.Runtime.Archetypes
             for (int i = 0; i < typeIndicesLen; i++)
             {
                 byte index = typeIndicesBuffer[i];
-                if (!current.next.TryGetValue(index, out EcsArchetype next))
+                if (!current.next.TryGetValue(index, out int nextId))
                 {
                     byte[] archetypeIndices = new byte[i + 1];
                     for (int j = 0; j < archetypeIndices.Length; j++)
                     {
                         archetypeIndices[j] = typeIndicesBuffer[j];
                     }
-                    next = new EcsArchetype(m_indexCounter, archetypeIndices, m_setting.archetypeChunkSizeInByte, m_primeStorage);
-                    next.prior[index] = current;
-                    current.next[index] = next;
+                    EcsArchetype next = new EcsArchetype(m_indexCounter, archetypeIndices, m_setting.archetypeChunkSizeInByte, m_primeStorage);
                     m_archetypes[m_indexCounter++] = next;
+                    next.prior[index] = current.index;
+                    current.next[index] = next.index;
+                    nextId = next.index;
                 }
-                current = next;
+                current = m_archetypes[nextId];
             }
             return current;
         }
 
         internal EcsArchetype FindOrCreateNextArchetype(EcsArchetype archetype, byte nextIndex)
         {
-            if (archetype.next.TryGetValue(nextIndex, out EcsArchetype next))
+            if (archetype.next.TryGetValue(nextIndex, out int next))
             {
-                return next;
+                return m_archetypes[next];
             }
 
             bool added = false;
@@ -83,15 +84,14 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal EcsArchetype FindOrCreatePriorArchetype(EcsArchetype archetype, byte priorIndex)
         {
-            if (archetype.next.TryGetValue(priorIndex, out EcsArchetype prior))
+            if (archetype.prior.TryGetValue(priorIndex, out int prior))
             {
-                return prior;
+                return m_archetypes[prior];
             }
             int length = 0;
             byte[] typeIndices = archetype.typeIndices;
-            for (int index = 0; index < typeIndices.Length; index++)
+            foreach (byte typeIndex in typeIndices)
             {
-                byte typeIndex = typeIndices[index];
                 if (typeIndex != priorIndex)
                 {
                     m_indicesBuffer[length++] = typeIndex;

@@ -139,7 +139,7 @@ namespace Qwerty.ECS.Runtime
             int indexInChunk = (*chunk->count)++;
             chunk->WriteEntity(indexInChunk, entity);
             
-            chunkInfo = new EcsArchetypeChunkInfo(archetype.archetypeIndex, indexInChunk, chunk);
+            chunkInfo = new EcsArchetypeChunkInfo(archetype.index, indexInChunk, chunk);
             m_entitiesInfo->Write(entity.Index, chunkInfo);
         }
         
@@ -155,7 +155,7 @@ namespace Qwerty.ECS.Runtime
                 void* sourcePtr = (void*)((IntPtr)lastChunk->body + rowCapacityInBytes * lastIndex);
                 void* targetPtr = (void*)((IntPtr)toChunk->body + rowCapacityInBytes * info.index);
                 Buffer.MemoryCopy(sourcePtr, targetPtr, rowCapacityInBytes, rowCapacityInBytes);
-                m_entitiesInfo->Write(swapEntity.Index, new EcsArchetypeChunkInfo(archetype.archetypeIndex, info.index, toChunk));
+                m_entitiesInfo->Write(swapEntity.Index, new EcsArchetypeChunkInfo(archetype.index, info.index, toChunk));
             }
             
             --*lastChunk->count;

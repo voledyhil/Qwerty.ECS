@@ -12,10 +12,10 @@ namespace Qwerty.ECS.Runtime.Archetypes
             internal unsafe EcsArchetypeChunk* last;
         }
         
-        internal readonly int archetypeIndex;
+        internal readonly int index;
         internal readonly byte[] typeIndices;
-        internal readonly Dictionary<int, EcsArchetype> next = new Dictionary<int, EcsArchetype>();
-        internal readonly Dictionary<int, EcsArchetype> prior = new Dictionary<int, EcsArchetype>();
+        internal readonly Dictionary<int, int> next = new Dictionary<int, int>();
+        internal readonly Dictionary<int, int> prior = new Dictionary<int, int>();
 
         internal int chunksCnt;
         internal readonly int rowCapacityInBytes;
@@ -29,7 +29,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal unsafe EcsArchetype(int index, byte[] indices, int chunkSizeInBytes, PrimeStorage* primeStorage)
         {
-            archetypeIndex = index;
+            this.index = index;
             this.chunkSizeInBytes = chunkSizeInBytes;
             typeIndices = indices;
 
