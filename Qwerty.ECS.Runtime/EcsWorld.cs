@@ -18,12 +18,10 @@ namespace Qwerty.ECS.Runtime
 
         private readonly byte[] m_indicesBuffer;
         private readonly EcsArchetypeManager m_archetypeManager;
-        private readonly EcsWorldSetting m_setting;
         //private readonly IEcsComponentPool[] m_componentPools;
 
         public unsafe EcsWorld(EcsWorldSetting setting)
         {
-            m_setting = setting;
             m_freeEntities = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
             m_freeEntities->Alloc<EcsEntity>(setting.entitiesCapacity);
             
@@ -87,27 +85,27 @@ namespace Qwerty.ECS.Runtime
         //     }
         // }
         
-        private unsafe void PushEntity(EcsArchetype archetype, EcsEntity entity, out EcsEntityInfo info)
+        private unsafe void PushEntity(EcsArchetype arch, EcsEntity entity, out EcsEntityInfo info)
         {
-            EcsArchetype.Chunks* chunks = archetype.chunks;
+            EcsArchetype.Chunks* chunks = arch.chunks;
             EcsChunk* chunk = chunks->last;
-            int chunkCapacity = archetype.chunkCapacity;
+            int chunkCapacity = arch.chunkCapacity;
             if (chunk == null || *chunk->count == chunkCapacity)
             {
                 EcsChunk* lastChunk = (EcsChunk*)MemoryUtil.Alloc<EcsChunk>(1);
-                lastChunk->Alloc(m_setting.archetypeChunkSizeInByte, archetype.rowCapacityInBytes, archetype.componentsMap, archetype.componentsOffset);
+                lastChunk->Alloc(arch.chunkCapacityInBytes, arch.rowCapacityInBytes, arch.componentsMap, arch.componentsOffset);
                 lastChunk->prior = chunks->last;
-                *lastChunk->start = archetype.chunksCount * chunkCapacity;
+                *lastChunk->start = arch.chunksCount * chunkCapacity;
                 *lastChunk->count = 0;
             
                 chunks->last = lastChunk;
-                archetype.chunksCount++;
+                arch.chunksCount++;
             }
             chunk = chunks->last;
             int indexInChunk = (*chunk->count)++;
             chunk->WriteEntity(indexInChunk, entity);
             
-            info = new EcsEntityInfo(archetype.index, indexInChunk, chunk);
+            info = new EcsEntityInfo(arch.index, indexInChunk, chunk);
             m_entitiesInfo->Write(entity.Index, info);
         }
         

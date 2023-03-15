@@ -23,6 +23,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         internal readonly unsafe IntMap* componentsMap;
 
         internal readonly int chunkCapacity;
+        internal readonly int chunkCapacityInBytes;
         
         internal unsafe EcsArchetype(int index, byte[] indices, PrimeStorage* primeStorage, EcsWorldSetting setting)
         {
@@ -47,7 +48,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
             
             componentsOffset->Write(indices.Length, rowCapacityInBytes);
             rowCapacityInBytes += Unsafe.SizeOf<EcsEntity>();
-            chunkCapacity = setting.archetypeChunkSizeInByte / rowCapacityInBytes;
+            
+            chunkCapacity = setting.archetypeChunkMaxSizeInByte / rowCapacityInBytes;
+            chunkCapacityInBytes = chunkCapacity * rowCapacityInBytes;
         }
 
         public unsafe void Dispose()

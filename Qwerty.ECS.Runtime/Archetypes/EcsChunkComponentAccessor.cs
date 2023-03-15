@@ -8,7 +8,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly byte* m_bodyPtr;
         private readonly int m_rowCapacityInBytes;
         private readonly int m_offset;
-
+        
         public EcsChunkComponentAccessor(byte* bodyPtr, int rowCapacityInBytes, int offset)
         {
             m_bodyPtr = bodyPtr;

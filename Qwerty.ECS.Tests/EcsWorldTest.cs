@@ -40,7 +40,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void RegisterComponentThrowExceptionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             Assert.That(() => world.CreateEntity(new ComponentF()), Throws.InvalidOperationException);
             world.Dispose();
         }
@@ -66,7 +66,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void EntityIncVersionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             
             EcsEntity e1 = world.CreateEntity();
             Assert.AreEqual(e1.Index, 1);
@@ -91,7 +91,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void CreateEntityTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e = world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentC(), new ComponentD());
             
             Assert.IsTrue(world.HasComponent<ComponentA>(e));
@@ -105,7 +105,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void CreateEntityThrowExceptionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentA()), Throws.ArgumentException);
             Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentB()), Throws.ArgumentException);
             Assert.That(() => world.CreateEntity(new ComponentA(), new ComponentB(), new ComponentC(), new ComponentC()), Throws.ArgumentException);
@@ -115,7 +115,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void RemoveComponentTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e = world.CreateEntity();
             
             Assert.IsFalse(world.HasComponent<ComponentA>(e));
@@ -132,7 +132,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void GetComponentThrowExceptionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e  = world.CreateEntity();
             Assert.That(() => world.GetComponent<ComponentA>(e), Throws.InvalidOperationException);
             
@@ -142,7 +142,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void AddComponentThrowExceptionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e  = world.CreateEntity();
             world.AddComponent(e, new ComponentA());
 
@@ -154,7 +154,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void RemoveComponentThrowExceptionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e = world.CreateEntity();
 
             Assert.That(() => world.RemoveComponent<ComponentA>(e), Throws.InvalidOperationException);
@@ -165,7 +165,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void SetComponentTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e = world.CreateEntity();
             
             world.AddComponent(e, new ComponentA());
@@ -179,7 +179,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void SetComponentThrowExceptionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e = world.CreateEntity();
             Assert.That(() => world.SetComponent(e, new ComponentA()), Throws.InvalidOperationException);
             
@@ -189,7 +189,7 @@ namespace Qwerty.ECS.Tests
         [Test]
         public void DestroyEntityThrowExceptionTest()
         {
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkSizeInByte = 32, entitiesCapacity = 32});
+            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             EcsEntity e = world.CreateEntity();
             world.DestroyEntity(e);
 

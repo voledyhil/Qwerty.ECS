@@ -53,7 +53,6 @@ namespace Qwerty.ECS.Runtime
         
         public EcsEntity CreateEntity()
         {
-            
             EcsEntity entity = InstantiateEntity();
             EcsArchetype archetype = m_archetypeManager.empty;
             PushEntity(archetype, entity, out _);
