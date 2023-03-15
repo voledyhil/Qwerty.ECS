@@ -137,14 +137,14 @@ namespace Qwerty.ECS.Tests
         }
 
         [Test]
-        public void All_ComponentB_Test()
+        public void All_ComponentB_With_Chunks_Test()
         {
             int sumB = 0;
             HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity> { m_abd, m_bd1, m_bd2, m_bc, m_ab, m_b1, m_b2, m_b3, m_b4, m_b5 };
 
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -160,9 +160,34 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(sumB, 130);
             Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
         }
+        
+        [Test]
+        public void All_ComponentB_With_Components_Array_Test()
+        {
+            int sumB = 0;
+            HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
+            HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity> { m_abd, m_bd1, m_bd2, m_bc, m_ab, m_b1, m_b2, m_b3, m_b4, m_b5 };
+
+            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    EcsEntity e = entityAccessor[i];
+                    sumB += compsB[e].value;
+                    actualEntities.Add(e);
+                }
+            }
+
+            Assert.AreEqual(sumB, 130);
+            Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
+        }
 
         [Test]
-        public void All_ComponentB_And_ComponentD_Test()
+        public void All_ComponentB_And_ComponentD_With_Chunks_Test()
         {
             int sumB = 0;
             int sumD = 0;
@@ -171,7 +196,7 @@ namespace Qwerty.ECS.Tests
 
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>());
 
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -190,16 +215,46 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(sumD, 18);
             Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
         }
+        
+        [Test]
+        public void All_ComponentB_And_ComponentD_With_Components_Array_Test()
+        {
+            int sumB = 0;
+            int sumD = 0;
+            HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
+            HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity> { m_abd, m_bd1, m_bd2 };
+            
+            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsComponentArrayAccessor<ComponentD> compsD = m_world.GetComponentArrayAccessor<ComponentD>();
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>());
+
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    EcsEntity e = entityAccessor[i];
+                    sumB += compsB[e].value;
+                    sumD += compsD[e].value;
+                    actualEntities.Add(e);
+                }
+            }
+
+            Assert.AreEqual(sumB, 17);
+            Assert.AreEqual(sumD, 18);
+            Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
+        }
 
         [Test]
-        public void Any_ComponentB_Test()
+        public void Any_ComponentB_With_Chunks_Test()
         {
             int sumB = 0;
             HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd, m_bd1, m_bd2, m_bc, m_ab, m_b1, m_b2, m_b3, m_b4, m_b5 };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -217,13 +272,38 @@ namespace Qwerty.ECS.Tests
         }
         
         [Test]
-        public void Any_ComponentB_Or_ComponentD_Test()
+        public void Any_ComponentB_With_Components_Array_Test()
+        {
+            int sumB = 0;
+            HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
+            HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd, m_bd1, m_bd2, m_bc, m_ab, m_b1, m_b2, m_b3, m_b4, m_b5 };
+            
+            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    EcsEntity e = entityAccessor[i];
+                    sumB += compsB[e].value;
+                    actualEntities.Add(e);
+                }
+            }
+        
+            Assert.AreEqual(sumB, 130);
+            Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
+        }
+        
+        [Test]
+        public void Any_ComponentB_Or_ComponentD_With_Chunks_Test()
         {
             HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd, m_bd1, m_bd2, m_bc, m_ab, m_ad, m_b1, m_b2, m_b3, m_b4, m_b5 };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB, ComponentD>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -233,18 +313,17 @@ namespace Qwerty.ECS.Tests
                     actualEntities.Add(e);
                 }
             }
-        
             Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
         }
-        
+
         [Test]
-        public void None_ComponentB_And_ComponentD_Test()
+        public void None_ComponentB_And_ComponentD_With_Chunks_Test()
         {
             HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_ac };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().NoneOf<ComponentB, ComponentD>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -258,13 +337,13 @@ namespace Qwerty.ECS.Tests
         }
         
         [Test]
-        public void None_DoubleComponentB_And_ComponentD_Test()
+        public void None_DoubleComponentB_And_ComponentD_With_Chunks_Test()
         {
             HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_ac };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().NoneOf<ComponentB, ComponentB, ComponentD>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -279,7 +358,7 @@ namespace Qwerty.ECS.Tests
         }
         
         [Test]
-        public void All_DoubleComponentB_And_ComponentD_AnyFilter_ComponentA_Test()
+        public void All_DoubleComponentB_And_ComponentD_AnyFilter_ComponentA_With_Chunks_Test()
         {
             int sumA = 0;
             int sumB = 0;
@@ -288,7 +367,7 @@ namespace Qwerty.ECS.Tests
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentB, ComponentD>().AnyOf<ComponentA>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -310,16 +389,50 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(sumD, 3);
             Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
         }
-        
+   
         [Test]
-        public void All_DoubleComponentD_AnyFilter_ComponentB_DoubleComponentC_Test()
+        public void All_DoubleComponentB_And_ComponentD_AnyFilter_ComponentA_With_Components_Array_Test()
+        {
+            int sumA = 0;
+            int sumB = 0;
+            int sumD = 0;
+            HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
+            HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd };
+        
+            EcsComponentArrayAccessor<ComponentA> compsA = m_world.GetComponentArrayAccessor<ComponentA>();
+            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsComponentArrayAccessor<ComponentD> compsD = m_world.GetComponentArrayAccessor<ComponentD>();
+            
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentB, ComponentD>().AnyOf<ComponentA>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    EcsEntity e = entityAccessor[i];
+                    sumA += compsA[e].value;
+                    sumB += compsB[e].value;
+                    sumD += compsD[e].value;
+                    actualEntities.Add(e);
+                }
+            }
+        
+            Assert.AreEqual(sumA, 1);
+            Assert.AreEqual(sumB, 2);
+            Assert.AreEqual(sumD, 3);
+            Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
+        }
+
+        [Test]
+        public void All_DoubleComponentD_AnyFilter_ComponentB_DoubleComponentC_With_Chunks_Test()
         {
             int sumD = 0;
             HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd, m_bd1, m_bd2};
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentD, ComponentD>().AnyOf<ComponentB, ComponentC, ComponentC>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -335,16 +448,41 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(sumD, 18);
             Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
         }
-        
+     
         [Test]
-        public void All_ComponentB_None_ComponentA_Test()
+        public void All_DoubleComponentD_AnyFilter_ComponentB_DoubleComponentC_With_Components_Array_Test()
+        {
+            int sumD = 0;
+            HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
+            HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd, m_bd1, m_bd2};
+            
+            EcsComponentArrayAccessor<ComponentD> compsD = m_world.GetComponentArrayAccessor<ComponentD>();
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentD, ComponentD>().AnyOf<ComponentB, ComponentC, ComponentC>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    EcsEntity e = entityAccessor[i];
+                    sumD += compsD[e].value;
+                    actualEntities.Add(e);
+                }
+            }
+            
+            Assert.AreEqual(sumD, 18);
+            Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
+        }
+
+        [Test]
+        public void All_ComponentB_None_ComponentA_With_Chunks_Test()
         {
             int sumB = 0;
             HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_bd1, m_bd2, m_bc, m_b1, m_b2, m_b3, m_b4, m_b5 };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>().NoneOf<ComponentA>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -357,13 +495,37 @@ namespace Qwerty.ECS.Tests
                 }
             }
             
-            Assert.AreEqual(sumB, 116
-            );
+            Assert.AreEqual(sumB, 116);
             Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
         }
         
         [Test]
-        public void All_ComponentB_And_ComponentD_None_ComponentA_Test()
+        public void All_ComponentB_None_ComponentA_With_Components_Array_Test()
+        {
+            int sumB = 0;
+            HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
+            HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_bd1, m_bd2, m_bc, m_b1, m_b2, m_b3, m_b4, m_b5 };
+        
+            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>().NoneOf<ComponentA>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    EcsEntity e = entityAccessor[i];
+                    sumB += compsB[e].value;
+                    actualEntities.Add(e);
+                }
+            }
+            
+            Assert.AreEqual(sumB, 116);
+            Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
+        }
+        
+        [Test]
+        public void All_ComponentB_And_ComponentD_None_ComponentA_With_Chunks_Test()
         {
             int sumB = 0;
             int sumD = 0;
@@ -371,7 +533,7 @@ namespace Qwerty.ECS.Tests
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_bd1, m_bd2 };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>().NoneOf<ComponentA>());
-            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetEntityAccessor();
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -383,6 +545,37 @@ namespace Qwerty.ECS.Tests
                     EcsEntity e = entityAccessor[i];
                     sumB += compsB[i].value;
                     sumD += compsD[i].value;
+                    actualEntities.Add(e);
+                }
+            }
+        
+            Assert.AreEqual(sumB, 15);
+            Assert.AreEqual(sumD, 15);
+            Assert.IsTrue(expectedEntities.SetEquals(actualEntities));
+        }
+        
+        [Test]
+        public void All_ComponentB_And_ComponentD_None_ComponentA_With_Components_Array_Test()
+        {
+            int sumB = 0;
+            int sumD = 0;
+            HashSet<EcsEntity> actualEntities = new HashSet<EcsEntity>();
+            HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_bd1, m_bd2 };
+            
+            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsComponentArrayAccessor<ComponentD> compsD = m_world.GetComponentArrayAccessor<ComponentD>();
+            
+            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>().NoneOf<ComponentA>());
+            EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
+            foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                
+                for (int i = 0; i < chunk.count; i++)
+                {
+                    EcsEntity e = entityAccessor[i];
+                    sumB += compsB[e].value;
+                    sumD += compsD[e].value;
                     actualEntities.Add(e);
                 }
             }

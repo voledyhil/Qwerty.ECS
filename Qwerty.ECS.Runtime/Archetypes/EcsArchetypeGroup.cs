@@ -37,7 +37,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
         }
 
-        public ref EcsArchetypeGroupAccessor GetEntityAccessor()
+        public ref EcsArchetypeGroupAccessor GetAccessor()
         {
             return ref m_archetypeGroupAccessor;
         }
