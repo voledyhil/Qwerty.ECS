@@ -50,7 +50,7 @@ namespace Qwerty.ECS.Runtime
 		
 		public int Get(int key)
 		{
-			return m_entries->Read<Entry>(FindEntry(key)).value;
+			return m_entries->Get<Entry>(FindEntry(key)).value;
 		}
 		
 		public void Set(int key, int value)
@@ -76,9 +76,9 @@ namespace Qwerty.ECS.Runtime
 			int bucketsLen = m_buckets->length;
 			int target = hashCode % bucketsLen;
 			
-			for (int i = m_buckets->Read<int>(target); i >= 0; i = m_entries->Read<Entry>(i).next)
+			for (int i = m_buckets->Get<int>(target); i >= 0; i = m_entries->Get<Entry>(i).next)
 			{
-				Entry entry = m_entries->Read<Entry>(i);
+				Entry entry = m_entries->Get<Entry>(i);
 				if (entry.hashCode != hashCode || !entry.key.Equals(key))
 				{
 					continue;

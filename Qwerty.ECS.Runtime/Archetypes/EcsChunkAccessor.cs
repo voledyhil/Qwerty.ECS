@@ -8,15 +8,13 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly byte* m_bodyPtr;
         private readonly int m_count;
         private readonly int m_rowCapacityInBytes;
-        private readonly UnsafeArray* m_offsets;
-        private readonly IntMap* m_map;
+        private readonly IntMap* m_offsetMap;
 
-        internal EcsChunkAccessor(byte* bodyPtr, int count, int rowCapacityInBytes, IntMap* map, UnsafeArray* offsets)
+        internal EcsChunkAccessor(byte* bodyPtr, int count, int rowCapacityInBytes, IntMap* offsetMap)
         {
             m_bodyPtr = bodyPtr;
             m_count = count;
-            m_offsets = offsets;
-            m_map = map;
+            m_offsetMap = offsetMap;
             m_rowCapacityInBytes = rowCapacityInBytes;
         }
 
@@ -27,7 +25,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         public EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
-            int offset = m_offsets->Read<int>(m_map->Get(EcsComponentType<T>.index));
+            int offset = m_offsetMap->Get(EcsComponentType<T>.index);
             return new EcsChunkComponentAccessor<T>(m_bodyPtr, m_rowCapacityInBytes, offset);
         }
     }

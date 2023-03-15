@@ -45,7 +45,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             m_chunk = null;
         }
 
-        public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk->body, *m_chunk->count, m_chunk->rowCapacityInBytes, m_chunk->map, m_chunk->offsets);
+        public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk->body, *m_chunk->count, m_chunk->rowCapacityInBytes, m_chunk->offsetMap);
         object IEnumerator.Current => Current;
 
         public void Dispose()

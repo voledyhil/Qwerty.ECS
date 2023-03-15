@@ -20,10 +20,12 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal readonly unsafe Chunks* chunks;
         internal readonly unsafe UnsafeArray* componentsOffset;
-        internal readonly unsafe IntMap* componentsMap;
+        internal readonly unsafe IntMap* indexMap;
+        internal readonly unsafe IntMap* offsetMap;
 
         internal readonly int chunkCapacity;
         internal readonly int chunkCapacityInBytes;
+        internal readonly int entityOffset;
         
         internal unsafe EcsArchetype(int index, byte[] indices, PrimeStorage* primeStorage, EcsWorldSetting setting)
         {
@@ -33,20 +35,26 @@ namespace Qwerty.ECS.Runtime.Archetypes
             chunks = (Chunks*)MemoryUtil.Alloc<Chunks>(1);
 
             componentsOffset = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
-            componentsOffset->Alloc<int>(indices.Length + 1);
+            componentsOffset->Alloc<int>(indices.Length);
 
-            componentsMap = (IntMap*)MemoryUtil.Alloc<IntMap>(1);
-            componentsMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
+            indexMap = (IntMap*)MemoryUtil.Alloc<IntMap>(1);
+            indexMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
+            
+            offsetMap = (IntMap*)MemoryUtil.Alloc<IntMap>(1);
+            offsetMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
 
             for (int i = 0; i < indices.Length; i++)
             {
                 int typeIndex = indices[i];
+
+                indexMap->Set(typeIndex, i);
+                offsetMap->Set(typeIndex, rowCapacityInBytes);
                 componentsOffset->Write(i, rowCapacityInBytes);
-                componentsMap->Set(typeIndex, i);
+                
                 rowCapacityInBytes += EcsTypeManager.Sizes[typeIndex];
             }
-            
-            componentsOffset->Write(indices.Length, rowCapacityInBytes);
+
+            entityOffset = rowCapacityInBytes;
             rowCapacityInBytes += Unsafe.SizeOf<EcsEntity>();
             
             chunkCapacity = setting.archetypeChunkMaxSizeInByte / rowCapacityInBytes;
@@ -64,11 +72,13 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
             
             componentsOffset->Dispose();
-            componentsMap->Dispose();
+            offsetMap->Dispose();
+            indexMap->Dispose();
             
             MemoryUtil.Free((IntPtr)chunks);
             MemoryUtil.Free((IntPtr)componentsOffset);
-            MemoryUtil.Free((IntPtr)componentsMap);
+            MemoryUtil.Free((IntPtr)offsetMap);
+            MemoryUtil.Free((IntPtr)indexMap);
         }
     }
 }
