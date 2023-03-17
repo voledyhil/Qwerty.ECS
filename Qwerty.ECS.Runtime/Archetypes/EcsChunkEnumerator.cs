@@ -1,8 +1,6 @@
-using System.Collections;
-
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    public unsafe struct EcsChunkEnumerator : IEnumerator<EcsChunkAccessor>
+    public unsafe ref struct EcsChunkEnumerator
     {
         private int m_archetypeIndex;
         private EcsChunk* m_chunk;
@@ -38,18 +36,13 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 }
             }
         }
-
+        
+        public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk);
+        
         public void Reset()
         {
             m_archetypeIndex = -1;
             m_chunk = null;
-        }
-
-        public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk->body, *m_chunk->count, m_chunk->rowCapacityInBytes, m_chunk->offsetMap);
-        object IEnumerator.Current => Current;
-
-        public void Dispose()
-        {
         }
     }
 }

@@ -32,15 +32,15 @@ namespace Qwerty.ECS.Runtime.Archetypes
             this.index = index;
             this.indices = indices;
 
-            chunks = (Chunks*)MemoryUtil.Alloc<Chunks>(1);
+            chunks = (Chunks*)MemoryUtil.Alloc<Chunks>();
 
-            componentsOffset = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+            componentsOffset = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
             componentsOffset->Alloc<int>(indices.Length);
 
-            indexMap = (IntMap*)MemoryUtil.Alloc<IntMap>(1);
+            indexMap = (IntMap*)MemoryUtil.Alloc<IntMap>();
             indexMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
             
-            offsetMap = (IntMap*)MemoryUtil.Alloc<IntMap>(1);
+            offsetMap = (IntMap*)MemoryUtil.Alloc<IntMap>();
             offsetMap->Alloc(primeStorage->GetPrime(2 * indices.Length));
 
             for (int i = 0; i < indices.Length; i++)

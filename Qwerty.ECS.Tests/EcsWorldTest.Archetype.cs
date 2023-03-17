@@ -7,16 +7,16 @@ namespace Qwerty.ECS.Tests
 {
     internal static class EcsArchetypeAccessorExtension
     {
-        public static List<EcsChunkAccessor> ToChunkAccessorsList(this EcsArchetypeGroupAccessor accessor)
+        public static EcsChunkAccessor[] ToChunkAccessorsArray(this EcsArchetypeGroupAccessor accessor)
         {
             List<EcsChunkAccessor> result = new List<EcsChunkAccessor>();
-            using EcsChunkEnumerator en = accessor.GetEnumerator();
+            EcsChunkEnumerator en = accessor.GetEnumerator();
             while (en.MoveNext())
             {
                 result.Add(en.Current);
             }
             result.Reverse();
-            return result;
+            return result.ToArray();
         }
     }
     
@@ -35,8 +35,8 @@ namespace Qwerty.ECS.Tests
 
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            List<EcsChunkAccessor> chunkAccessors = group.GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(2, chunkAccessors.Count);
+            EcsChunkAccessor[] chunkAccessors = group.GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(2, chunkAccessors.Length);
             Assert.AreEqual(6, group.CalculateEntitiesCount());
 
             EcsChunkAccessor chunk = chunkAccessors[0];
@@ -97,8 +97,8 @@ namespace Qwerty.ECS.Tests
         
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            List<EcsChunkAccessor> chunkAccessors = group.GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(1, chunkAccessors.Count);
+            EcsChunkAccessor[] chunkAccessors = group.GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(1, chunkAccessors.Length);
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
             EcsChunkAccessor chunk = chunkAccessors[0];
@@ -140,8 +140,8 @@ namespace Qwerty.ECS.Tests
         
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            List<EcsChunkAccessor> chunkAccessors = group.GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(1, chunkAccessors.Count);
+            EcsChunkAccessor[] chunkAccessors = group.GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(1, chunkAccessors.Length);
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
             EcsChunkAccessor chunk = chunkAccessors[0];
@@ -164,8 +164,8 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[2]);
             
             filter = new EcsFilter().AllOf<ComponentB, ComponentC>().NoneOf<ComponentA>();
-            chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(1, chunkAccessors.Count);
+            chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(1, chunkAccessors.Length);
             
             chunk = chunkAccessors[0];
             entityAccessor = chunk.GetEntityAccessor();
@@ -177,8 +177,8 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(new ComponentC { value = 2 }, compCAccessor[0]);
             
             filter = new EcsFilter().AllOf<ComponentA, ComponentC>().NoneOf<ComponentB>();
-            chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(1, chunkAccessors.Count);
+            chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(1, chunkAccessors.Length);
             
             chunk = chunkAccessors[0];
             entityAccessor = chunk.GetEntityAccessor();
@@ -191,8 +191,8 @@ namespace Qwerty.ECS.Tests
         
             
             filter = new EcsFilter().AllOf<ComponentA, ComponentB>().NoneOf<ComponentC>();
-            chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(1, chunkAccessors.Count);
+            chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(1, chunkAccessors.Length);
             
             chunk = chunkAccessors[0];
             entityAccessor = chunk.GetEntityAccessor();
@@ -218,8 +218,8 @@ namespace Qwerty.ECS.Tests
             EcsEntity entity5 = world.CreateEntity(new ComponentA { value = 15 }, new ComponentC {value = 17});
         
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentC>().NoneOf<ComponentB>();
-            List<EcsChunkAccessor> chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(2, chunkAccessors.Count);
+            EcsChunkAccessor[] chunkAccessors = world.Filter(filter).GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(2, chunkAccessors.Length);
             
             world.AddComponent(entity0, new ComponentB { value = 1 });
             world.AddComponent(entity1, new ComponentB { value = 4 });
@@ -230,14 +230,14 @@ namespace Qwerty.ECS.Tests
             
             filter = new EcsFilter().AllOf<ComponentA, ComponentC>().NoneOf<ComponentB>();
             EcsArchetypeGroup group = world.Filter(filter);
-            chunkAccessors = group.GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(0, chunkAccessors.Count);
+            chunkAccessors = group.GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(0, chunkAccessors.Length);
             Assert.AreEqual(0, group.CalculateEntitiesCount());
 
             filter = new EcsFilter().AllOf<ComponentA, ComponentC, ComponentB>();
             group = world.Filter(filter);
-            chunkAccessors = group.GetAccessor().ToChunkAccessorsList();
-            Assert.AreEqual(2, chunkAccessors.Count);
+            chunkAccessors = group.GetAccessor().ToChunkAccessorsArray();
+            Assert.AreEqual(2, chunkAccessors.Length);
             Assert.AreEqual(6, group.CalculateEntitiesCount());
             
             EcsChunkAccessor chunk = chunkAccessors[0];
@@ -325,7 +325,7 @@ namespace Qwerty.ECS.Tests
             world.CreateEntity(new ComponentA { value = 12 }, new ComponentB { value = 13 }, new ComponentC {value = 14});
             world.CreateEntity(new ComponentA { value = 15 }, new ComponentB { value = 16 }, new ComponentC {value = 17});
 
-            EcsComponentArrayAccessor<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsComponentDataFromEntity<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
             EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             

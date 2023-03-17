@@ -7,7 +7,7 @@ namespace Qwerty.ECS.Runtime
 
         public void Alloc()
         {
-            m_primes = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+            m_primes = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
             m_primes->Alloc<int>(Capacity);
             m_primes->Write(0, 3);
             m_primes->Write(1, 7);

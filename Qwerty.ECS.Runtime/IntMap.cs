@@ -19,12 +19,12 @@ namespace Qwerty.ECS.Runtime
 		
 		public void Alloc(int capacity)
 		{
-			m_count = (int*)MemoryUtil.Alloc<int>(1);
+			m_count = (int*)MemoryUtil.Alloc<int>();
 			
-			m_entries = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+			m_entries = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
 			m_entries->Alloc<Entry>(capacity);
 			
-			m_buckets = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>(1);
+			m_buckets = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
 			m_buckets->Alloc<int>(capacity);
 			
 			for (int i = 0; i < capacity; i++)
@@ -45,18 +45,22 @@ namespace Qwerty.ECS.Runtime
 		
 		public bool Contains(int key)
 		{
-			return FindEntry(key) >= 0;
+			return TryGetValue(key, out _);
 		}
 		
 		public int Get(int key)
 		{
-			return m_entries->Get<Entry>(FindEntry(key)).value;
+			if (TryGetValue(key, out int value))
+			{
+				return value;
+			}
+			throw new KeyNotFoundException(nameof(Get));
 		}
 		
 		public void Set(int key, int value)
 		{
 			int index = (*m_count)++;
-			int hashCode = key.GetHashCode() & Lower31BitMask;
+			int hashCode = key & Lower31BitMask;
 			int bucketsLen = m_buckets->length;
 			int target = hashCode % bucketsLen;
 			
@@ -70,22 +74,25 @@ namespace Qwerty.ECS.Runtime
 			m_buckets->Write(target, index);
 		}
 
-		private int FindEntry(int key) 
+		private bool TryGetValue(int key, out int value)
 		{
-			int hashCode = key.GetHashCode() & Lower31BitMask;
+			value = 0;
+			int hashCode = key & Lower31BitMask;
 			int bucketsLen = m_buckets->length;
 			int target = hashCode % bucketsLen;
-			
-			for (int i = m_buckets->Get<int>(target); i >= 0; i = m_entries->Get<Entry>(i).next)
+			int index = m_buckets->Get<int>(target);
+			while (index >= 0)
 			{
-				Entry entry = m_entries->Get<Entry>(i);
-				if (entry.hashCode != hashCode || !entry.key.Equals(key))
+				Entry entry = m_entries->Get<Entry>(index);
+				if (entry.hashCode != hashCode || entry.key != key)
 				{
+					index = entry.next;
 					continue;
 				}
-				return i;
+				value = entry.value;
+				return true;
 			}
-			return -1;
+			return false;
 		}
 	}
 }

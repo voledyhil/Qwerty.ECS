@@ -7,27 +7,23 @@ namespace Qwerty.ECS.Runtime
     {
         public EcsArchetypeGroup Filter(EcsFilter filter)
         {
-            int version = m_archetypeManager.archetypeCount;
-            if (m_archetypeGroups.TryGetValue(filter, out EcsArchetypeGroup group))
+            int version = m_arcManager.count;
+            if (m_archGroups.TryGetValue(filter, out EcsArchetypeGroup group) && group.Version >= version)
             {
-                if (group.Version >= version)
-                {
-                    return group;
-                }
+                return group;
             }
 
             if (group == null)
             {
                 group = new EcsArchetypeGroup();
-                m_archetypeGroups.Add(filter.Clone(), group);
+                m_archGroups.Add(filter.Clone(), group);
             }
 
-            int count = m_archetypeManager.archetypeCount;
+            int count = m_arcManager.count;
             for (int i = group.Version; i < count; i++)
             {
-                EcsArchetype archetype = m_archetypeManager[i];
+                EcsArchetype archetype = m_arcManager[i];
                 byte[] typeIndices = archetype.indices;
-
                 if (None(typeIndices, filter.none) && Any(typeIndices, filter.any) && All(typeIndices, filter.all))
                 {
                     group.archetypes.Add(archetype);

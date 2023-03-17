@@ -5,7 +5,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
     internal unsafe class EcsArchetypeManager
     {
         private readonly EcsWorldSetting m_setting;
-        internal int archetypeCount => m_archetypes.Count;
+        internal int count => m_archetypes.Count;
         internal EcsArchetype empty => m_emptyArchetype;
         internal EcsArchetype this[int index] => m_archetypes[index];
         
@@ -17,7 +17,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         public EcsArchetypeManager(EcsWorldSetting setting)
         {
-            m_primeStorage = (PrimeStorage*)MemoryUtil.Alloc<PrimeStorage>(1);
+            m_primeStorage = (PrimeStorage*)MemoryUtil.Alloc<PrimeStorage>();
             m_primeStorage->Alloc();
             
             m_setting = setting;

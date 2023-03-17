@@ -3,6 +3,10 @@ using System;
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Components
 {
+    public interface IEcsComponent
+    {
+    }
+    
     public static class EcsComponentType<T> where T : struct, IEcsComponent
     {
         public static byte index

@@ -7,19 +7,24 @@ namespace Qwerty.ECS.Runtime.Archetypes
         public int Version { get; private set; }
 
         internal readonly List<EcsArchetype> archetypes = new List<EcsArchetype>();
-        private EcsArchetypeGroupAccessor m_archetypeGroupAccessor;
-        
-        internal void ChangeVersion(int newVersion)
+
+        private unsafe UnsafeArray* m_archetypesRoot;
+        internal unsafe void ChangeVersion(int newVersion)
         {
             if (Version > 0)
             {
-                m_archetypeGroupAccessor.Dispose();
+                m_archetypesRoot->Dispose();
             }
             
-            m_archetypeGroupAccessor = new EcsArchetypeGroupAccessor(archetypes);
+            m_archetypesRoot = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
+            m_archetypesRoot->Alloc<IntPtr>(archetypes.Count);
+            for (int i = 0; i < archetypes.Count; i++)
+            {
+                m_archetypesRoot->Write(i, (IntPtr)archetypes[i].chunks);
+            }
             Version = newVersion;
         }
-        
+
         public int CalculateEntitiesCount()
         {
             unsafe
@@ -37,22 +42,14 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
         }
 
-        public ref EcsArchetypeGroupAccessor GetAccessor()
+        public unsafe EcsArchetypeGroupAccessor GetAccessor()
         {
-            return ref m_archetypeGroupAccessor;
+            return new EcsArchetypeGroupAccessor(m_archetypesRoot);
         }
         
-        public unsafe EcsArchetypeGroupAccessor* GetEntityAccessorPtr()
+        public unsafe void Dispose()
         {
-            fixed (EcsArchetypeGroupAccessor* accessor = &m_archetypeGroupAccessor)
-            {
-                return accessor;
-            }
-        }
-
-        public void Dispose()
-        {
-            m_archetypeGroupAccessor.Dispose();
+            m_archetypesRoot->Dispose();
         }
     }
 }

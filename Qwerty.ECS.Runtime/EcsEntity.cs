@@ -1,4 +1,4 @@
-using System;
+using Qwerty.ECS.Runtime.Archetypes;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
@@ -43,6 +43,20 @@ namespace Qwerty.ECS.Runtime
         public override string ToString()
         {
             return $"({Index}; {Version})";
+        }
+    }
+    
+    internal unsafe readonly struct EcsEntityInfo
+    {
+        public readonly int archetypeIndex;
+        public readonly int indexInChunk;
+        public readonly EcsChunk* chunk;
+
+        public EcsEntityInfo(int archetypeIndex, int indexInChunk, EcsChunk* chunk)
+        {
+            this.archetypeIndex = archetypeIndex;
+            this.indexInChunk = indexInChunk;
+            this.chunk = chunk;
         }
     }
 }

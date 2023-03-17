@@ -15,7 +15,7 @@ namespace Qwerty.ECS.Runtime
         private unsafe bool HasComponent(EcsEntity entity, byte index)
         {
             EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
-            return m_archetypeManager[info.archetypeIndex].indexMap->Contains(index);
+            return m_arcManager[info.archetypeIndex].indexMap->Contains(index);
         }
 
         public unsafe T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
@@ -24,62 +24,62 @@ namespace Qwerty.ECS.Runtime
             {
                 throw new InvalidOperationException();
             }
-            EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
-            return info.chunk->ReadComponent<T>(info.chunkIndex);
+            EcsEntityInfo info = m_entitiesInfo->Get<EcsEntityInfo>(entity.Index);
+            return info.chunk->ReadComponent<T>(info.indexInChunk, EcsComponentType<T>.index);
         }
         
         public unsafe void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            byte componentTypeIndex = EcsComponentType<T>.index;
-            if (!HasComponent(entity, componentTypeIndex))
+            byte typeIndex = EcsComponentType<T>.index;
+            if (!HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
             }
             
-            EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
-            info.chunk->WriteComponent<T>(info.chunkIndex, component);
+            EcsEntityInfo info = m_entitiesInfo->Get<EcsEntityInfo>(entity.Index);
+            info.chunk->WriteComponent<T>(info.indexInChunk, EcsComponentType<T>.index, component);
         }
 
         public unsafe void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
-            byte componentTypeIndex = EcsComponentType<T>.index;
-            if (!HasComponent(entity, componentTypeIndex))
+            byte typeIndex = EcsComponentType<T>.index;
+            if (!HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
             }
 
             EcsEntityInfo fromInfo = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
             
-            EcsArchetype fromArchetype = m_archetypeManager[fromInfo.archetypeIndex];
-            EcsArchetype toArchetype = m_archetypeManager.FindOrCreatePriorArchetype(fromArchetype, componentTypeIndex);
+            EcsArchetype fromArchetype = m_arcManager[fromInfo.archetypeIndex];
+            EcsArchetype toArchetype = m_arcManager.FindOrCreatePriorArchetype(fromArchetype, typeIndex);
             
             PushEntity(toArchetype, entity, out EcsEntityInfo toInfo);
-            CopyRow(fromArchetype, fromInfo, toInfo, componentTypeIndex);
+            CopyRow(fromArchetype, fromInfo, toInfo, typeIndex);
             SwapRow(fromArchetype, fromInfo);
         }
         
         public unsafe void AddComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            byte componentTypeIndex = EcsComponentType<T>.index;
-            if (HasComponent(entity, componentTypeIndex))
+            byte typeIndex = EcsComponentType<T>.index;
+            if (HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
             }
             
             EcsEntityInfo fromInfo = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
-            EcsArchetype fromArchetype = m_archetypeManager[fromInfo.archetypeIndex];
+            EcsArchetype fromArchetype = m_arcManager[fromInfo.archetypeIndex];
             
-            EcsArchetype toArchetype = m_archetypeManager.FindOrCreateNextArchetype(fromArchetype, componentTypeIndex);
+            EcsArchetype toArchetype = m_arcManager.FindOrCreateNextArchetype(fromArchetype, typeIndex);
             PushEntity(toArchetype, entity, out EcsEntityInfo toInfo);
-            CopyRow(fromInfo, toArchetype, toInfo, componentTypeIndex);
+            CopyRow(fromInfo, toArchetype, toInfo, typeIndex);
             SwapRow(fromArchetype, fromInfo);
             
-            toInfo.chunk->WriteComponent(toInfo.chunkIndex, component);
+            toInfo.chunk->WriteComponent(toInfo.indexInChunk, typeIndex, component);
         }
 
-        public unsafe EcsComponentArrayAccessor<T> GetComponentArrayAccessor<T>() where T : struct, IEcsComponent
+        public unsafe EcsComponentDataFromEntity<T> GetComponentArrayAccessor<T>() where T : struct, IEcsComponent
         {
-            return new EcsComponentArrayAccessor<T>(m_entitiesInfo);
+            return new EcsComponentDataFromEntity<T>(m_entitiesInfo);
         }
     }
 }

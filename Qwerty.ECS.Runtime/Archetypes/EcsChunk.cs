@@ -5,45 +5,44 @@ namespace Qwerty.ECS.Runtime.Archetypes
 {
     internal unsafe struct EcsChunk
     {
-        public int rowCapacityInBytes => m_rowCapacityInBytes;
-        public EcsChunk* prior;
-        public byte* body;
-        public int* start;
-        public int* count;
+        internal int rowByteSize => m_rowByteSize;
+        internal EcsChunk* prior;
+        internal IntMap* offsets;
         
-        private int m_rowCapacityInBytes;
-        public IntMap* offsetMap;
+        internal byte* body;
+        internal int* start;
+        internal int* count;
+        
+        private int m_rowByteSize;
 
-        public void Alloc(int sizeInBytes, int rowCapacityInBytes, IntMap* offsetMap)
+        public void Alloc(int sizeInBytes, int rowByteSize, IntMap* offsets)
         {
             body = (byte*)MemoryUtil.Alloc(sizeInBytes);
-            start = (int*)MemoryUtil.Alloc<int>(1);
-            count = (int*)MemoryUtil.Alloc<int>(1);
-            m_rowCapacityInBytes = rowCapacityInBytes;
+            start = (int*)MemoryUtil.Alloc<int>();
+            count = (int*)MemoryUtil.Alloc<int>();
+            m_rowByteSize = rowByteSize;
             
-            this.offsetMap = offsetMap;
+            this.offsets = offsets;
         }
 
         internal EcsEntity ReadEntity(int index, int offset)
         {
-            return Unsafe.Read<EcsEntity>((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset));
+            return Unsafe.Read<EcsEntity>((void*)((IntPtr)body + m_rowByteSize * index + offset));
         }
         
         internal void WriteEntity(int index, int offset, EcsEntity entity)
         {
-            Unsafe.Write((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset), entity);
+            Unsafe.Write((void*)((IntPtr)body + m_rowByteSize * index + offset), entity);
         }
         
-        internal T ReadComponent<T>(int index) where T : struct, IEcsComponent
+        internal T ReadComponent<T>(int index, int typeIndex) where T : struct, IEcsComponent
         {
-            int offset = offsetMap->Get(EcsComponentType<T>.index);
-            return Unsafe.Read<T>((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset));
+            return Unsafe.Read<T>((void*)((IntPtr)body + m_rowByteSize * index + offsets->Get(typeIndex)));
         }
 
-        internal void WriteComponent<T>(int index, T component) where T : struct, IEcsComponent
+        internal void WriteComponent<T>(int index, int typeIndex, T component) where T : struct, IEcsComponent
         {
-            int offset = offsetMap->Get(EcsComponentType<T>.index);
-            Unsafe.Write((void*)((IntPtr)body + m_rowCapacityInBytes * index + offset), component);
+            Unsafe.Write((void*)((IntPtr)body + m_rowByteSize * index + offsets->Get(typeIndex)), component);
         }
 
         internal void Dispose()
@@ -51,7 +50,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
             MemoryUtil.Free((IntPtr)body);
             MemoryUtil.Free((IntPtr)start);
             MemoryUtil.Free((IntPtr)count);
-            prior = null;
         }
     }
 }
