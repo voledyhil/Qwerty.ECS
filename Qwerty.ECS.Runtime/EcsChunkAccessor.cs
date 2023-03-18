@@ -38,18 +38,18 @@ namespace Qwerty.ECS.Runtime
         
         public EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
-            int offset = m_chunk->offsets->Get(EcsComponentType<T>.index);
+            int offset = m_chunk->ReadOffset(EcsComponentType<T>.index);
             return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->rowByteSize, offset);
         }
     }
     
     public unsafe readonly ref struct EcsChunkComponentAccessor<T> where T : struct, IEcsComponent
     {
-        private readonly byte* m_bodyPtr;
+        private readonly IntPtr m_bodyPtr;
         private readonly int m_rowCapacityInBytes;
         private readonly int m_offset;
         
-        public EcsChunkComponentAccessor(byte* bodyPtr, int rowCapacityInBytes, int offset)
+        public EcsChunkComponentAccessor(IntPtr bodyPtr, int rowCapacityInBytes, int offset)
         {
             m_bodyPtr = bodyPtr;
             m_rowCapacityInBytes = rowCapacityInBytes;
@@ -58,24 +58,24 @@ namespace Qwerty.ECS.Runtime
 
         public T this[int index]
         {
-            get => Unsafe.Read<T>((void*)((IntPtr)m_bodyPtr + m_rowCapacityInBytes * index + m_offset));
-            set => Unsafe.Write((void*)((IntPtr)m_bodyPtr + m_rowCapacityInBytes * index + m_offset), value);
+            get => Unsafe.Read<T>((void*)(m_bodyPtr + EcsChunk.HeaderSize + m_rowCapacityInBytes * index + m_offset));
+            set => Unsafe.Write((void*)(m_bodyPtr + EcsChunk.HeaderSize + m_rowCapacityInBytes * index + m_offset), value);
         }
     }
     
     public unsafe readonly ref struct EcsChunkEntityAccessor
     {
-        private readonly byte* m_bodyPtr;
+        private readonly IntPtr m_bodyPtr;
         private readonly int m_rowCapacityInBytes;
         private readonly int m_offset;
 
-        public EcsChunkEntityAccessor(byte* bodyPtr, int rowCapacityInBytes, int offset)
+        public EcsChunkEntityAccessor(IntPtr bodyPtr, int rowCapacityInBytes, int offset)
         {
             m_bodyPtr = bodyPtr;
             m_rowCapacityInBytes = rowCapacityInBytes;
             m_offset = offset;
         }
         
-        public EcsEntity this[int index] => Unsafe.Read<EcsEntity>((void*)((IntPtr)m_bodyPtr + m_rowCapacityInBytes * index + m_offset));
+        public EcsEntity this[int index] => Unsafe.Read<EcsEntity>((void*)(m_bodyPtr + EcsChunk.HeaderSize + m_rowCapacityInBytes * index + m_offset));
     }
 }
