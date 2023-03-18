@@ -146,7 +146,7 @@ namespace Qwerty.ECS.Runtime
             MemoryUtil.Free((IntPtr)lastChunk);
         }
 
-        private static unsafe void CopyRow(EcsArchetype fromArchetype, EcsEntityInfo fromInfo, EcsEntityInfo toInfo, int componentTypeIndex)
+        private static unsafe void CopyRow(EcsArchetype fromArchetype, EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short componentTypeIndex)
         {
             EcsChunk* fromChunk = fromInfo.chunk;
             EcsChunk* toChunk = toInfo.chunk;
@@ -154,9 +154,8 @@ namespace Qwerty.ECS.Runtime
             int fromRowCapacityInBytes = fromChunk->rowByteSize;
             int toRowCapacityInBytes = toChunk->rowByteSize;
             
-            UnsafeArray componentsOffset = *fromArchetype.componentsOffset;
-            int index = fromArchetype.indexMap->Get(componentTypeIndex);
-            int sizeInBytes = componentsOffset.Read<int>(index);
+            short index = fromChunk->ReadIndex(componentTypeIndex);
+            int sizeInBytes = fromChunk->ReadOffsetByIndex(index);
             if (sizeInBytes > 0)
             {
                 void* source = (void*)(fromChunk->body + EcsChunk.HeaderSize + fromRowCapacityInBytes * fromInfo.indexInChunk);
@@ -166,14 +165,14 @@ namespace Qwerty.ECS.Runtime
             
             if (++index < fromArchetype.indices.Length)
             {
-                void* source = (void*)(fromChunk->body + EcsChunk.HeaderSize + fromRowCapacityInBytes * fromInfo.indexInChunk + componentsOffset.Read<int>(index));
+                void* source = (void*)(fromChunk->body + EcsChunk.HeaderSize + fromRowCapacityInBytes * fromInfo.indexInChunk + fromChunk->ReadOffsetByIndex(index));
                 void* target = (void*)(toChunk->body + EcsChunk.HeaderSize + toRowCapacityInBytes * toInfo.indexInChunk + sizeInBytes);
-                sizeInBytes = componentsOffset.Read<int>(componentsOffset.length - 1) - sizeInBytes;
+                sizeInBytes = fromChunk->ReadOffsetByIndex((short)(fromArchetype.indices.Length - 1)) - sizeInBytes;
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
         }
         
-        private static unsafe void CopyRow(EcsEntityInfo fromInfo, EcsArchetype toArchetype, EcsEntityInfo toInfo, int componentTypeIndex)
+        private static unsafe void CopyRow(EcsEntityInfo fromInfo, EcsArchetype toArchetype, EcsEntityInfo toInfo, short componentTypeIndex)
         {
             EcsChunk* fromChunk = fromInfo.chunk;
             EcsChunk* toChunk = toInfo.chunk;
@@ -181,9 +180,8 @@ namespace Qwerty.ECS.Runtime
             int fromRowCapacityInBytes = fromChunk->rowByteSize;
             int toRowCapacityInBytes = toChunk->rowByteSize;
             
-            UnsafeArray componentsOffset = *toArchetype.componentsOffset;
-            int index = toArchetype.indexMap->Get(componentTypeIndex);
-            int sizeInBytes = componentsOffset.Read<int>(index);
+            short index = toChunk->ReadIndex(componentTypeIndex);
+            int sizeInBytes = toChunk->ReadOffsetByIndex(index);
             if (sizeInBytes > 0)
             {
                 void* source = (void*)(fromChunk->body + EcsChunk.HeaderSize + fromRowCapacityInBytes * fromInfo.indexInChunk);
@@ -194,8 +192,8 @@ namespace Qwerty.ECS.Runtime
             if (++index < toArchetype.indices.Length)
             {
                 void* source = (void*)(fromChunk->body + EcsChunk.HeaderSize + fromRowCapacityInBytes * fromInfo.indexInChunk + sizeInBytes);
-                void* target = (void*)(toChunk->body + EcsChunk.HeaderSize + toRowCapacityInBytes * toInfo.indexInChunk + componentsOffset.Read<int>(index));
-                sizeInBytes = componentsOffset.Read<int>(componentsOffset.length - 1) - sizeInBytes;
+                void* target = (void*)(toChunk->body + EcsChunk.HeaderSize + toRowCapacityInBytes * toInfo.indexInChunk + toChunk->ReadOffsetByIndex(index));
+                sizeInBytes = toChunk->ReadOffsetByIndex((short)(toArchetype.indices.Length - 1)) - sizeInBytes;
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
         }

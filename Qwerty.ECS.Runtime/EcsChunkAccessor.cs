@@ -38,7 +38,7 @@ namespace Qwerty.ECS.Runtime
         
         public EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
-            int offset = m_chunk->ReadOffset(EcsComponentType<T>.index);
+            int offset = m_chunk->ReadOffsetByType(EcsComponentType<T>.index);
             return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->rowByteSize, offset);
         }
     }
