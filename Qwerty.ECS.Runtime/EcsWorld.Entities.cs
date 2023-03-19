@@ -32,7 +32,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
         
-        public unsafe void DestroyEntity(EcsEntity entity)
+        public void DestroyEntity(EcsEntity entity)
         {
             int entityIndex = entity.Index;
             
@@ -133,9 +133,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
 
-        public unsafe 
-            
-            EcsEntity CreateEntity<T0, T1, T2, T3>(T0 c0, T1 c1, T2 c2, T3 c3)
+        public unsafe EcsEntity CreateEntity<T0, T1, T2, T3>(T0 c0, T1 c1, T2 c2, T3 c3)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent

@@ -16,7 +16,6 @@ namespace Qwerty.ECS.Runtime.Chunks
         private const int SizeOfInt = sizeof(int);
         private const int TypeToOffset = Capacity * SizeOfInt;
         
-        
         private const int TypeToIndex = Capacity * SizeOfShort;
         private const int IndexToOffset = Capacity * SizeOfShort;
         private const int HeaderSize = TypeToOffset + TypeToIndex + IndexToOffset;

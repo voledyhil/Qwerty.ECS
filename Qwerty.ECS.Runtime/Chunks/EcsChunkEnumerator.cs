@@ -18,6 +18,8 @@ namespace Qwerty.ECS.Runtime.Chunks
             m_chunk = null;
         }
 
+        public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk);
+        
         public bool MoveNext()
         {
             while (true)
@@ -41,14 +43,6 @@ namespace Qwerty.ECS.Runtime.Chunks
                     return true;
                 }
             }
-        }
-        
-        public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk);
-        
-        public void Reset()
-        {
-            m_archetypeIndex = -1;
-            m_chunk = null;
         }
     }
 }

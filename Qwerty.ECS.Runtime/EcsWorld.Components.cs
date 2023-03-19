@@ -39,7 +39,7 @@ namespace Qwerty.ECS.Runtime
             info.chunk->WriteComponent<T>(info.indexInChunk, EcsComponentType<T>.index, component);
         }
 
-        public unsafe void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
+        public void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
             byte typeIndex = EcsComponentType<T>.index;
             if (!HasComponent(entity, typeIndex))
@@ -75,7 +75,7 @@ namespace Qwerty.ECS.Runtime
             toInfo.chunk->WriteComponent(toInfo.indexInChunk, typeIndex, component);
         }
 
-        public unsafe EcsComponentDataFromEntity<T> GetComponentArrayAccessor<T>() where T : struct, IEcsComponent
+        public EcsComponentDataFromEntity<T> GetComponentArrayAccessor<T>() where T : struct, IEcsComponent
         {
             return new EcsComponentDataFromEntity<T>(m_entitiesInfo);
         }
