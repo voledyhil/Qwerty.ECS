@@ -13,16 +13,17 @@ namespace Qwerty.ECS.Runtime.Archetypes
         internal int* count;
         
         private int m_rowByteSize;
+        private short entityOffset;
+        public int chunkCapacity;
 
         public const int HeaderSize = 400;
 
-        public void Alloc(int bodySizeInBytes, int rowByteSize, byte[] indices)
+        public void Alloc(int bodySizeInBytes, byte[] indices)
         {
             body = MemoryUtil.Alloc(HeaderSize + bodySizeInBytes);
             start = (int*)MemoryUtil.Alloc<int>();
             count = (int*)MemoryUtil.Alloc<int>();
-            m_rowByteSize = rowByteSize;
-            
+   
             short sizeInBytes = 0;
             for (short index = 0; index < indices.Length; index++)
             {
@@ -43,6 +44,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
                 sizeInBytes += (short)EcsTypeManager.Sizes[typeIndex];
             }
+            entityOffset = sizeInBytes;
+            m_rowByteSize = entityOffset + Unsafe.SizeOf<EcsEntity>();
+            chunkCapacity = bodySizeInBytes / m_rowByteSize;
         }
         
         private const int MaxComponentCount = 20;
@@ -87,14 +91,14 @@ namespace Qwerty.ECS.Runtime.Archetypes
             return *(short*)(body + TypeOffsets + TypeIndices + SizeOfShort * index);
         }
         
-        internal EcsEntity ReadEntity(int index, int offset)
+        internal EcsEntity ReadEntity(int index)
         {
-            return Unsafe.Read<EcsEntity>((void*)(body + HeaderSize + m_rowByteSize * index + offset));
+            return Unsafe.Read<EcsEntity>((void*)(body + HeaderSize + m_rowByteSize * index + entityOffset));
         }
         
-        internal void WriteEntity(int index, int offset, EcsEntity entity)
+        internal void WriteEntity(int index, EcsEntity entity)
         {
-            Unsafe.Write((void*)(body + HeaderSize + m_rowByteSize * index + offset), entity);
+            Unsafe.Write((void*)(body + HeaderSize + m_rowByteSize * index + entityOffset), entity);
         }
         
         internal T ReadComponent<T>(int index, int typeIndex) where T : struct, IEcsComponent

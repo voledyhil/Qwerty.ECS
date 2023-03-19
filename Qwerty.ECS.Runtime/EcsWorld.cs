@@ -35,8 +35,10 @@ namespace Qwerty.ECS.Runtime
             m_entitiesInfo = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
             m_entitiesInfo->Alloc<EcsEntityInfo>(setting.entitiesCapacity);
 
-            m_arcManager = new EcsArchetypeManager(setting);
+            m_arcManager = new EcsArchetypeManager();
 
+            
+            
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
 
         }
@@ -62,21 +64,21 @@ namespace Qwerty.ECS.Runtime
         {
             EcsArchetype.Chunks* chunks = arch.chunks;
             EcsChunk* chunk = chunks->last;
-            int chunkCapacity = arch.chunkCapacity;
-            if (chunk == null || *chunk->count == chunkCapacity)
+            if (chunk == null || *chunk->count == chunk->chunkCapacity)
             {
                 EcsChunk* lastChunk = (EcsChunk*)MemoryUtil.Alloc<EcsChunk>();
-                lastChunk->Alloc(m_setting.archetypeChunkMaxSizeInByte, arch.rowCapacityInBytes, arch.indices);
+                lastChunk->Alloc(m_setting.archetypeChunkMaxSizeInByte, arch.indices);
                 lastChunk->prior = chunks->last;
-                *lastChunk->start = arch.chunksCount * chunkCapacity;
+                *lastChunk->start = arch.chunksCount * lastChunk->chunkCapacity;
                 *lastChunk->count = 0;
             
                 chunks->last = lastChunk;
+                
                 arch.chunksCount++;
             }
             chunk = chunks->last;
             int indexInChunk = (*chunk->count)++;
-            chunk->WriteEntity(indexInChunk, arch.entityOffset, entity);
+            chunk->WriteEntity(indexInChunk, entity);
             
             info = new EcsEntityInfo(arch.index, indexInChunk, chunk);
             m_entitiesInfo->Write(entity.Index, info);
@@ -89,8 +91,8 @@ namespace Qwerty.ECS.Runtime
             int lastIndex = *lastChunk->count - 1;
             if (toChunk != lastChunk || info.indexInChunk != lastIndex)
             {
-                int rowCapacityInBytes = arch.rowCapacityInBytes;
-                EcsEntity swapEntity = lastChunk->ReadEntity(lastIndex, arch.entityOffset);
+                int rowCapacityInBytes = lastChunk->rowByteSize;
+                EcsEntity swapEntity = lastChunk->ReadEntity(lastIndex);
                 void* sourcePtr = (void*)(lastChunk->body + EcsChunk.HeaderSize + rowCapacityInBytes * lastIndex);
                 void* targetPtr = (void*)(toChunk->body + EcsChunk.HeaderSize + rowCapacityInBytes * info.indexInChunk);
                 Buffer.MemoryCopy(sourcePtr, targetPtr, rowCapacityInBytes, rowCapacityInBytes);
