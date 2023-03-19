@@ -16,26 +16,13 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         public const int HeaderSize = 400;
 
-        public void Alloc(int sizeInBytes, int rowByteSize)
+        public void Alloc(int bodySizeInBytes, int rowByteSize, byte[] indices)
         {
-            body = MemoryUtil.Alloc(HeaderSize + sizeInBytes);
+            body = MemoryUtil.Alloc(HeaderSize + bodySizeInBytes);
             start = (int*)MemoryUtil.Alloc<int>();
             count = (int*)MemoryUtil.Alloc<int>();
             m_rowByteSize = rowByteSize;
-        }
-        
-        private const int MaxComponentCount = 20;
-        private const ushort Length = 47;
-
-
-        private const int SizeOfShort = sizeof(short);
-        private const int SizeOfInt = sizeof(int);
-        private const int TypeOffsets = Length * SizeOfInt;
-        private const int TypeIndices = Length * SizeOfShort;
-        
-        
-        public void FillHeader(byte[] indices)
-        {
+            
             short sizeInBytes = 0;
             for (short index = 0; index < indices.Length; index++)
             {
@@ -57,60 +44,44 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 sizeInBytes += (short)EcsTypeManager.Sizes[typeIndex];
             }
         }
-
-        public int ReadOffsetByType(short typeIndex)
+        
+        private const int MaxComponentCount = 20;
+        private const ushort Length = 47;
+        
+        private const int SizeOfShort = sizeof(short);
+        private const int SizeOfInt = sizeof(int);
+        private const int TypeOffsets = Length * SizeOfInt;
+        private const int TypeIndices = Length * SizeOfShort;
+        
+        private int GetHash(short typeIndex)
         {
             typeIndex++;
             int hash = typeIndex % Length;
-            int amount = *(int*)(body + SizeOfInt * hash);
-            int curKey = amount >> 16;
-            while (curKey > 0)
+            int t = *(int*)(body + SizeOfInt * hash) >> 16;
+            while (t > 0)
             {
-                if (curKey == typeIndex)
-                {
-                    return amount & 0xFFFF;
-                }
+                if (t == typeIndex) return hash;
                 hash = (hash + 1) % Length;
-                curKey = *(int*)(body + SizeOfInt * hash) >> 16;
+                t = *(int*)(body + SizeOfInt * hash) >> 16;
             }
-            throw new ArgumentException(nameof(ReadOffsetByType));
+            return -1;
         }
 
-        public bool Contain(short typeIndex)
+        public bool ContainType(short typeIndex)
         {
-            typeIndex++;
-            int hash = typeIndex % Length;
-            int curKey = *(int*)(body + SizeOfInt * hash) >> 16;
-            while (curKey > 0)
-            {
-                if (curKey == typeIndex)
-                {
-                    return true;
-                }
-                hash = (hash + 1) % Length;
-                curKey = *(int*)(body + SizeOfInt * hash) >> 16;
-            }
-            return false;
+            return GetHash(typeIndex) > -1;
         }
         
         public short ReadIndex(short typeIndex)
         {
-            typeIndex++;
-            int hash = typeIndex % Length;
-            int amount = *(int*)(body + SizeOfInt * hash);
-            int curKey = amount >> 16;
-            while (curKey > 0)
-            {
-                if (curKey == typeIndex)
-                {
-                    return *(short*)(body + TypeOffsets + SizeOfShort * hash);
-                }
-                hash = (hash + 1) % Length;
-                curKey = *(int*)(body + SizeOfInt * hash) >> 16;
-            }
-            throw new ArgumentException(nameof(ReadOffsetByType));     
+            return *(short*)(body + TypeOffsets + SizeOfShort * GetHash(typeIndex));
         }
         
+        public int ReadOffsetByType(short typeIndex)
+        {
+            return *(int*)(body + SizeOfInt * GetHash(typeIndex)) & 0xFFFF;
+        }
+
         public short ReadOffsetByIndex(short index)
         {
             return *(short*)(body + TypeOffsets + TypeIndices + SizeOfShort * index);

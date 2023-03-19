@@ -2,7 +2,7 @@
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
-    internal unsafe class EcsArchetypeManager
+    internal class EcsArchetypeManager : IDisposable
     {
         private readonly EcsWorldSetting m_setting;
         internal int count => m_archetypes.Count;
@@ -13,16 +13,11 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly List<EcsArchetype> m_archetypes = new List<EcsArchetype>();
         private readonly byte[] m_indicesBuffer;
         
-        private readonly PrimeStorage* m_primeStorage;
-
         public EcsArchetypeManager(EcsWorldSetting setting)
         {
-            m_primeStorage = (PrimeStorage*)MemoryUtil.Alloc<PrimeStorage>();
-            m_primeStorage->Alloc();
-            
             m_setting = setting;
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
-            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<byte>(), m_primeStorage, setting);
+            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<byte>(), setting);
             m_archetypes.Add(m_emptyArchetype);
         }
         
@@ -36,7 +31,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 {
                     byte[] newIndices = new byte[i + 1];
                     Array.Copy(indicesBuffer, newIndices, i + 1);
-                    EcsArchetype next = new EcsArchetype(m_archetypes.Count, newIndices, m_primeStorage, m_setting);
+                    EcsArchetype next = new EcsArchetype(m_archetypes.Count, newIndices, m_setting);
                     m_archetypes.Add(next);
                     next.prior[index] = current.index;
                     current.next[index] = next.index;
@@ -94,10 +89,12 @@ namespace Qwerty.ECS.Runtime.Archetypes
             return FindOrCreateArchetype(m_indicesBuffer, len);
         }
 
-        internal void Dispose()
+        public void Dispose()
         {
-            m_primeStorage->Dispose();
-            MemoryUtil.Free((IntPtr)m_primeStorage);
+            foreach (EcsArchetype archetype in m_archetypes)
+            {
+                archetype.Dispose();
+            }
         }
     }
 }

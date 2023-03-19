@@ -15,7 +15,7 @@ namespace Qwerty.ECS.Runtime
         private unsafe bool HasComponent(EcsEntity entity, byte index)
         {
             EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
-            return info.chunk->Contain(index);
+            return info.chunk->ContainType(index);
         }
 
         public unsafe T GetComponent<T>(EcsEntity entity) where T : struct, IEcsComponent

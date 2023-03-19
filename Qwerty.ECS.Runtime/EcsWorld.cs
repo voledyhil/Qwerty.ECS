@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Qwerty.ECS.Runtime.Archetypes;
 
 // ReSharper disable once CheckNamespace
@@ -8,7 +6,7 @@ namespace Qwerty.ECS.Runtime
     public class EcsWorldSetting
     {
         public int entitiesCapacity = 0x200000;         // 2 097 152
-        public int archetypeChunkMaxSizeInByte = 0x4000;   // 16 384
+        public short archetypeChunkMaxSizeInByte = 0x4000;   // 16 384
     }
     
     public partial class EcsWorld : IDisposable
@@ -25,8 +23,6 @@ namespace Qwerty.ECS.Runtime
 
         private readonly byte[] m_indicesBuffer;
         private readonly EcsArchetypeManager m_arcManager;
-        //private readonly IEcsComponentPool[] m_componentPools;
-
         public unsafe EcsWorld(EcsWorldSetting setting)
         {
             m_setting = setting;
@@ -42,35 +38,17 @@ namespace Qwerty.ECS.Runtime
             m_arcManager = new EcsArchetypeManager(setting);
 
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
-            //m_componentPools = new IEcsComponentPool[EcsTypeManager.typeCount];
 
-            // foreach ((int, IEcsComponentPoolCreator) item in EcsTypeManager.ComponentsCreators)
-            // {
-            //     (int typeIndex, IEcsComponentPoolCreator creator) = item;
-            //     m_componentPools[typeIndex] = creator.Instantiate(1024);
-            // }
         }
         
         public unsafe void Dispose()
         {
-            int count = m_arcManager.count;
-            for (int i = 0; i < count; i++)
-            {
-                m_arcManager[i].Dispose();
-            }
-
-            // foreach ((int, IEcsComponentPoolCreator) item in EcsTypeManager.ComponentsCreators)
-            // {
-            //     m_componentPools[item.Item1].Dispose();
-            // }
-
             foreach (EcsArchetypeGroup archetypeGroup in m_archGroups.Values)
             {
                 archetypeGroup.Dispose();
             }
             
             m_arcManager.Dispose();
-            
             m_entitiesInfo->Dispose();
             m_entities->Dispose();
             m_freeEntities->Dispose();
@@ -79,19 +57,6 @@ namespace Qwerty.ECS.Runtime
             MemoryUtil.Free((IntPtr)m_entities);
             MemoryUtil.Free((IntPtr)m_freeEntities);
         }
-
-        // public ref EcsComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
-        // {
-        //     return ref ((EcsComponentPool<T>)m_componentPools[EcsComponentType<T>.index]).GetAccessor();
-        // }
-        //
-        // public EcsComponentAccessor<T>* GetComponentAccessorPtr<T>() where T : struct, IEcsComponent
-        // {
-        //     fixed (EcsComponentAccessor<T>* ptr = &GetComponentAccessor<T>())
-        //     {
-        //         return ptr;
-        //     }
-        // }
         
         private unsafe void PushEntity(EcsArchetype arch, EcsEntity entity, out EcsEntityInfo info)
         {
@@ -101,8 +66,7 @@ namespace Qwerty.ECS.Runtime
             if (chunk == null || *chunk->count == chunkCapacity)
             {
                 EcsChunk* lastChunk = (EcsChunk*)MemoryUtil.Alloc<EcsChunk>();
-                lastChunk->Alloc(m_setting.archetypeChunkMaxSizeInByte, arch.rowCapacityInBytes);
-                lastChunk->FillHeader(arch.indices);
+                lastChunk->Alloc(m_setting.archetypeChunkMaxSizeInByte, arch.rowCapacityInBytes, arch.indices);
                 lastChunk->prior = chunks->last;
                 *lastChunk->start = arch.chunksCount * chunkCapacity;
                 *lastChunk->count = 0;
