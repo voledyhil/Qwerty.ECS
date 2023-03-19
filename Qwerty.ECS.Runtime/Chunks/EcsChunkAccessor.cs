@@ -4,12 +4,15 @@ namespace Qwerty.ECS.Runtime.Chunks
 {
     public readonly ref struct EcsArchetypeGroupAccessor
     {
-        private readonly unsafe UnsafeArray* m_archetypesRoot;
-        internal unsafe EcsArchetypeGroupAccessor(UnsafeArray* archetypesRoot)
+        private readonly IntPtr m_archetypes;
+        private readonly int m_archetypesCount;
+
+        internal EcsArchetypeGroupAccessor(IntPtr archetypes, int archetypesCount)
         {
-            m_archetypesRoot = archetypesRoot;
+            m_archetypes = archetypes;
+            m_archetypesCount = archetypesCount;
         }
-        public unsafe EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypesRoot);
+        public EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypes, m_archetypesCount);
     }
     
     public readonly struct EcsChunkAccessor

@@ -6,11 +6,14 @@ namespace Qwerty.ECS.Runtime.Chunks
     {
         private int m_archetypeIndex;
         private EcsChunk* m_chunk;
-        private readonly UnsafeArray* m_archetypes;
+        private readonly IntPtr m_archetypes;
+        private readonly int m_archetypesCount;
+        private readonly int m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
 
-        public EcsChunkEnumerator(UnsafeArray* archetypes)
+        public EcsChunkEnumerator(IntPtr archetypes, int archetypesCount)
         {
             m_archetypes = archetypes;
+            m_archetypesCount = archetypesCount;
             m_archetypeIndex = -1;
             m_chunk = null;
         }
@@ -25,12 +28,13 @@ namespace Qwerty.ECS.Runtime.Chunks
                     return true;
                 }
 
-                if (++m_archetypeIndex >= m_archetypes->length)
+                if (++m_archetypeIndex >= m_archetypesCount)
                 {
                     return false;
                 }
-                
-                m_chunk = ((EcsArchetype.Chunks*)m_archetypes->Get<IntPtr>(m_archetypeIndex))->last;
+
+                IntPtr intPtr = MemoryUtil.Read<IntPtr>(m_archetypes, m_archetypeIndex * m_sizeOfIntPtr);
+                m_chunk = ((EcsArchetype.Chunks*)intPtr)->last;
                 
                 if (m_chunk != null)
                 {

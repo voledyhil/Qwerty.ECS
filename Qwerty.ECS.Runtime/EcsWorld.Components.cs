@@ -13,7 +13,7 @@ namespace Qwerty.ECS.Runtime
 
         private unsafe bool HasComponent(EcsEntity entity, byte index)
         {
-            EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
+            EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
             return info.chunk->header->ContainType(index);
         }
 
@@ -23,7 +23,7 @@ namespace Qwerty.ECS.Runtime
             {
                 throw new InvalidOperationException();
             }
-            EcsEntityInfo info = m_entitiesInfo->Get<EcsEntityInfo>(entity.Index);
+            EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
             return info.chunk->ReadComponent<T>(info.indexInChunk, EcsComponentType<T>.index);
         }
         
@@ -34,8 +34,8 @@ namespace Qwerty.ECS.Runtime
             {
                 throw new InvalidOperationException();
             }
-            
-            EcsEntityInfo info = m_entitiesInfo->Get<EcsEntityInfo>(entity.Index);
+
+            EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
             info.chunk->WriteComponent<T>(info.indexInChunk, EcsComponentType<T>.index, component);
         }
 
@@ -47,8 +47,7 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
 
-            EcsEntityInfo fromInfo = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
-            
+            EcsEntityInfo fromInfo = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
             EcsArchetype fromArchetype = m_arcManager[fromInfo.archetypeIndex];
             EcsArchetype toArchetype = m_arcManager.FindOrCreatePriorArchetype(fromArchetype, typeIndex);
             
@@ -65,7 +64,7 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
             
-            EcsEntityInfo fromInfo = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
+            EcsEntityInfo fromInfo = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
             EcsArchetype fromArchetype = m_arcManager[fromInfo.archetypeIndex];
             
             EcsArchetype toArchetype = m_arcManager.FindOrCreateNextArchetype(fromArchetype, typeIndex);

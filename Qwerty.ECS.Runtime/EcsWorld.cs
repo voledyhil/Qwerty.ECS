@@ -13,9 +13,9 @@ namespace Qwerty.ECS.Runtime
     public partial class EcsWorld : IDisposable
     {
         private readonly EcsWorldSetting m_setting;
-        private readonly unsafe UnsafeArray* m_entitiesInfo;
-        private readonly unsafe UnsafeArray* m_entities;
-        private readonly unsafe UnsafeArray* m_freeEntities;
+        private readonly IntPtr m_entitiesInfo;
+        private readonly IntPtr m_entities;
+        private readonly IntPtr m_freeEntities;
 
         private int m_entityCounter;
         private int m_freeEntitiesLen;
@@ -24,23 +24,24 @@ namespace Qwerty.ECS.Runtime
 
         private readonly byte[] m_indicesBuffer;
         private readonly EcsArchetypeManager m_arcManager;
-        public unsafe EcsWorld(EcsWorldSetting setting)
+        private readonly int m_sizeOfEntity = MemoryUtil.SizeOf<EcsEntity>();
+        private readonly int m_sizeOfEntityInfo = MemoryUtil.SizeOf<EcsEntityInfo>();
+        private readonly int m_entitiesCapacity;
+
+        public EcsWorld(EcsWorldSetting setting)
         {
             m_setting = setting;
-            m_freeEntities = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
-            m_freeEntities->Alloc<EcsEntity>(setting.entitiesCapacity);
+            m_entitiesCapacity = setting.entitiesCapacity;
             
-            m_entities = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
-            m_entities->Alloc<EcsEntity>(setting.entitiesCapacity);
-            
-            m_entitiesInfo = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
-            m_entitiesInfo->Alloc<EcsEntityInfo>(setting.entitiesCapacity);
+            m_freeEntities = MemoryUtil.Alloc(m_sizeOfEntity * m_entitiesCapacity);
+            m_entities = MemoryUtil.Alloc(m_sizeOfEntity * m_entitiesCapacity);
+            m_entitiesInfo = MemoryUtil.Alloc(m_sizeOfEntityInfo * m_entitiesCapacity);
 
             m_arcManager = new EcsArchetypeManager(setting);
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
         }
         
-        public unsafe void Dispose()
+        public void Dispose()
         {
             foreach (EcsArchetypeGroup archetypeGroup in m_archGroups.Values)
             {
@@ -48,13 +49,10 @@ namespace Qwerty.ECS.Runtime
             }
             
             m_arcManager.Dispose();
-            m_entitiesInfo->Dispose();
-            m_entities->Dispose();
-            m_freeEntities->Dispose();
-            
-            MemoryUtil.Free((IntPtr)m_entitiesInfo);
-            MemoryUtil.Free((IntPtr)m_entities);
-            MemoryUtil.Free((IntPtr)m_freeEntities);
+
+            MemoryUtil.Free(m_entitiesInfo);
+            MemoryUtil.Free(m_entities);
+            MemoryUtil.Free(m_freeEntities);
         }
         
         private unsafe void PushEntity(EcsArchetype arch, EcsEntity entity, out EcsEntityInfo info)
@@ -75,7 +73,7 @@ namespace Qwerty.ECS.Runtime
             chunk->WriteEntity(indexInChunk, entity);
             
             info = new EcsEntityInfo(arch.index, indexInChunk, chunk);
-            m_entitiesInfo->Write(entity.Index, info);
+            MemoryUtil.Write(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo, info);
         }
         
         private unsafe void SwapRow(EcsArchetype arch, EcsEntityInfo info)
@@ -90,7 +88,9 @@ namespace Qwerty.ECS.Runtime
                 void* sourcePtr = (void*)(lastChunk->body + rowSizeInBytes * lastIndex);
                 void* targetPtr = (void*)(toChunk->body + rowSizeInBytes * info.indexInChunk);
                 Buffer.MemoryCopy(sourcePtr, targetPtr, rowSizeInBytes, rowSizeInBytes);
-                m_entitiesInfo->Write(swapEntity.Index, new EcsEntityInfo(arch.index, info.indexInChunk, toChunk));
+                
+                EcsEntityInfo swapEntityInfo = new EcsEntityInfo(arch.index, info.indexInChunk, toChunk);
+                MemoryUtil.Write(m_entitiesInfo, swapEntity.Index * m_sizeOfEntityInfo, swapEntityInfo);
             }
             
             --*lastChunk->count;

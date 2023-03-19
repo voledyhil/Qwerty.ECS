@@ -7,13 +7,13 @@ namespace Qwerty.ECS.Runtime
 {
     public partial class EcsWorld
     {
-        private unsafe EcsEntity InstantiateEntity()
+        private EcsEntity InstantiateEntity()
         {
             int entityIndex;
             int entityVersion = 0;
             if (m_freeEntitiesLen > 0)
             {
-                EcsEntity freeEntity = m_freeEntities->Read<EcsEntity>(--m_freeEntitiesLen);
+                EcsEntity freeEntity = MemoryUtil.Read<EcsEntity>(m_freeEntities, --m_freeEntitiesLen * m_sizeOfEntity);
                 entityIndex = freeEntity.Index;
                 entityVersion = freeEntity.Version;
             }
@@ -22,32 +22,32 @@ namespace Qwerty.ECS.Runtime
                 entityIndex = ++m_entityCounter;
             }
 
-            if (entityIndex >= m_entities->length)
+            if (entityIndex >= m_entitiesCapacity)
             {
                 throw new InvalidEnumArgumentException(nameof(InstantiateEntity));
             }
 
             EcsEntity entity = new EcsEntity(entityIndex, entityVersion + 1);
-            m_entities->Write(entityIndex, entity);
-
+            MemoryUtil.Write(m_entities, entityIndex * m_sizeOfEntity, entity);
             return entity;
         }
         
         public unsafe void DestroyEntity(EcsEntity entity)
         {
             int entityIndex = entity.Index;
-            if (m_entities->Read<EcsEntity>(entityIndex) == EcsEntity.Null)
+            
+            if (MemoryUtil.Read<EcsEntity>(m_entities, entityIndex * m_sizeOfEntity) == EcsEntity.Null)
             {
                 throw new InvalidOperationException(nameof(entity));
             }
 
-            EcsEntityInfo info = m_entitiesInfo->Read<EcsEntityInfo>(entity.Index);
+            EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
             EcsArchetype archetype = m_arcManager[info.archetypeIndex];
             
             SwapRow(archetype, info);
-
-            m_entities->Write(entityIndex, EcsEntity.Null);
-            m_freeEntities->Write(m_freeEntitiesLen++, entity);
+            
+            MemoryUtil.Write(m_entities, entityIndex * m_sizeOfEntity, EcsEntity.Null);
+            MemoryUtil.Write(m_freeEntities, m_freeEntitiesLen++ * m_sizeOfEntity, entity);
         }
         
         public EcsEntity CreateEntity()

@@ -8,19 +8,22 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
         internal readonly List<EcsArchetype> archetypes = new List<EcsArchetype>();
 
-        private unsafe UnsafeArray* m_archetypesRoot;
+        private IntPtr m_archetypes;
+        private readonly int m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
+        private int m_archetypesCount;
+
         internal unsafe void ChangeVersion(int newVersion)
         {
             if (Version > 0)
             {
-                m_archetypesRoot->Dispose();
+                MemoryUtil.Free(m_archetypes);
             }
             
-            m_archetypesRoot = (UnsafeArray*)MemoryUtil.Alloc<UnsafeArray>();
-            m_archetypesRoot->Alloc<IntPtr>(archetypes.Count);
-            for (int i = 0; i < archetypes.Count; i++)
+            m_archetypes = MemoryUtil.Alloc(m_sizeOfIntPtr * archetypes.Count);
+            m_archetypesCount = archetypes.Count;
+            for (int i = 0; i < m_archetypesCount; i++)
             {
-                m_archetypesRoot->Write(i, (IntPtr)archetypes[i].chunks);
+                MemoryUtil.Write(m_archetypes, m_sizeOfIntPtr * i, (IntPtr)archetypes[i].chunks);
             }
             Version = newVersion;
         }
@@ -29,7 +32,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
         {
             unsafe
             {
-                
                 int count = 0;
                 foreach (EcsArchetype archetype in archetypes)
                 {
@@ -44,14 +46,14 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
         }
 
-        public unsafe EcsArchetypeGroupAccessor GetAccessor()
+        public EcsArchetypeGroupAccessor GetAccessor()
         {
-            return new EcsArchetypeGroupAccessor(m_archetypesRoot);
+            return new EcsArchetypeGroupAccessor(m_archetypes, m_archetypesCount);
         }
         
-        public unsafe void Dispose()
+        public void Dispose()
         {
-            m_archetypesRoot->Dispose();
+            MemoryUtil.Free(m_archetypes);
         }
     }
 }

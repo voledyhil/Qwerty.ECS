@@ -10,13 +10,15 @@ namespace Qwerty.ECS.Runtime
 			return Alloc(Unsafe.SizeOf<T>());
 		}
 		
-		internal static unsafe IntPtr Alloc(int sizeInBytes = 1)
+		internal static unsafe IntPtr Alloc(int sizeInBytes)
 		{
-			IntPtr ptr = Marshal.AllocHGlobal(sizeInBytes);
-			if (sizeInBytes > 0)
+			if (sizeInBytes <= 0)
 			{
-				Unsafe.InitBlock((void*)ptr, 0, (uint)sizeInBytes);
+				throw new ArgumentException(nameof(Alloc));
 			}
+			
+			IntPtr ptr = Marshal.AllocHGlobal(sizeInBytes);
+			Unsafe.InitBlock((void*)ptr, 0, (uint)sizeInBytes);
 			return ptr;
 		}
 		
