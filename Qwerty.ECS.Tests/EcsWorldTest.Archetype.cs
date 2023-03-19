@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Archetypes;
+using Qwerty.ECS.Runtime.Chunks;
 using Qwerty.ECS.Runtime.Components;
 
 namespace Qwerty.ECS.Tests

@@ -1,7 +1,5 @@
 using System.Runtime.CompilerServices;
-using Qwerty.ECS.Runtime.Components;
 
-// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
 	internal static class EcsTypeManager
@@ -11,7 +9,7 @@ namespace Qwerty.ECS.Runtime
 
 		private static byte m_typeCount;
 		
-		internal static byte RegisterComponent<TC>() where TC : struct, IEcsComponent
+		internal static byte Register<TC>() where TC : struct
 		{
 			int index = m_typeCount++;
 			Sizes[index] = Unsafe.SizeOf<TC>();

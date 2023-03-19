@@ -1,4 +1,3 @@
-using System;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 
@@ -54,7 +53,7 @@ namespace Qwerty.ECS.Runtime
             EcsArchetype toArchetype = m_arcManager.FindOrCreatePriorArchetype(fromArchetype, typeIndex);
             
             PushEntity(toArchetype, entity, out EcsEntityInfo toInfo);
-            CopyRow(fromArchetype, fromInfo, toInfo, typeIndex);
+            CopyToPrior(fromInfo, toInfo, typeIndex);
             SwapRow(fromArchetype, fromInfo);
         }
         
@@ -71,7 +70,7 @@ namespace Qwerty.ECS.Runtime
             
             EcsArchetype toArchetype = m_arcManager.FindOrCreateNextArchetype(fromArchetype, typeIndex);
             PushEntity(toArchetype, entity, out EcsEntityInfo toInfo);
-            CopyRow(fromInfo, toArchetype, toInfo, typeIndex);
+            CopyToNext(fromInfo, toInfo, typeIndex);
             SwapRow(fromArchetype, fromInfo);
             
             toInfo.chunk->WriteComponent(toInfo.indexInChunk, typeIndex, component);

@@ -1,49 +1,45 @@
-// ReSharper disable once CheckNamespace
-
-using System.Runtime.CompilerServices;
-using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 
-namespace Qwerty.ECS.Runtime
+namespace Qwerty.ECS.Runtime.Chunks
 {
-    public readonly unsafe ref struct EcsArchetypeGroupAccessor
+    public readonly ref struct EcsArchetypeGroupAccessor
     {
-        private readonly UnsafeArray* m_archetypesRoot;
-        internal EcsArchetypeGroupAccessor(UnsafeArray* archetypesRoot)
+        private readonly unsafe UnsafeArray* m_archetypesRoot;
+        internal unsafe EcsArchetypeGroupAccessor(UnsafeArray* archetypesRoot)
         {
             m_archetypesRoot = archetypesRoot;
         }
-        public EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypesRoot);
+        public unsafe EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypesRoot);
     }
     
-    public unsafe readonly struct EcsChunkAccessor
+    public readonly struct EcsChunkAccessor
     {
         public int count { get; }
         
-        private readonly EcsChunk* m_chunk;
+        private readonly unsafe EcsChunk* m_chunk;
         private readonly int m_entitySizeOf;
 
-        internal EcsChunkAccessor(EcsChunk* chunk)
+        internal unsafe EcsChunkAccessor(EcsChunk* chunk)
         {
             m_chunk = chunk;
-            m_entitySizeOf = Unsafe.SizeOf<EcsEntity>();
+            m_entitySizeOf = MemoryUtil.SizeOf<EcsEntity>();
             count = *m_chunk->count;
         }
 
-        public EcsChunkEntityAccessor GetEntityAccessor()
+        public unsafe EcsChunkEntityAccessor GetEntityAccessor()
         {
             int rowCapacityInBytes = m_chunk->header->rowSizeInBytes;
             return new EcsChunkEntityAccessor(m_chunk->body, rowCapacityInBytes, rowCapacityInBytes - m_entitySizeOf);
         }
         
-        public EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
+        public unsafe EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
             int offset = m_chunk->header->ReadOffsetByType(EcsComponentType<T>.index);
             return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->header->rowSizeInBytes, offset);
         }
     }
     
-    public unsafe readonly ref struct EcsChunkComponentAccessor<T> where T : struct, IEcsComponent
+    public readonly ref struct EcsChunkComponentAccessor<T> where T : struct, IEcsComponent
     {
         private readonly IntPtr m_bodyPtr;
         private readonly int m_rowCapacityInBytes;
@@ -58,12 +54,12 @@ namespace Qwerty.ECS.Runtime
 
         public T this[int index]
         {
-            get => Unsafe.Read<T>((void*)(m_bodyPtr + m_rowCapacityInBytes * index + m_offset));
-            set => Unsafe.Write((void*)(m_bodyPtr + m_rowCapacityInBytes * index + m_offset), value);
+            get => MemoryUtil.Read<T>(m_bodyPtr, m_rowCapacityInBytes * index + m_offset);
+            set => MemoryUtil.Write(m_bodyPtr, m_rowCapacityInBytes * index + m_offset, value);
         }
     }
     
-    public unsafe readonly ref struct EcsChunkEntityAccessor
+    public readonly ref struct EcsChunkEntityAccessor
     {
         private readonly IntPtr m_bodyPtr;
         private readonly int m_rowCapacityInBytes;
@@ -76,6 +72,6 @@ namespace Qwerty.ECS.Runtime
             m_offset = offset;
         }
         
-        public EcsEntity this[int index] => Unsafe.Read<EcsEntity>((void*)(m_bodyPtr + m_rowCapacityInBytes * index + m_offset));
+        public EcsEntity this[int index] => MemoryUtil.Read<EcsEntity>(m_bodyPtr, m_rowCapacityInBytes * index + m_offset);
     }
 }

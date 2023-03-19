@@ -1,4 +1,6 @@
-namespace Qwerty.ECS.Runtime.Archetypes
+using Qwerty.ECS.Runtime.Archetypes;
+
+namespace Qwerty.ECS.Runtime.Chunks
 {
     public unsafe ref struct EcsChunkEnumerator
     {

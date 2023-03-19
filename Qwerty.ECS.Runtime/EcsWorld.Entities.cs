@@ -1,7 +1,6 @@
-// ReSharper disable once CheckNamespace
-
 using System.ComponentModel;
 using Qwerty.ECS.Runtime.Archetypes;
+using Qwerty.ECS.Runtime.Chunks;
 using Qwerty.ECS.Runtime.Components;
 
 namespace Qwerty.ECS.Runtime

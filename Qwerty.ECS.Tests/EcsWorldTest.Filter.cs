@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Archetypes;
+using Qwerty.ECS.Runtime.Chunks;
 using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace

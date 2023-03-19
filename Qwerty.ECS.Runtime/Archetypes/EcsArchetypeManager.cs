@@ -1,5 +1,3 @@
-
-// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
     internal class EcsArchetypeManager : IDisposable

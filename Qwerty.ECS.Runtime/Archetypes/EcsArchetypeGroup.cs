@@ -1,5 +1,5 @@
+using Qwerty.ECS.Runtime.Chunks;
 
-// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Archetypes
 {
     public class EcsArchetypeGroup : IDisposable

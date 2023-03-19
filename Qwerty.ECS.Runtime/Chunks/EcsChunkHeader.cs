@@ -1,6 +1,4 @@
-using System.Runtime.CompilerServices;
-
-namespace Qwerty.ECS.Runtime.Archetypes
+namespace Qwerty.ECS.Runtime.Chunks
 {
     internal unsafe struct EcsChunkHeader
     {
@@ -9,6 +7,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         public int rowSizeInBytes;
         public int chunkCapacity;
         public short entityOffset;
+        public int typesCount;
         
         private const int MaxComponentCount = 20;
         
@@ -25,6 +24,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
         public void Alloc(int bodySizeInBytes, byte[] indices)
         {
             m_body = MemoryUtil.Alloc(HeaderSize);
+            typesCount = indices.Length;
             
             short sizeInBytes = 0;
             for (short index = 0; index < indices.Length; index++)
@@ -49,7 +49,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
 
             entityOffset = sizeInBytes;
-            rowSizeInBytes = entityOffset + Unsafe.SizeOf<EcsEntity>();
+            rowSizeInBytes = entityOffset + MemoryUtil.SizeOf<EcsEntity>();
             chunkCapacity = bodySizeInBytes / rowSizeInBytes;
         }
 
@@ -82,7 +82,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             return *(int*)(m_body + SizeOfInt * GetHash(typeIndex)) & 0xFFFF;
         }
 
-        public short ReadOffsetByIndex(short index)
+        public short ReadOffsetByIndex(int index)
         {
             return *(short*)(m_body + TypeToOffset + TypeToIndex + SizeOfShort * index);
         }

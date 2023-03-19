@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Qwerty.ECS.Runtime.Components;
 
-// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
     public sealed class EcsFilter : IEquatable<EcsFilter>
