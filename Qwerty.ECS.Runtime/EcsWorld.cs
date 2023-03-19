@@ -35,9 +35,9 @@ namespace Qwerty.ECS.Runtime
             m_setting = setting;
             m_entitiesCapacity = setting.entitiesCapacity;
             
-            m_freeEntities = MemoryUtil.Alloc(m_sizeOfEntity * m_entitiesCapacity);
-            m_entities = MemoryUtil.Alloc(m_sizeOfEntity * m_entitiesCapacity);
-            m_entitiesInfo = MemoryUtil.Alloc(m_sizeOfEntityInfo * m_entitiesCapacity);
+            m_freeEntities = MemoryUtil.Alloc((uint)(m_sizeOfEntity * m_entitiesCapacity));
+            m_entities = MemoryUtil.Alloc((uint)(m_sizeOfEntity * m_entitiesCapacity));
+            m_entitiesInfo = MemoryUtil.Alloc((uint)(m_sizeOfEntityInfo * m_entitiesCapacity));
 
             m_arcManager = new EcsArchetypeManager(setting);
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
@@ -64,7 +64,7 @@ namespace Qwerty.ECS.Runtime
             if (chunk == null || *chunk->count == chunks->header->chunkCapacity)
             {
                 EcsChunk* lastChunk = (EcsChunk*)MemoryUtil.Alloc<EcsChunk>();
-                lastChunk->Alloc(m_setting.archetypeChunkMaxSizeInByte, chunks->header);
+                lastChunk->Alloc((uint)m_setting.archetypeChunkMaxSizeInByte, chunks->header);
                 lastChunk->prior = chunks->last;
                 
                 

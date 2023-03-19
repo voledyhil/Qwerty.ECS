@@ -9,13 +9,13 @@ namespace Qwerty.ECS.Runtime
 	{
 		internal static IntPtr Alloc<T>() where T : struct
 		{
-			return Alloc(Unsafe.SizeOf<T>());
+			return Alloc((uint)SizeOf<T>());
 		}
 		
-		internal static unsafe IntPtr Alloc(int sizeInBytes)
+		internal static unsafe IntPtr Alloc(uint sizeInBytes)
 		{
-			IntPtr ptr = Marshal.AllocHGlobal(sizeInBytes);
-			Unsafe.InitBlock((void*)ptr, 0, (uint)sizeInBytes);
+			IntPtr ptr = Marshal.AllocHGlobal((int)sizeInBytes);
+			Unsafe.InitBlock((void*)ptr, 0, sizeInBytes);
 			return ptr;
 		}
 		

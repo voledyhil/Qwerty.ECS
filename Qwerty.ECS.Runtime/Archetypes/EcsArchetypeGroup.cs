@@ -22,7 +22,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 MemoryUtil.Free(m_archetypes);
             }
             
-            m_archetypes = MemoryUtil.Alloc(m_sizeOfIntPtr * archetypes.Count);
+            m_archetypes = MemoryUtil.Alloc((uint)(m_sizeOfIntPtr * archetypes.Count));
             m_archetypesCount = archetypes.Count;
             for (int i = 0; i < m_archetypesCount; i++)
             {

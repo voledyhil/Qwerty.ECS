@@ -11,7 +11,7 @@ namespace Qwerty.ECS.Runtime.Chunks
         internal IntPtr body;
         internal unsafe int* count;
 
-        public unsafe void Alloc(int bodySizeInBytes, EcsChunkHeader* chunkHeader)
+        public unsafe void Alloc(uint bodySizeInBytes, EcsChunkHeader* chunkHeader)
         {
             body = MemoryUtil.Alloc(bodySizeInBytes);
             count = (int*)MemoryUtil.Alloc<int>();
