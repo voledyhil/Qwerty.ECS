@@ -67,7 +67,6 @@ namespace Qwerty.ECS.Runtime
                 lastChunk->Alloc((uint)m_setting.archetypeChunkMaxSizeInByte, chunks->header);
                 lastChunk->prior = chunks->last;
                 
-                
                 chunks->last = lastChunk;
             }
             chunk = chunks->last;
