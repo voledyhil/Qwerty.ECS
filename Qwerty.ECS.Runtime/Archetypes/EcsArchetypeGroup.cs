@@ -29,13 +29,15 @@ namespace Qwerty.ECS.Runtime.Archetypes
         {
             unsafe
             {
+                
                 int count = 0;
                 foreach (EcsArchetype archetype in archetypes)
                 {
                     EcsChunk* chunk = archetype.chunks->last;
-                    if (chunk != null)
+                    while (chunk != null)
                     {
-                        count += *chunk->start + *chunk->count;
+                        count += *chunk->count;
+                        chunk = chunk->prior;
                     }
                 }
                 return count;

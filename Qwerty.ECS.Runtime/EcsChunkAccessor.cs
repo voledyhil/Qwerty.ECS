@@ -32,14 +32,14 @@ namespace Qwerty.ECS.Runtime
 
         public EcsChunkEntityAccessor GetEntityAccessor()
         {
-            int rowCapacityInBytes = m_chunk->rowByteSize;
+            int rowCapacityInBytes = m_chunk->rowSizeInBytes;
             return new EcsChunkEntityAccessor(m_chunk->body, rowCapacityInBytes, rowCapacityInBytes - m_entitySizeOf);
         }
         
         public EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
             int offset = m_chunk->ReadOffsetByType(EcsComponentType<T>.index);
-            return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->rowByteSize, offset);
+            return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->rowSizeInBytes, offset);
         }
     }
     

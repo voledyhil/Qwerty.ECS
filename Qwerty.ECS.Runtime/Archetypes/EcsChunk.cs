@@ -5,23 +5,21 @@ namespace Qwerty.ECS.Runtime.Archetypes
 {
     internal unsafe struct EcsChunk
     {
-        internal int rowByteSize => m_rowByteSize;
         internal EcsChunk* prior;
         
         internal IntPtr body;
-        internal int* start;
         internal int* count;
         
-        private int m_rowByteSize;
-        private short entityOffset;
+        public int rowSizeInBytes;
         public int chunkCapacity;
 
         public const int HeaderSize = 400;
+        
+        private short m_entityOffset;
 
         public void Alloc(int bodySizeInBytes, byte[] indices)
         {
             body = MemoryUtil.Alloc(HeaderSize + bodySizeInBytes);
-            start = (int*)MemoryUtil.Alloc<int>();
             count = (int*)MemoryUtil.Alloc<int>();
    
             short sizeInBytes = 0;
@@ -44,9 +42,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
 
                 sizeInBytes += (short)EcsTypeManager.Sizes[typeIndex];
             }
-            entityOffset = sizeInBytes;
-            m_rowByteSize = entityOffset + Unsafe.SizeOf<EcsEntity>();
-            chunkCapacity = bodySizeInBytes / m_rowByteSize;
+            m_entityOffset = sizeInBytes;
+            rowSizeInBytes = m_entityOffset + Unsafe.SizeOf<EcsEntity>();
+            chunkCapacity = bodySizeInBytes / rowSizeInBytes;
         }
         
         private const int MaxComponentCount = 20;
@@ -93,28 +91,27 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal EcsEntity ReadEntity(int index)
         {
-            return Unsafe.Read<EcsEntity>((void*)(body + HeaderSize + m_rowByteSize * index + entityOffset));
+            return Unsafe.Read<EcsEntity>((void*)(body + HeaderSize + rowSizeInBytes * index + m_entityOffset));
         }
         
         internal void WriteEntity(int index, EcsEntity entity)
         {
-            Unsafe.Write((void*)(body + HeaderSize + m_rowByteSize * index + entityOffset), entity);
+            Unsafe.Write((void*)(body + HeaderSize + rowSizeInBytes * index + m_entityOffset), entity);
         }
         
         internal T ReadComponent<T>(int index, int typeIndex) where T : struct, IEcsComponent
         {
-            return Unsafe.Read<T>((void*)(body + HeaderSize + m_rowByteSize * index + ReadOffsetByType((short)typeIndex)));
+            return Unsafe.Read<T>((void*)(body + HeaderSize + rowSizeInBytes * index + ReadOffsetByType((short)typeIndex)));
         }
 
         internal void WriteComponent<T>(int index, int typeIndex, T component) where T : struct, IEcsComponent
         {
-            Unsafe.Write((void*)(body + HeaderSize + m_rowByteSize * index + ReadOffsetByType((short)typeIndex)), component);
+            Unsafe.Write((void*)(body + HeaderSize + rowSizeInBytes * index + ReadOffsetByType((short)typeIndex)), component);
         }
 
         internal void Dispose()
         {
             MemoryUtil.Free(body);
-            MemoryUtil.Free((IntPtr)start);
             MemoryUtil.Free((IntPtr)count);
         }
     }
