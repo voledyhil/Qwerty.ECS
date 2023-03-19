@@ -29,12 +29,12 @@ namespace Qwerty.ECS.Runtime
 			return Unsafe.SizeOf<T>();
 		}
 
-		internal static unsafe T Read<T>(IntPtr ptr, int offset)
+		internal static unsafe T Read<T>(IntPtr ptr, int offset) where T : struct
 		{
 			return Unsafe.Read<T>((void*)(ptr + offset));
 		}
 		
-		internal static unsafe void Write<T>(IntPtr ptr, int offset, T value)
+		internal static unsafe void Write<T>(IntPtr ptr, int offset, T value) where T : struct
 		{
 			Unsafe.Write((void*)(ptr + offset), value);
 		}
