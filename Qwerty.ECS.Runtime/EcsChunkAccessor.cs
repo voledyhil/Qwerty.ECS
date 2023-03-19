@@ -32,14 +32,14 @@ namespace Qwerty.ECS.Runtime
 
         public EcsChunkEntityAccessor GetEntityAccessor()
         {
-            int rowCapacityInBytes = m_chunk->rowSizeInBytes;
+            int rowCapacityInBytes = m_chunk->header->rowSizeInBytes;
             return new EcsChunkEntityAccessor(m_chunk->body, rowCapacityInBytes, rowCapacityInBytes - m_entitySizeOf);
         }
         
         public EcsChunkComponentAccessor<T> GetComponentAccessor<T>() where T : struct, IEcsComponent
         {
-            int offset = m_chunk->ReadOffsetByType(EcsComponentType<T>.index);
-            return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->rowSizeInBytes, offset);
+            int offset = m_chunk->header->ReadOffsetByType(EcsComponentType<T>.index);
+            return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->header->rowSizeInBytes, offset);
         }
     }
     
@@ -58,8 +58,8 @@ namespace Qwerty.ECS.Runtime
 
         public T this[int index]
         {
-            get => Unsafe.Read<T>((void*)(m_bodyPtr + EcsChunk.HeaderSize + m_rowCapacityInBytes * index + m_offset));
-            set => Unsafe.Write((void*)(m_bodyPtr + EcsChunk.HeaderSize + m_rowCapacityInBytes * index + m_offset), value);
+            get => Unsafe.Read<T>((void*)(m_bodyPtr + m_rowCapacityInBytes * index + m_offset));
+            set => Unsafe.Write((void*)(m_bodyPtr + m_rowCapacityInBytes * index + m_offset), value);
         }
     }
     
@@ -76,6 +76,6 @@ namespace Qwerty.ECS.Runtime
             m_offset = offset;
         }
         
-        public EcsEntity this[int index] => Unsafe.Read<EcsEntity>((void*)(m_bodyPtr + EcsChunk.HeaderSize + m_rowCapacityInBytes * index + m_offset));
+        public EcsEntity this[int index] => Unsafe.Read<EcsEntity>((void*)(m_bodyPtr + m_rowCapacityInBytes * index + m_offset));
     }
 }

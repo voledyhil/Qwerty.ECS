@@ -11,11 +11,13 @@ namespace Qwerty.ECS.Runtime.Archetypes
         private readonly EcsArchetype m_emptyArchetype;
         private readonly List<EcsArchetype> m_archetypes = new List<EcsArchetype>();
         private readonly byte[] m_indicesBuffer;
-        
-        public EcsArchetypeManager()
+        private readonly EcsWorldSetting m_setting;
+
+        public EcsArchetypeManager(EcsWorldSetting setting)
         {
+            m_setting = setting;
             m_indicesBuffer = new byte[EcsTypeManager.typeCount];
-            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<byte>());
+            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<byte>(), m_setting);
             m_archetypes.Add(m_emptyArchetype);
         }
         
@@ -29,7 +31,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 {
                     byte[] newIndices = new byte[i + 1];
                     Array.Copy(indicesBuffer, newIndices, i + 1);
-                    EcsArchetype next = new EcsArchetype(m_archetypes.Count, newIndices);
+                    EcsArchetype next = new EcsArchetype(m_archetypes.Count, newIndices, m_setting);
                     m_archetypes.Add(next);
                     next.prior[index] = current.index;
                     current.next[index] = next.index;
