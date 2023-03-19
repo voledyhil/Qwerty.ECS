@@ -42,11 +42,15 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(2, chunkAccessors.Length);
             Assert.AreEqual(6, group.CalculateEntitiesCount());
 
+            EcsComponentTypeHandle<ComponentA> compATypeHandle = m_world.GetComponentTypeHandle<ComponentA>();
+            EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
+            EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
+            
             EcsChunkAccessor chunk = chunkAccessors[0];
             EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity0, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
@@ -63,9 +67,9 @@ namespace Qwerty.ECS.Tests
 
             chunk = chunkAccessors[1];
             entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity3, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[0]);
@@ -104,11 +108,16 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(1, chunkAccessors.Length);
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
+            EcsComponentTypeHandle<ComponentA> compATypeHandle = m_world.GetComponentTypeHandle<ComponentA>();
+            EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
+            EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
+
+            
             EcsChunkAccessor chunk = chunkAccessors[0];
             EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity5, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
@@ -147,11 +156,16 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(1, chunkAccessors.Length);
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
+            EcsComponentTypeHandle<ComponentA> compATypeHandle = m_world.GetComponentTypeHandle<ComponentA>();
+            EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
+            EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
+
+            
             EcsChunkAccessor chunk = chunkAccessors[0];
             EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity5, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
@@ -172,8 +186,8 @@ namespace Qwerty.ECS.Tests
             
             chunk = chunkAccessors[0];
             entityAccessor = chunk.GetEntityAccessor();
-            compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(1, chunk.count);
             Assert.AreEqual(entity0, entityAccessor[0]);
             Assert.AreEqual(new ComponentB { value = 1 }, compBAccessor[0]);
@@ -185,8 +199,8 @@ namespace Qwerty.ECS.Tests
             
             chunk = chunkAccessors[0];
             entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(1, chunk.count);
             Assert.AreEqual(entity4, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 12 }, compAAccessor[0]);
@@ -199,8 +213,8 @@ namespace Qwerty.ECS.Tests
             
             chunk = chunkAccessors[0];
             entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            compBAccessor = chunk.GetComponentAccessor<ComponentB>();
+            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
             Assert.AreEqual(1, chunk.count);
             Assert.AreEqual(entity2, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[0]);
@@ -243,11 +257,15 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(2, chunkAccessors.Length);
             Assert.AreEqual(6, group.CalculateEntitiesCount());
             
+            EcsComponentTypeHandle<ComponentA> compATypeHandle = m_world.GetComponentTypeHandle<ComponentA>();
+            EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
+            EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
+            
             EcsChunkAccessor chunk = chunkAccessors[0];
             EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity0, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
@@ -261,12 +279,12 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[2]);
             Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[2]);
             Assert.AreEqual(new ComponentC { value = 8 }, compCAccessor[2]);
-            
+
             chunk = chunkAccessors[1];
             entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor<ComponentA>();
-            compBAccessor = chunk.GetComponentAccessor<ComponentB>();
-            compCAccessor = chunk.GetComponentAccessor<ComponentC>();
+            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
             Assert.AreEqual(3, chunk.count);
             Assert.AreEqual(entity3, entityAccessor[0]);
             Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[0]);
@@ -295,12 +313,14 @@ namespace Qwerty.ECS.Tests
             world.CreateEntity(new ComponentA { value = 12 }, new ComponentB { value = 13 }, new ComponentC {value = 14});
             world.CreateEntity(new ComponentA { value = 15 }, new ComponentB { value = 16 }, new ComponentC {value = 17});
             
+            EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
+
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
             EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
-                EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor<ComponentB>();
+                EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor(compBTypeHandle);
                 for (int i = 0; i < chunk.count; i++)
                 {
                     compsB[i] = new ComponentB { value = int.MaxValue };
@@ -309,7 +329,7 @@ namespace Qwerty.ECS.Tests
             
             foreach (EcsChunkAccessor chunk in archetypeGroupAccessor)
             {
-                EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor<ComponentB>();
+                EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor<ComponentB>(compBTypeHandle);
                 for (int i = 0; i < chunk.count; i++)
                 {
                     Assert.AreEqual(int.MaxValue, compsB[i].value);

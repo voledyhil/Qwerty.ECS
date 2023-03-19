@@ -10,10 +10,10 @@ namespace Qwerty.ECS.Runtime.Components
         private readonly int m_typeIndex;
         private readonly int m_sizeOfEntityInfo;
 
-        internal EcsComponentDataFromEntity(IntPtr entities)
+        internal EcsComponentDataFromEntity(IntPtr entities, EcsComponentTypeHandle<T> typeHandle)
         {
             m_entities = entities;
-            m_typeIndex = EcsComponentType<T>.index;
+            m_typeIndex = typeHandle.typeIndex;
             m_sizeOfEntityInfo = MemoryUtil.SizeOf<EcsEntityInfo>();
         }
 

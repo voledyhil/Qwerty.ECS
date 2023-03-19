@@ -55,7 +55,7 @@ namespace Qwerty.ECS.Runtime.Chunks
             chunkCapacity = bodySizeInBytes / rowSizeInBytes;
         }
 
-        private int GetHash(short typeIndex)
+        private int GetHash(int typeIndex)
         {
             typeIndex++;
             int hash = typeIndex % Capacity;
@@ -79,7 +79,7 @@ namespace Qwerty.ECS.Runtime.Chunks
             return *(short*)(m_body + TypeToOffset + SizeOfShort * GetHash(typeIndex));
         }
 
-        public int ReadOffsetByType(short typeIndex)
+        public int ReadOffsetByType(int typeIndex)
         {
             return *(int*)(m_body + SizeOfInt * GetHash(typeIndex)) & 0xFFFF;
         }

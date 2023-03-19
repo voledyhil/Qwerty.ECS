@@ -1,4 +1,3 @@
-using System;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 
@@ -78,15 +77,12 @@ namespace Qwerty.ECS.Runtime
 
         public EcsComponentDataFromEntity<T> GetComponentDataFromEntityAccessor<T>() where T : struct, IEcsComponent
         {
-            return new EcsComponentDataFromEntity<T>(m_entitiesInfo);
+            return new EcsComponentDataFromEntity<T>(m_entitiesInfo, new EcsComponentTypeHandle<T>(EcsComponentType<T>.index));
         }
-        
-        // public unsafe EcsComponentDataFromEntity<T>* GetComponentDataFromEntityAccessorPtr<T>() where T : struct, IEcsComponent
-        // {
-        //     fixed (EcsComponentDataFromEntity<T>* ptr = &GetComponentDataFromEntityAccessor<T>())
-        //     {
-        //         return ptr;
-        //     }
-        // }
+
+        public EcsComponentTypeHandle<T> GetComponentTypeHandle<T>() where T : struct, IEcsComponent
+        {
+            return new EcsComponentTypeHandle<T>(EcsComponentType<T>.index);
+        }
     }
 }
