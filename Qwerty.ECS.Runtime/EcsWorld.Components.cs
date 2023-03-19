@@ -1,3 +1,4 @@
+using System;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 
@@ -75,9 +76,17 @@ namespace Qwerty.ECS.Runtime
             toInfo.chunk->WriteComponent(toInfo.indexInChunk, typeIndex, component);
         }
 
-        public EcsComponentDataFromEntity<T> GetComponentArrayAccessor<T>() where T : struct, IEcsComponent
+        public EcsComponentDataFromEntity<T> GetComponentDataFromEntityAccessor<T>() where T : struct, IEcsComponent
         {
             return new EcsComponentDataFromEntity<T>(m_entitiesInfo);
         }
+        
+        // public unsafe EcsComponentDataFromEntity<T>* GetComponentDataFromEntityAccessorPtr<T>() where T : struct, IEcsComponent
+        // {
+        //     fixed (EcsComponentDataFromEntity<T>* ptr = &GetComponentDataFromEntityAccessor<T>())
+        //     {
+        //         return ptr;
+        //     }
+        // }
     }
 }

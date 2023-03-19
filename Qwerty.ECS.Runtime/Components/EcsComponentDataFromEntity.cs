@@ -1,5 +1,7 @@
+using System;
 using Qwerty.ECS.Runtime.Chunks;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Components
 {
     public readonly struct EcsComponentDataFromEntity<T> where T : struct, IEcsComponent

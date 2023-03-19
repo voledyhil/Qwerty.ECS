@@ -1,3 +1,6 @@
+using System;
+
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
     internal unsafe struct EcsChunkHeader

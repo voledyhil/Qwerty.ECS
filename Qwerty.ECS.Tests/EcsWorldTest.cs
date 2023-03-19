@@ -2,6 +2,7 @@ using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Components;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Tests
 {
     public struct ComponentA : IEcsComponent

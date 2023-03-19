@@ -1,3 +1,6 @@
+using System;
+
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Components
 {
     public static class EcsComponentType<T> where T : struct, IEcsComponent

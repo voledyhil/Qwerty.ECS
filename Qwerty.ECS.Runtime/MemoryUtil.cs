@@ -1,6 +1,8 @@
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
 	internal static class MemoryUtil
@@ -12,11 +14,6 @@ namespace Qwerty.ECS.Runtime
 		
 		internal static unsafe IntPtr Alloc(int sizeInBytes)
 		{
-			if (sizeInBytes <= 0)
-			{
-				throw new ArgumentException(nameof(Alloc));
-			}
-			
 			IntPtr ptr = Marshal.AllocHGlobal(sizeInBytes);
 			Unsafe.InitBlock((void*)ptr, 0, (uint)sizeInBytes);
 			return ptr;

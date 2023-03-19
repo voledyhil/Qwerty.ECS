@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Chunks;
 using Qwerty.ECS.Runtime.Components;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Tests
 {
     internal static class EcsArchetypeAccessorExtension
@@ -326,7 +328,7 @@ namespace Qwerty.ECS.Tests
             world.CreateEntity(new ComponentA { value = 12 }, new ComponentB { value = 13 }, new ComponentC {value = 14});
             world.CreateEntity(new ComponentA { value = 15 }, new ComponentB { value = 16 }, new ComponentC {value = 17});
 
-            EcsComponentDataFromEntity<ComponentB> compsB = m_world.GetComponentArrayAccessor<ComponentB>();
+            EcsComponentDataFromEntity<ComponentB> compsB = m_world.GetComponentDataFromEntityAccessor<ComponentB>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
             EcsArchetypeGroupAccessor archetypeGroupAccessor = archetypeGroup.GetAccessor();
             

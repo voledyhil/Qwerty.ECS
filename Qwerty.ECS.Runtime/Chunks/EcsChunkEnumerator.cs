@@ -1,5 +1,7 @@
+using System;
 using Qwerty.ECS.Runtime.Archetypes;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
     public unsafe ref struct EcsChunkEnumerator
@@ -8,7 +10,7 @@ namespace Qwerty.ECS.Runtime.Chunks
         private EcsChunk* m_chunk;
         private readonly IntPtr m_archetypes;
         private readonly int m_archetypesCount;
-        private readonly int m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
+        private readonly int m_sizeOfIntPtr;
 
         public EcsChunkEnumerator(IntPtr archetypes, int archetypesCount)
         {
@@ -16,6 +18,7 @@ namespace Qwerty.ECS.Runtime.Chunks
             m_archetypesCount = archetypesCount;
             m_archetypeIndex = -1;
             m_chunk = null;
+            m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
         }
 
         public EcsChunkAccessor Current => new EcsChunkAccessor(m_chunk);

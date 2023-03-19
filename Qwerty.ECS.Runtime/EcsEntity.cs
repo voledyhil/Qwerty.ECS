@@ -1,3 +1,4 @@
+using System;
 using Qwerty.ECS.Runtime.Chunks;
 
 // ReSharper disable once CheckNamespace

@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Systems;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Tests
 {
     public class SystemSorterTest

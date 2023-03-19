@@ -1,8 +1,10 @@
+using System;
 using System.ComponentModel;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Chunks;
 using Qwerty.ECS.Runtime.Components;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
     public partial class EcsWorld

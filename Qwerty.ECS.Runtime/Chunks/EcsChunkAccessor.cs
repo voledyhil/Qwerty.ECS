@@ -1,8 +1,10 @@
+using System;
 using Qwerty.ECS.Runtime.Components;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
-    public readonly ref struct EcsArchetypeGroupAccessor
+    public readonly struct EcsArchetypeGroupAccessor
     {
         private readonly IntPtr m_archetypes;
         private readonly int m_archetypesCount;
