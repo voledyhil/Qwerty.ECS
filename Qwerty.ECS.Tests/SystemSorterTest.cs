@@ -23,7 +23,7 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateAfter(typeof(SystemD))]
         private class SystemA : IEcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            public void Update(float deltaTime)
             {
             }
         }
@@ -34,7 +34,7 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateAfter(typeof(SystemG))]
         private class SystemB : IEcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            public void Update(float deltaTime)
             {
             }
         }
@@ -45,7 +45,7 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateAfter(typeof(SystemC))]
         private class SystemC : IEcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            public void Update(float deltaTime)
             {
             }
         }
@@ -55,7 +55,7 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateAfter(typeof(SystemB))]
         private class SystemD : IEcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            public void Update(float deltaTime)
             {
             }
         }
@@ -66,7 +66,7 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateAfter(typeof(SystemA))]
         private class SystemE : IEcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            public void Update(float deltaTime)
             {
             }
         }
@@ -77,7 +77,7 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateBefore(typeof(SystemG))]
         private class SystemF : IEcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            public void Update(float deltaTime)
             {
             }
         }
@@ -88,7 +88,7 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateBefore(typeof(SystemF))]
         private class SystemG : IEcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            public void Update(float deltaTime)
             {
             }
         }
@@ -113,8 +113,7 @@ namespace Qwerty.ECS.Tests
             root.AddSystem(systemB);
             root.AddSystem(systemG);
 
-            EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
-            root.Update(0, world);
+            root.Update(0);
 
             List<IEcsSystem> systems = new List<IEcsSystem>(root.Systems);
             Assert.AreEqual(1, systems.Count);
@@ -132,10 +131,7 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(systemC, systems[5]);
 
             Assert.That(()=> EcsSystemSorter.Sort(new List<IEcsSystem> {new SystemF(), new SystemG()}), Throws.InvalidOperationException);
-            
-            world.Dispose();
-            
-            
+
         }
     }
 }
