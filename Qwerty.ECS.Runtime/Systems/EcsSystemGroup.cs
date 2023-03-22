@@ -99,7 +99,8 @@ namespace Qwerty.ECS.Runtime.Systems
         /// Before updating, sorts the items in the list, if necessary.
         /// </summary>
         /// <param name="deltaTime">Elapsed time since last update</param>
-        public void Update(float deltaTime)
+        /// <param name="world">Entity Manager <see cref="EcsWorld"/></param>
+        public void Update(float deltaTime, EcsWorld world)
         {
             if (_dirty)
             {
@@ -109,7 +110,7 @@ namespace Qwerty.ECS.Runtime.Systems
 
             foreach (IEcsSystem system in m_systems)
             {
-                system.Update(deltaTime);
+                system.Update(deltaTime, world);
             }
         }
     }

@@ -55,6 +55,6 @@ namespace Qwerty.ECS.Runtime.Systems
     /// </summary>
     public interface IEcsSystem
     {
-        void Update(float deltaTime);
+        void Update(float deltaTime, EcsWorld world);
     }
 }
