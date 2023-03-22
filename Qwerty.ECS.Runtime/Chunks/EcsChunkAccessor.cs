@@ -39,9 +39,10 @@ namespace Qwerty.ECS.Runtime.Chunks
         
         public unsafe EcsChunkComponentAccessor<T> GetComponentAccessor<T>(EcsComponentTypeHandle<T> typeHandle) where T : struct, IEcsComponent
         {
-            int offset = m_chunk->header->ReadOffsetByType(typeHandle.typeIndex);
-            return new EcsChunkComponentAccessor<T>(m_chunk->body, m_chunk->header->rowSizeInBytes, offset);
+            EcsChunkHeader* header = m_chunk->header;
+            return new EcsChunkComponentAccessor<T>(m_chunk->body, header->rowSizeInBytes, header->ReadOffsetByType(typeHandle.typeIndex));
         }
+        
     }
     
     public readonly ref struct EcsChunkComponentAccessor<T> where T : struct, IEcsComponent
