@@ -1,14 +1,27 @@
 using System;
+using System.Diagnostics;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Systems
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// A system or system groups is updated
-    /// after the specified system or system groups.
-    /// If the specified type is not found, this attribute is ignored.
-    /// </summary>
+    public abstract class EcsSystem
+    {
+        public double elapsedTotalMilliseconds { get; private set; }
+        
+        public void Update(float deltaTime, EcsWorld world)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            OnUpdate(deltaTime, world);
+            
+            stopwatch.Stop();
+            elapsedTotalMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+        }
+
+        protected abstract void OnUpdate(float deltaTime, EcsWorld world);
+    }
+    
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class EcsUpdateAfterAttribute : Attribute
     {
@@ -19,12 +32,6 @@ namespace Qwerty.ECS.Runtime.Systems
         }
     }
 
-    /// <inheritdoc />
-    /// <summary>
-    /// A system or system groups is updated
-    /// before the specified system or system groups.
-    /// If the specified type is not found, this attribute is ignored.
-    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class EcsUpdateBeforeAttribute : Attribute
     {
@@ -34,12 +41,7 @@ namespace Qwerty.ECS.Runtime.Systems
             Type = type;
         }
     }
-
-    /// <inheritdoc />
-    /// <summary>
-    /// A system or group of systems must belong to the specified group.
-    /// If the specified group does not exist, the group will be created automatically.
-    /// </summary>
+    
     [AttributeUsage(AttributeTargets.Class)]
     public class EcsUpdateInGroupAttribute : Attribute
     {
@@ -48,13 +50,5 @@ namespace Qwerty.ECS.Runtime.Systems
         {
             Type = type;
         }
-    }
-
-    /// <summary>
-    /// Interface for all systems and systems groups
-    /// </summary>
-    public interface IEcsSystem
-    {
-        void Update(float deltaTime, EcsWorld world);
     }
 }

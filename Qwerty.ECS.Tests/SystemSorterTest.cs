@@ -21,9 +21,9 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateInGroup(typeof(SystemGroupA))]
         [EcsUpdateBefore(typeof(SystemC))]
         [EcsUpdateAfter(typeof(SystemD))]
-        private class SystemA : IEcsSystem
+        private class SystemA : EcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            protected override void OnUpdate(float deltaTime, EcsWorld world)
             {
             }
         }
@@ -32,9 +32,9 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateInGroup(typeof(SystemGroupA))]
         [EcsUpdateBefore(typeof(SystemA))]
         [EcsUpdateAfter(typeof(SystemG))]
-        private class SystemB : IEcsSystem
+        private class SystemB : EcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            protected override void OnUpdate(float deltaTime, EcsWorld world)
             {
             }
         }
@@ -43,9 +43,9 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateInGroup(typeof(SystemGroupA))]
         [EcsUpdateBefore(typeof(SystemC))]
         [EcsUpdateAfter(typeof(SystemC))]
-        private class SystemC : IEcsSystem
+        private class SystemC : EcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            protected override void OnUpdate(float deltaTime, EcsWorld world)
             {
             }
         }
@@ -53,9 +53,9 @@ namespace Qwerty.ECS.Tests
         
         [EcsUpdateInGroup(typeof(SystemGroupA))]
         [EcsUpdateAfter(typeof(SystemB))]
-        private class SystemD : IEcsSystem
+        private class SystemD : EcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            protected override void OnUpdate(float deltaTime, EcsWorld world)
             {
             }
         }
@@ -64,9 +64,9 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateInGroup(typeof(SystemGroupA))]
         [EcsUpdateBefore(typeof(SystemC))]
         [EcsUpdateAfter(typeof(SystemA))]
-        private class SystemE : IEcsSystem
+        private class SystemE : EcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            protected override void OnUpdate(float deltaTime, EcsWorld world)
             {
             }
         }
@@ -75,9 +75,9 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateInGroup(typeof(SystemGroupA))]
         [EcsUpdateBefore(typeof(SystemB))]
         [EcsUpdateBefore(typeof(SystemG))]
-        private class SystemF : IEcsSystem
+        private class SystemF : EcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            protected override void OnUpdate(float deltaTime, EcsWorld world)
             {
             }
         }
@@ -86,9 +86,9 @@ namespace Qwerty.ECS.Tests
         [EcsUpdateInGroup(typeof(SystemGroupB))]
         [EcsUpdateBefore(typeof(SystemGroupA))]
         [EcsUpdateBefore(typeof(SystemF))]
-        private class SystemG : IEcsSystem
+        private class SystemG : EcsSystem
         {
-            public void Update(float deltaTime, EcsWorld world)
+            protected override void OnUpdate(float deltaTime, EcsWorld world)
             {
             }
         }
@@ -116,14 +116,14 @@ namespace Qwerty.ECS.Tests
             EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             root.Update(0, world);
 
-            List<IEcsSystem> systems = new List<IEcsSystem>(root.Systems);
+            List<EcsSystem> systems = new List<EcsSystem>(root.Systems);
             Assert.AreEqual(1, systems.Count);
             
-            systems = new List<IEcsSystem>(((EcsSystemGroup)systems[0]).Systems);
+            systems = new List<EcsSystem>(((EcsSystemGroup)systems[0]).Systems);
             Assert.AreEqual(2, systems.Count);
             Assert.AreEqual(systemG, systems[0]);
      
-            systems = new List<IEcsSystem>(((EcsSystemGroup) systems[1]).Systems);
+            systems = new List<EcsSystem>(((EcsSystemGroup) systems[1]).Systems);
             Assert.AreEqual(systemF, systems[0]);
             Assert.AreEqual(systemB, systems[1]);
             Assert.AreEqual(systemD, systems[2]);
@@ -131,11 +131,9 @@ namespace Qwerty.ECS.Tests
             Assert.AreEqual(systemE, systems[4]);
             Assert.AreEqual(systemC, systems[5]);
 
-            Assert.That(()=> EcsSystemSorter.Sort(new List<IEcsSystem> {new SystemF(), new SystemG()}), Throws.InvalidOperationException);
+            Assert.That(()=> EcsSystemSorter.Sort(new List<EcsSystem> {new SystemF(), new SystemG()}), Throws.InvalidOperationException);
             
             world.Dispose();
-            
-            
         }
     }
 }

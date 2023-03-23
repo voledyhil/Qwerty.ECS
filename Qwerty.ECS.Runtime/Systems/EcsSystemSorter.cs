@@ -1,25 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Systems
 {
-    /// <summary>
-    /// Sorts the list of systems based on attributes
-    /// <see cref="EcsUpdateBeforeAttribute"/> and <see cref="EcsUpdateAfterAttribute"/>
-    /// </summary>
     public static class EcsSystemSorter
     {
-        /// <summary>
-        /// Sorts the list of systems based on attributes
-        /// <see cref="EcsUpdateBeforeAttribute"/> and <see cref="EcsUpdateAfterAttribute"/>
-        /// </summary>
-        /// <param name="systems">List of systems</param>
-        /// <exception cref="SystemSorterException">
-        /// Occurs when the list of nodes cannot be sorted
-        /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Sort<T>(List<T> systems)
         {
             SystemDependencies<T>[] dependencies = new SystemDependencies<T>[systems.Count];
@@ -30,15 +16,15 @@ namespace Qwerty.ECS.Runtime.Systems
                 T system = systems[i];
                 dependencies[i] = new SystemDependencies<T>
                 {
-                    System = system,
-                    Before = new List<Type>()
+                    system = system,
+                    before = new List<Type>()
                 };
                 systemsDict[system.GetType()] = i;
             }
 
             for (int i = 0; i < dependencies.Length; i++)
             {
-                Type systemType = dependencies[i].System.GetType();
+                Type systemType = dependencies[i].system.GetType();
                 Attribute[] before = Attribute.GetCustomAttributes(systemType, typeof(EcsUpdateBeforeAttribute));
                 Attribute[] after = Attribute.GetCustomAttributes(systemType, typeof(EcsUpdateAfterAttribute));
 
@@ -51,8 +37,8 @@ namespace Qwerty.ECS.Runtime.Systems
                     if (!systemsDict.TryGetValue(dep.Type, out int index))
                         continue;
 
-                    dependencies[i].Before.Add(dep.Type);
-                    dependencies[index].After++;
+                    dependencies[i].before.Add(dep.Type);
+                    dependencies[index].after++;
                 }
 
                 foreach (Attribute attr in after)
@@ -64,8 +50,8 @@ namespace Qwerty.ECS.Runtime.Systems
                     if (!systemsDict.TryGetValue(dep.Type, out int index))
                         continue;
 
-                    dependencies[index].Before.Add(systemType);
-                    dependencies[i].After++;
+                    dependencies[index].before.Add(systemType);
+                    dependencies[i].after++;
                 }
             }
 
@@ -76,7 +62,7 @@ namespace Qwerty.ECS.Runtime.Systems
 
             for (int i = 0; i < dependencies.Length; i++)
             {
-                if (dependencies[i].After == 0)
+                if (dependencies[i].after == 0)
                     indices[size++] = i;
             }
 
@@ -86,12 +72,12 @@ namespace Qwerty.ECS.Runtime.Systems
                 indices[0] = indices[--size];
                 SystemDependencies<T> sd = dependencies[index];
 
-                systems.Add(sd.System);
-                foreach (Type type in sd.Before)
+                systems.Add(sd.system);
+                foreach (Type type in sd.before)
                 {
                     index = systemsDict[type];
-                    dependencies[index].After--;
-                    if (dependencies[index].After == 0)
+                    dependencies[index].after--;
+                    if (dependencies[index].after == 0)
                         indices[size++] = index;
                 }
             }
@@ -102,9 +88,9 @@ namespace Qwerty.ECS.Runtime.Systems
 
         private struct SystemDependencies<T>
         {
-            public T System;
-            public List<Type> Before;
-            public int After;
+            public T system;
+            public List<Type> before;
+            public int after;
         }
 
     }
