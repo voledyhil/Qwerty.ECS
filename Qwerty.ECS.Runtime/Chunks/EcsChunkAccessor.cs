@@ -1,4 +1,5 @@
 using System;
+using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace
@@ -8,15 +9,41 @@ namespace Qwerty.ECS.Runtime.Chunks
     {
         private readonly IntPtr m_archetypes;
         private readonly int m_archetypesCount;
+        private readonly int m_sizeOfIntPtr;
 
         internal EcsArchetypeGroupAccessor(IntPtr archetypes, int archetypesCount)
         {
             m_archetypes = archetypes;
             m_archetypesCount = archetypesCount;
+            m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
         }
+
         public EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypes, m_archetypesCount);
+
+        public unsafe EcsChunkAccessor GetChunk(int index)
+        {
+            int archetypeIndex = 0;
+            while (archetypeIndex < m_archetypesCount)
+            {
+                IntPtr intPtr = MemoryUtil.Read<IntPtr>(m_archetypes, archetypeIndex++ * m_sizeOfIntPtr);
+                EcsChunk* chunk = ((EcsArchetype.Chunks*)intPtr)->last;
+                
+                if (chunk == null) continue;
+
+                int count = chunk->index + 1;
+                if (index >= count)
+                {
+                    index -= count;
+                    continue;
+                }
+                
+                while (--count > index) chunk = chunk->prior;
+                return new EcsChunkAccessor(chunk);
+            }
+            throw new ArgumentOutOfRangeException(nameof(GetChunk));
+        }
     }
-    
+
     public readonly struct EcsChunkAccessor
     {
         public int count { get; }

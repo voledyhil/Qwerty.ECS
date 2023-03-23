@@ -31,21 +31,32 @@ namespace Qwerty.ECS.Runtime.Archetypes
             Version = newVersion;
         }
 
-        public int CalculateEntitiesCount()
+        public unsafe int CalculateEntitiesCount()
         {
-            unsafe
+            int count = 0;
+            foreach (EcsArchetype archetype in archetypes)
             {
-                int count = 0;
-                foreach (EcsArchetype archetype in archetypes)
+                EcsChunk* chunk = archetype.chunks->last;
+                if (chunk != null)
                 {
-                    EcsChunk* chunk = archetype.chunks->last;
-                    if (chunk != null)
-                    {
-                        count += chunk->index * chunk->header->chunkCapacity + *chunk->count;
-                    }
+                    count += chunk->index * chunk->header->chunkCapacity + *chunk->count;
                 }
-                return count;
             }
+            return count;
+        }
+        
+        public unsafe int CalculateChunksCount()
+        {
+            int count = 0;
+            foreach (EcsArchetype archetype in archetypes)
+            {
+                EcsChunk* chunk = archetype.chunks->last;
+                if (chunk != null)
+                {
+                    count += chunk->index + 1;
+                }
+            }
+            return count;
         }
 
         public EcsArchetypeGroupAccessor GetAccessor()

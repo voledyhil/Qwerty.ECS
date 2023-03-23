@@ -64,8 +64,7 @@ namespace Qwerty.ECS.Runtime
             bool empty = chunk == null;
             if (empty || *chunk->count == chunks->header->chunkCapacity)
             {
-                int index = 0;
-                if (!empty) index = chunk->index + 1;
+                int index = empty ? 0 : chunk->index + 1;
                 EcsChunk* lastChunk = (EcsChunk*)MemoryUtil.Alloc<EcsChunk>();
                 lastChunk->Alloc(index, (uint)m_setting.archetypeChunkMaxSizeInByte, chunks->header);
                 lastChunk->prior = chunks->last;
