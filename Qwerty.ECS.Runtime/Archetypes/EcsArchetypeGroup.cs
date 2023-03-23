@@ -63,6 +63,11 @@ namespace Qwerty.ECS.Runtime.Archetypes
         {
             return new EcsArchetypeGroupAccessor(m_archetypes, m_archetypesCount);
         }
+
+        public EcsChunkCollection GetChunkCollection()
+        {
+            return new EcsChunkCollection(m_archetypes, m_archetypesCount, CalculateChunksCount());
+        }
         
         public void Dispose()
         {

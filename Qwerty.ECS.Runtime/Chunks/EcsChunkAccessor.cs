@@ -19,28 +19,42 @@ namespace Qwerty.ECS.Runtime.Chunks
         }
 
         public EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypes, m_archetypesCount);
+    }
 
-        public unsafe EcsChunkAccessor GetChunk(int index)
+    public readonly struct EcsChunkCollection : IDisposable
+    {
+        public int count => m_chunksCount;
+        
+        private readonly IntPtr m_chunks;
+        private readonly int m_sizeOfIntPtr;
+        private readonly int m_chunksCount;
+
+        public unsafe EcsChunkCollection(IntPtr archetypes, int archetypesCount, int chunksCount)
         {
-            int archetypeIndex = 0;
-            while (archetypeIndex < m_archetypesCount)
-            {
-                IntPtr intPtr = MemoryUtil.Read<IntPtr>(m_archetypes, archetypeIndex++ * m_sizeOfIntPtr);
-                EcsChunk* chunk = ((EcsArchetype.Chunks*)intPtr)->last;
-                
-                if (chunk == null) continue;
+            m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
+            m_chunks = MemoryUtil.Alloc((uint)(m_sizeOfIntPtr * chunksCount));
+            m_chunksCount = chunksCount;
 
-                int count = chunk->index + 1;
-                if (index >= count)
+            int archetypeIndex = 0;
+            int index = 0;
+            while (archetypeIndex < archetypesCount)
+            {
+                IntPtr intPtr = MemoryUtil.Read<IntPtr>(archetypes, archetypeIndex++ * m_sizeOfIntPtr);
+                EcsChunk* chunk = ((EcsArchetype.Chunks*)intPtr)->last;
+                while (chunk != null)
                 {
-                    index -= count;
-                    continue;
+                    MemoryUtil.Write(m_chunks, m_sizeOfIntPtr * index++, (IntPtr)chunk);
+                    chunk = chunk->prior;
                 }
-                
-                while (--count > index) chunk = chunk->prior;
-                return new EcsChunkAccessor(chunk);
             }
-            throw new ArgumentOutOfRangeException(nameof(GetChunk));
+        }
+        
+        public unsafe EcsChunkAccessor this[int index] => 
+            new EcsChunkAccessor((EcsChunk*)MemoryUtil.Read<IntPtr>(m_chunks, index * m_sizeOfIntPtr));
+
+        public void Dispose()
+        {
+            MemoryUtil.Free(m_chunks);
         }
     }
 
