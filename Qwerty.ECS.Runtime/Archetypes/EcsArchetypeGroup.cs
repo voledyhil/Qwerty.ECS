@@ -39,10 +39,9 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 foreach (EcsArchetype archetype in archetypes)
                 {
                     EcsChunk* chunk = archetype.chunks->last;
-                    while (chunk != null)
+                    if (chunk != null)
                     {
-                        count += *chunk->count;
-                        chunk = chunk->prior;
+                        count += chunk->index * chunk->header->chunkCapacity + *chunk->count;
                     }
                 }
                 return count;

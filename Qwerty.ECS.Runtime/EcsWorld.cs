@@ -61,10 +61,13 @@ namespace Qwerty.ECS.Runtime
         {
             EcsArchetype.Chunks* chunks = arch.chunks;
             EcsChunk* chunk = chunks->last;
-            if (chunk == null || *chunk->count == chunks->header->chunkCapacity)
+            bool empty = chunk == null;
+            if (empty || *chunk->count == chunks->header->chunkCapacity)
             {
+                int index = 0;
+                if (!empty) index = chunk->index + 1;
                 EcsChunk* lastChunk = (EcsChunk*)MemoryUtil.Alloc<EcsChunk>();
-                lastChunk->Alloc((uint)m_setting.archetypeChunkMaxSizeInByte, chunks->header);
+                lastChunk->Alloc(index, (uint)m_setting.archetypeChunkMaxSizeInByte, chunks->header);
                 lastChunk->prior = chunks->last;
                 
                 chunks->last = lastChunk;
@@ -79,8 +82,9 @@ namespace Qwerty.ECS.Runtime
         
         private unsafe void SwapRow(EcsArchetype arch, EcsEntityInfo info)
         {
+            EcsArchetype.Chunks* chunks = arch.chunks;
             EcsChunk* toChunk = info.chunk;
-            EcsChunk* lastChunk = arch.chunks->last;
+            EcsChunk* lastChunk = chunks->last;
             int lastIndex = *lastChunk->count - 1;
             if (toChunk != lastChunk || info.indexInChunk != lastIndex)
             {
@@ -94,13 +98,12 @@ namespace Qwerty.ECS.Runtime
                 MemoryUtil.Write(m_entitiesInfo, swapEntity.Index * m_sizeOfEntityInfo, swapEntityInfo);
             }
             
-            --*lastChunk->count;
-            if (*lastChunk->count > 0)
+            if (--*lastChunk->count > 0)
             {
                 return;
             }
             
-            arch.chunks->last = lastChunk->prior;
+            chunks->last = lastChunk->prior;
             
             lastChunk->Dispose();
             MemoryUtil.Free((IntPtr)lastChunk);

@@ -10,9 +10,11 @@ namespace Qwerty.ECS.Runtime.Chunks
         internal unsafe EcsChunkHeader* header;
         internal IntPtr body;
         internal unsafe int* count;
+        internal int index;
 
-        public unsafe void Alloc(uint bodySizeInBytes, EcsChunkHeader* chunkHeader)
+        public unsafe void Alloc(int index, uint bodySizeInBytes, EcsChunkHeader* chunkHeader)
         {
+            this.index = index;
             body = MemoryUtil.Alloc(bodySizeInBytes);
             count = (int*)MemoryUtil.Alloc<int>();
             header = chunkHeader;
