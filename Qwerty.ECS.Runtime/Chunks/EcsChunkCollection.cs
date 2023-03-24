@@ -1,8 +1,9 @@
+using System;
 using Qwerty.ECS.Runtime.Archetypes;
 
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
-
     public readonly struct EcsChunkCollection : IDisposable
     {
         public int count => m_chunksCount;

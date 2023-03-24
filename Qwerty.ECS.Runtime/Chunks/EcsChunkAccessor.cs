@@ -1,3 +1,4 @@
+using System;
 using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace
