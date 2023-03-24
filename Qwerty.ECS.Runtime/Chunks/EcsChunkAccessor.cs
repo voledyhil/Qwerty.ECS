@@ -9,13 +9,11 @@ namespace Qwerty.ECS.Runtime.Chunks
     {
         private readonly IntPtr m_archetypes;
         private readonly int m_archetypesCount;
-        private readonly int m_sizeOfIntPtr;
 
         internal EcsArchetypeGroupAccessor(IntPtr archetypes, int archetypesCount)
         {
             m_archetypes = archetypes;
             m_archetypesCount = archetypesCount;
-            m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
         }
 
         public EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypes, m_archetypesCount);
@@ -29,7 +27,7 @@ namespace Qwerty.ECS.Runtime.Chunks
         private readonly int m_sizeOfIntPtr;
         private readonly int m_chunksCount;
 
-        public unsafe EcsChunkCollection(IntPtr archetypes, int archetypesCount, int chunksCount)
+        internal unsafe EcsChunkCollection(IntPtr archetypes, int archetypesCount, int chunksCount)
         {
             m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
             m_chunks = MemoryUtil.Alloc((uint)(m_sizeOfIntPtr * chunksCount));
