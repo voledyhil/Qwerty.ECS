@@ -2,9 +2,9 @@
 using System;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Chunks;
-using Unity.Collections.LowLevel.Unsafe;
 
 #if UNITY_EDITOR
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 #endif
@@ -50,7 +50,10 @@ namespace Qwerty.ECS.Runtime.Jobs
         private struct JobChunkWrapper<T> where T : struct
         {
             public T jobData;
-            [NativeDisableUnsafePtrRestriction] public IntPtr chunks;
+#if UNITY_EDITOR
+            [NativeDisableUnsafePtrRestriction]
+#endif
+            public IntPtr chunks;
         }
 
 #if UNITY_EDITOR
