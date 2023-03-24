@@ -147,7 +147,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -174,7 +174,7 @@ namespace Qwerty.ECS.Tests
 
             EcsComponentDataFromEntity<ComponentB> compsB = m_world.GetComponentDataFromEntityAccessor<ComponentB>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -204,7 +204,7 @@ namespace Qwerty.ECS.Tests
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>());
 
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -237,7 +237,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentDataFromEntity<ComponentD> compsD = m_world.GetComponentDataFromEntityAccessor<ComponentD>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>());
 
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -266,7 +266,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -292,7 +292,7 @@ namespace Qwerty.ECS.Tests
             
             EcsComponentDataFromEntity<ComponentB> compsB = m_world.GetComponentDataFromEntityAccessor<ComponentB>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -316,7 +316,7 @@ namespace Qwerty.ECS.Tests
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_abd, m_bd1, m_bd2, m_bc, m_ab, m_ad, m_b1, m_b2, m_b3, m_b4, m_b5 };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AnyOf<ComponentB, ComponentD>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -337,7 +337,7 @@ namespace Qwerty.ECS.Tests
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_ac };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().NoneOf<ComponentB, ComponentD>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -358,7 +358,7 @@ namespace Qwerty.ECS.Tests
             HashSet<EcsEntity> expectedEntities = new HashSet<EcsEntity>() { m_ac };
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().NoneOf<ComponentB, ComponentB, ComponentD>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -386,7 +386,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentD> compDTypeHandle = m_world.GetComponentTypeHandle<ComponentD>();
         
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentB, ComponentD>().AnyOf<ComponentA>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -425,7 +425,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentDataFromEntity<ComponentD> compsD = m_world.GetComponentDataFromEntityAccessor<ComponentD>();
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentB, ComponentD>().AnyOf<ComponentA>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -456,7 +456,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentD> compDTypeHandle = m_world.GetComponentTypeHandle<ComponentD>();
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentD, ComponentD>().AnyOf<ComponentB, ComponentC, ComponentC>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -482,7 +482,7 @@ namespace Qwerty.ECS.Tests
             
             EcsComponentDataFromEntity<ComponentD> compsD = m_world.GetComponentDataFromEntityAccessor<ComponentD>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentD, ComponentD>().AnyOf<ComponentB, ComponentC, ComponentC>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -509,7 +509,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>().NoneOf<ComponentA>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -535,7 +535,7 @@ namespace Qwerty.ECS.Tests
         
             EcsComponentDataFromEntity<ComponentB> compsB = m_world.GetComponentDataFromEntityAccessor<ComponentB>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>().NoneOf<ComponentA>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -563,7 +563,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentD> compDTypeHandle = m_world.GetComponentTypeHandle<ComponentD>();
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>().NoneOf<ComponentA>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
@@ -596,7 +596,7 @@ namespace Qwerty.ECS.Tests
             EcsComponentDataFromEntity<ComponentD> compsD = m_world.GetComponentDataFromEntityAccessor<ComponentD>();
             
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB, ComponentD>().NoneOf<ComponentA>());
-            EcsChunkCollection chunks = archetypeGroup.GetChunks();
+            EcsChunkArray chunks = archetypeGroup.ToChunks();
             foreach (EcsChunkAccessor chunk in chunks)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();

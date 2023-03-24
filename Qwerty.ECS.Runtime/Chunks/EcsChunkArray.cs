@@ -7,7 +7,7 @@ namespace Qwerty.ECS.Runtime.Chunks
 #if UNITY_EDITOR
     [Unity.Burst.BurstCompile]
 #endif
-    public readonly struct EcsChunkCollection : IDisposable
+    public readonly struct EcsChunkArray : IDisposable
     {
         public int count => m_chunksCount;
 
@@ -26,7 +26,7 @@ namespace Qwerty.ECS.Runtime.Chunks
 
         private readonly int m_sizeOfIntPtr;
 
-        internal unsafe EcsChunkCollection(IntPtr archetypes, int archetypesCount, int chunksCount)
+        internal unsafe EcsChunkArray(IntPtr archetypes, int archetypesCount, int chunksCount)
         {
             m_archetypes = archetypes;
             m_archetypesCount = archetypesCount;
