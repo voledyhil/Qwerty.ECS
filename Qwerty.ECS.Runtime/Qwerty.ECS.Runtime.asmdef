@@ -1,6 +1,8 @@
 {
     "name": "Qwerty.ECS.Runtime",
+    "rootNamespace": "Qwerty.ECS.Runtime",
     "references": [
+        "Unity.Burst"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -8,8 +10,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

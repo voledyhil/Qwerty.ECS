@@ -3,6 +3,9 @@ using System;
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
+#if UNITY_EDITOR
+    [Unity.Burst.BurstCompile]
+#endif
     internal unsafe struct EcsChunkHeader
     {
         private IntPtr m_body;
