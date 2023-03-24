@@ -4,9 +4,6 @@ using Qwerty.ECS.Runtime.Archetypes;
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
-#if UNITY_EDITOR
-    [Unity.Burst.BurstCompile]
-#endif
     public unsafe ref struct EcsChunkEnumerator
     {
         private int m_archetypeIndex;

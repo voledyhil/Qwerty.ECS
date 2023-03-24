@@ -4,9 +4,6 @@ using Qwerty.ECS.Runtime.Components;
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
-#if UNITY_EDITOR
-    [Unity.Burst.BurstCompile]
-#endif
     public readonly ref struct EcsChunkAccessor
     {
         public int count { get; }
@@ -35,9 +32,6 @@ namespace Qwerty.ECS.Runtime.Chunks
         
     }
     
-#if UNITY_EDITOR
-    [Unity.Burst.BurstCompile]
-#endif
     public readonly ref struct EcsChunkComponentAccessor<T> where T : struct, IEcsComponent
     {
         private readonly IntPtr m_bodyPtr;
@@ -58,9 +52,6 @@ namespace Qwerty.ECS.Runtime.Chunks
         }
     }
     
-#if UNITY_EDITOR
-    [Unity.Burst.BurstCompile]
-#endif
     public readonly ref struct EcsChunkEntityAccessor
     {
         private readonly IntPtr m_bodyPtr;

@@ -4,9 +4,6 @@ using Qwerty.ECS.Runtime.Archetypes;
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
-#if UNITY_EDITOR
-    [Unity.Burst.BurstCompile]
-#endif
     public readonly struct EcsChunkArray : IDisposable
     {
         public int count => m_chunksCount;
@@ -19,7 +16,7 @@ namespace Qwerty.ECS.Runtime.Chunks
 #if UNITY_EDITOR
         [Unity.Collections.LowLevel.Unsafe.NativeDisableUnsafePtrRestriction]
 #endif
-        private readonly IntPtr m_chunks;
+        internal readonly IntPtr m_chunks;
 
         private readonly int m_archetypesCount;
         private readonly int m_chunksCount;
