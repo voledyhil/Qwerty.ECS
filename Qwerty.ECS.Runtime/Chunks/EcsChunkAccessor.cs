@@ -1,61 +1,8 @@
-using System;
-using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Chunks
 {
-    public readonly struct EcsArchetypeGroupAccessor
-    {
-        private readonly IntPtr m_archetypes;
-        private readonly int m_archetypesCount;
-
-        internal EcsArchetypeGroupAccessor(IntPtr archetypes, int archetypesCount)
-        {
-            m_archetypes = archetypes;
-            m_archetypesCount = archetypesCount;
-        }
-
-        public EcsChunkEnumerator GetEnumerator() => new EcsChunkEnumerator(m_archetypes, m_archetypesCount);
-    }
-
-    public readonly struct EcsChunkCollection : IDisposable
-    {
-        public int count => m_chunksCount;
-        
-        private readonly IntPtr m_chunks;
-        private readonly int m_sizeOfIntPtr;
-        private readonly int m_chunksCount;
-
-        internal unsafe EcsChunkCollection(IntPtr archetypes, int archetypesCount, int chunksCount)
-        {
-            m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
-            m_chunks = MemoryUtil.Alloc((uint)(m_sizeOfIntPtr * chunksCount));
-            m_chunksCount = chunksCount;
-
-            int archetypeIndex = 0;
-            int index = 0;
-            while (archetypeIndex < archetypesCount)
-            {
-                IntPtr intPtr = MemoryUtil.Read<IntPtr>(archetypes, archetypeIndex++ * m_sizeOfIntPtr);
-                EcsChunk* chunk = ((EcsArchetype.Chunks*)intPtr)->last;
-                while (chunk != null)
-                {
-                    MemoryUtil.Write(m_chunks, m_sizeOfIntPtr * index++, (IntPtr)chunk);
-                    chunk = chunk->prior;
-                }
-            }
-        }
-        
-        public unsafe EcsChunkAccessor this[int index] => 
-            new EcsChunkAccessor((EcsChunk*)MemoryUtil.Read<IntPtr>(m_chunks, index * m_sizeOfIntPtr));
-
-        public void Dispose()
-        {
-            MemoryUtil.Free(m_chunks);
-        }
-    }
-
     public readonly struct EcsChunkAccessor
     {
         public int count { get; }

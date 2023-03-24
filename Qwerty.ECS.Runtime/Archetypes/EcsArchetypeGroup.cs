@@ -58,13 +58,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
             return count;
         }
-
-        public EcsArchetypeGroupAccessor GetAccessor()
-        {
-            return new EcsArchetypeGroupAccessor(m_archetypes, m_archetypesCount);
-        }
-
-        public EcsChunkCollection GetChunkCollection()
+        
+        public EcsChunkCollection GetChunks()
         {
             return new EcsChunkCollection(m_archetypes, m_archetypesCount, CalculateChunksCount());
         }
