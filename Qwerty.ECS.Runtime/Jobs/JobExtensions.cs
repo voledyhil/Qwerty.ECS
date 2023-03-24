@@ -3,8 +3,11 @@ using System;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Chunks;
 using Unity.Collections.LowLevel.Unsafe;
+
+#if UNITY_EDITOR
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
+#endif
 
 
 // ReSharper disable once CheckNamespace
@@ -12,7 +15,8 @@ namespace Qwerty.ECS.Runtime.Jobs
 {
     public static class JobExtensions
     {
-        public static void Run<T>(this T jobData, EcsArchetypeGroup archetypeGroup, int innerLoopBatchCount) where T : struct, IParallelForJobChunk
+        public static void Run<T>(this T jobData, EcsArchetypeGroup archetypeGroup, int innerLoopBatchCount)
+            where T : struct, IParallelForJobChunk
         {
 #if UNITY_EDITOR
             int chunksCount = archetypeGroup.CalculateChunksCount();
@@ -26,7 +30,7 @@ namespace Qwerty.ECS.Runtime.Jobs
         {
             int index = 0;
             int archetypeIndex = 0;
-            
+
             int sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
             IntPtr chunks = MemoryUtil.Alloc((uint)(sizeOfIntPtr * chunksCount));
             while (archetypeIndex < archetypesCount)
@@ -39,6 +43,7 @@ namespace Qwerty.ECS.Runtime.Jobs
                     chunk = chunk->prior;
                 }
             }
+
             return chunks;
         }
 
@@ -57,14 +62,18 @@ namespace Qwerty.ECS.Runtime.Jobs
             {
                 if (m_jobReflectionData == IntPtr.Zero)
                 {
-                    m_jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(JobChunkWrapper<T>), typeof(T), (ExecuteJobFunction)Execute);
+                    m_jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(JobChunkWrapper<T>), typeof(T),
+                        (ExecuteJobFunction)Execute);
                 }
+
                 return m_jobReflectionData;
             }
 
-            private delegate void ExecuteJobFunction(ref JobChunkWrapper<T> jobWrapper, IntPtr additionalPtr, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex);
+            private delegate void ExecuteJobFunction(ref JobChunkWrapper<T> jobWrapper, IntPtr additionalPtr,
+                IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex);
 
-            private static unsafe void Execute(ref JobChunkWrapper<T> jobWrapper, IntPtr additionalPtr, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex)
+            private static unsafe void Execute(ref JobChunkWrapper<T> jobWrapper, IntPtr additionalPtr,
+                IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex)
             {
                 T jobData = jobWrapper.jobData;
 
@@ -75,8 +84,9 @@ namespace Qwerty.ECS.Runtime.Jobs
                         break;
                     }
 
-                    JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData, UnsafeUtility.AddressOf(ref jobWrapper), begin, end - begin);
-                    
+                    JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData, UnsafeUtility.AddressOf(ref jobWrapper),
+                        begin, end - begin);
+
                     for (int i = begin; i < end; i++)
                     {
                         EcsChunk* chunk = (EcsChunk*)MemoryUtil.Read<IntPtr>(jobWrapper.chunks, i * sizeof(IntPtr));
@@ -86,7 +96,8 @@ namespace Qwerty.ECS.Runtime.Jobs
             }
         }
 
-        private static unsafe JobHandle Schedule<T>(this T jobData, int arrayLength, int innerLoopBatchCount, IntPtr chunks) where T : struct, IParallelForJobChunk
+        private static unsafe JobHandle Schedule<T>(this T jobData, int arrayLength, int innerLoopBatchCount,
+            IntPtr chunks) where T : struct, IParallelForJobChunk
         {
             JobChunkWrapper<T> wrapper = new JobChunkWrapper<T>()
             {
