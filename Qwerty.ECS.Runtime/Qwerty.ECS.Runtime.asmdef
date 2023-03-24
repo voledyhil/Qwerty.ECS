@@ -1,6 +1,6 @@
 {
     "name": "Qwerty.ECS.Runtime",
-    "rootNamespace": "Qwerty.ECS.Runtime",
+    "rootNamespace": "",
     "references": [
         "Unity.Burst"
     ],
