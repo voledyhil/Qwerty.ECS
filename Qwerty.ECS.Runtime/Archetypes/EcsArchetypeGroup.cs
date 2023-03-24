@@ -10,23 +10,28 @@ namespace Qwerty.ECS.Runtime.Archetypes
         public int Version { get; private set; }
 
         internal readonly List<EcsArchetype> archetypes = new List<EcsArchetype>();
-
-        private IntPtr m_archetypes;
+        internal IntPtr archetypesChunks;
+        internal int archetypesCount;
+        
         private readonly int m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
-        private int m_archetypesCount;
+
+        internal EcsArchetypeGroup()
+        {
+            
+        }
 
         internal unsafe void ChangeVersion(int newVersion)
         {
             if (Version > 0)
             {
-                MemoryUtil.Free(m_archetypes);
+                MemoryUtil.Free(archetypesChunks);
             }
             
-            m_archetypes = MemoryUtil.Alloc((uint)(m_sizeOfIntPtr * archetypes.Count));
-            m_archetypesCount = archetypes.Count;
-            for (int i = 0; i < m_archetypesCount; i++)
+            archetypesChunks = MemoryUtil.Alloc((uint)(m_sizeOfIntPtr * archetypes.Count));
+            archetypesCount = archetypes.Count;
+            for (int i = 0; i < archetypesCount; i++)
             {
-                MemoryUtil.Write(m_archetypes, m_sizeOfIntPtr * i, (IntPtr)archetypes[i].chunks);
+                MemoryUtil.Write(archetypesChunks, m_sizeOfIntPtr * i, (IntPtr)archetypes[i].chunks);
             }
             Version = newVersion;
         }
@@ -59,14 +64,14 @@ namespace Qwerty.ECS.Runtime.Archetypes
             return count;
         }
         
-        public EcsChunkArray ToChunks()
+        public EcsChunkEnumerator GetEnumerator()
         {
-            return new EcsChunkArray(m_archetypes, m_archetypesCount, CalculateChunksCount());
+            return new EcsChunkEnumerator(archetypesChunks, archetypesCount);
         }
         
         public void Dispose()
         {
-            MemoryUtil.Free(m_archetypes);
+            MemoryUtil.Free(archetypesChunks);
         }
     }
 }

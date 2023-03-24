@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using Qwerty.ECS.Runtime;
 using Qwerty.ECS.Runtime.Archetypes;
@@ -23,53 +22,57 @@ namespace Qwerty.ECS.Tests
 
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            EcsChunkArray chunkArray = group.ToChunks();
             Assert.AreEqual(2, group.CalculateChunksCount());
             Assert.AreEqual(6, group.CalculateEntitiesCount());
 
             EcsComponentTypeHandle<ComponentA> compATypeHandle = m_world.GetComponentTypeHandle<ComponentA>();
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
             EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
-            
-            EcsChunkAccessor chunk = chunkArray.GetChunk(1);
-            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(3, chunk.count);
-            Assert.AreEqual(entity0, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 1 }, compBAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 2 }, compCAccessor[0]);
-            Assert.AreEqual(entity1, entityAccessor[1]);
-            Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
-            Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
-            Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
-            Assert.AreEqual(entity2, entityAccessor[2]);
-            Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[2]);
-            Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[2]);
-            Assert.AreEqual(new ComponentC { value = 8 }, compCAccessor[2]);
 
-            chunk = chunkArray.GetChunk(0);
-            entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(3, chunk.count);
-            Assert.AreEqual(entity3, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[0]);
-            Assert.AreEqual(entity4, entityAccessor[1]);
-            Assert.AreEqual(new ComponentA { value = 12 }, compAAccessor[1]);
-            Assert.AreEqual(new ComponentB { value = 13 }, compBAccessor[1]);
-            Assert.AreEqual(new ComponentC { value = 14 }, compCAccessor[1]);
-            Assert.AreEqual(entity5, entityAccessor[2]);
-            Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[2]);
-            Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[2]);
-            Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[2]);
+            int chunkCounter = 0;
+            foreach (EcsChunkAccessor chunk in group)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+                EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+                EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
+
+                if (chunkCounter++ % 2 == 0)
+                {
+                    Assert.AreEqual(3, chunk.count);
+                    Assert.AreEqual(entity3, entityAccessor[0]);
+                    Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[0]);
+                    Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[0]);
+                    Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[0]);
+                    Assert.AreEqual(entity4, entityAccessor[1]);
+                    Assert.AreEqual(new ComponentA { value = 12 }, compAAccessor[1]);
+                    Assert.AreEqual(new ComponentB { value = 13 }, compBAccessor[1]);
+                    Assert.AreEqual(new ComponentC { value = 14 }, compCAccessor[1]);
+                    Assert.AreEqual(entity5, entityAccessor[2]);
+                    Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[2]);
+                    Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[2]);
+                    Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[2]);
+                }
+                else
+                {
+                    Assert.AreEqual(3, chunk.count);
+                    Assert.AreEqual(entity0, entityAccessor[0]);
+                    Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
+                    Assert.AreEqual(new ComponentB { value = 1 }, compBAccessor[0]);
+                    Assert.AreEqual(new ComponentC { value = 2 }, compCAccessor[0]);
+                    Assert.AreEqual(entity1, entityAccessor[1]);
+                    Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
+                    Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
+                    Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
+                    Assert.AreEqual(entity2, entityAccessor[2]);
+                    Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[2]);
+                    Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[2]);
+                    Assert.AreEqual(new ComponentC { value = 8 }, compCAccessor[2]);
+                }
+            }
             
-            chunkArray.Dispose();
+            Assert.AreEqual(2, chunkCounter);
+            
             world.Dispose();
         }
         
@@ -87,10 +90,10 @@ namespace Qwerty.ECS.Tests
             world.DestroyEntity(entity0);
             world.DestroyEntity(entity4);
             world.DestroyEntity(entity2);
-        
+            
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            EcsChunkArray groupAccessor = group.ToChunks();
+
             Assert.AreEqual(1, group.CalculateChunksCount());
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
@@ -98,26 +101,32 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
             EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
             
-            EcsChunkAccessor chunk = groupAccessor.GetChunk(0);
-            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(3, chunk.count);
-            Assert.AreEqual(entity5, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[0]);
-            Assert.AreEqual(entity1, entityAccessor[1]);
-            Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
-            Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
-            Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
-            Assert.AreEqual(entity3, entityAccessor[2]);
-            Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[2]);
-            Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[2]);
-            Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[2]);
+            int chunkCounter = 0;
+            foreach (EcsChunkAccessor chunk in group)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+                EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+                EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
+                Assert.AreEqual(3, chunk.count);
+                Assert.AreEqual(entity5, entityAccessor[0]);
+                Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
+                Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[0]);
+                Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[0]);
+                Assert.AreEqual(entity1, entityAccessor[1]);
+                Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
+                Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
+                Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
+                Assert.AreEqual(entity3, entityAccessor[2]);
+                Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[2]);
+                Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[2]);
+                Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[2]);
+                
+                chunkCounter++;
+            }
             
-            groupAccessor.Dispose();
+            Assert.AreEqual(1, chunkCounter);
+            
             world.Dispose();
         }
         
@@ -135,83 +144,99 @@ namespace Qwerty.ECS.Tests
             world.RemoveComponent<ComponentA>(entity0);
             world.RemoveComponent<ComponentB>(entity4);
             world.RemoveComponent<ComponentC>(entity2);
-        
+            
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>();
             EcsArchetypeGroup group = world.Filter(filter);
-            EcsChunkArray chunkArray = group.ToChunks();
             Assert.AreEqual(1, group.CalculateChunksCount());
             Assert.AreEqual(3, group.CalculateEntitiesCount());
             
             EcsComponentTypeHandle<ComponentA> compATypeHandle = m_world.GetComponentTypeHandle<ComponentA>();
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
             EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
+            
+            
+            int chunkCounter = 0;
+            foreach (EcsChunkAccessor chunk in group)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+                EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+                EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
+                Assert.AreEqual(3, chunk.count);
+                Assert.AreEqual(entity5, entityAccessor[0]);
+                Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
+                Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[0]);
+                Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[0]);
+                Assert.AreEqual(entity1, entityAccessor[1]);
+                Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
+                Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
+                Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
+                Assert.AreEqual(entity3, entityAccessor[2]);
+                Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[2]);
+                Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[2]);
+                Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[2]);
+                
+                chunkCounter++;
+            }
+            Assert.AreEqual(1, chunkCounter);
 
-            
-            EcsChunkAccessor chunk = chunkArray.GetChunk(0);
-            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(3, chunk.count);
-            Assert.AreEqual(entity5, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[0]);
-            Assert.AreEqual(entity1, entityAccessor[1]);
-            Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
-            Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
-            Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
-            Assert.AreEqual(entity3, entityAccessor[2]);
-            Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[2]);
-            Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[2]);
-            Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[2]);
-            chunkArray.Dispose();
-            
             filter = new EcsFilter().AllOf<ComponentB, ComponentC>().NoneOf<ComponentA>();
-            EcsArchetypeGroup archetypeGroup = world.Filter(filter);
-            chunkArray = archetypeGroup.ToChunks();
-            Assert.AreEqual(1, archetypeGroup.CalculateChunksCount());
+            group = world.Filter(filter);
+            Assert.AreEqual(1, group.CalculateChunksCount());
             
-            chunk = chunkArray.GetChunk(0);
-            entityAccessor = chunk.GetEntityAccessor();
-            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(1, chunk.count);
-            Assert.AreEqual(entity0, entityAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 1 }, compBAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 2 }, compCAccessor[0]);
-            chunkArray.Dispose();
-            
+            chunkCounter = 0;
+            foreach (EcsChunkAccessor chunk in group)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+                EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
+                Assert.AreEqual(1, chunk.count);
+                Assert.AreEqual(entity0, entityAccessor[0]);
+                Assert.AreEqual(new ComponentB { value = 1 }, compBAccessor[0]);
+                Assert.AreEqual(new ComponentC { value = 2 }, compCAccessor[0]);
+                
+                chunkCounter++;
+            }
+            Assert.AreEqual(1, chunkCounter);
+
             filter = new EcsFilter().AllOf<ComponentA, ComponentC>().NoneOf<ComponentB>();
-            archetypeGroup = world.Filter(filter);
-            chunkArray = archetypeGroup.ToChunks();
-            Assert.AreEqual(1, archetypeGroup.CalculateChunksCount());
+            group = world.Filter(filter);
+            Assert.AreEqual(1, group.CalculateChunksCount());
             
-            chunk = chunkArray.GetChunk(0);
-            entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(1, chunk.count);
-            Assert.AreEqual(entity4, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 12 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 14 }, compCAccessor[0]);
-            chunkArray.Dispose();
+            chunkCounter = 0;
+            foreach (EcsChunkAccessor chunk in group)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+                EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
+                Assert.AreEqual(1, chunk.count);
+                Assert.AreEqual(entity4, entityAccessor[0]);
+                Assert.AreEqual(new ComponentA { value = 12 }, compAAccessor[0]);
+                Assert.AreEqual(new ComponentC { value = 14 }, compCAccessor[0]);
+                
+                chunkCounter++;
+            }
+            Assert.AreEqual(1, chunkCounter);
 
             filter = new EcsFilter().AllOf<ComponentA, ComponentB>().NoneOf<ComponentC>();
-            archetypeGroup = world.Filter(filter);
-            chunkArray = archetypeGroup.ToChunks();
-            Assert.AreEqual(1, archetypeGroup.CalculateChunksCount());
+            group = world.Filter(filter);
+            Assert.AreEqual(1, group.CalculateChunksCount());
             
-            chunk = chunkArray.GetChunk(0);
-            entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            Assert.AreEqual(1, chunk.count);
-            Assert.AreEqual(entity2, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[0]);
-            chunkArray.Dispose();
-            
+            chunkCounter = 0;
+            foreach (EcsChunkAccessor chunk in group)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+                EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+                Assert.AreEqual(1, chunk.count);
+                Assert.AreEqual(entity2, entityAccessor[0]);
+                Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[0]);
+                Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[0]);
+                
+                chunkCounter++;
+            }
+            Assert.AreEqual(1, chunkCounter);
+
             world.Dispose();
         }
         
@@ -225,7 +250,7 @@ namespace Qwerty.ECS.Tests
             EcsEntity entity3 = world.CreateEntity(new ComponentA { value = 9 }, new ComponentC {value = 11});
             EcsEntity entity4 = world.CreateEntity(new ComponentA { value = 12 }, new ComponentC {value = 14});
             EcsEntity entity5 = world.CreateEntity(new ComponentA { value = 15 }, new ComponentC {value = 17});
-        
+            
             EcsFilter filter = new EcsFilter().AllOf<ComponentA, ComponentC>().NoneOf<ComponentB>();
             EcsArchetypeGroup archetypeGroup = world.Filter(filter);
             Assert.AreEqual(2, archetypeGroup.CalculateChunksCount());
@@ -241,10 +266,9 @@ namespace Qwerty.ECS.Tests
             EcsArchetypeGroup group = world.Filter(filter);
             Assert.AreEqual(0, group.CalculateChunksCount());
             Assert.AreEqual(0, group.CalculateEntitiesCount());
-
+            
             filter = new EcsFilter().AllOf<ComponentA, ComponentC, ComponentB>();
             group = world.Filter(filter);
-            EcsChunkArray groupAccessor = group.ToChunks();
             Assert.AreEqual(2, group.CalculateChunksCount());
             Assert.AreEqual(6, group.CalculateEntitiesCount());
             
@@ -252,44 +276,50 @@ namespace Qwerty.ECS.Tests
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
             EcsComponentTypeHandle<ComponentC> compCTypeHandle = m_world.GetComponentTypeHandle<ComponentC>();
             
-            EcsChunkAccessor chunk = groupAccessor.GetChunk(1);
-            EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
-            EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(3, chunk.count);
-            Assert.AreEqual(entity0, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 1 }, compBAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 2 }, compCAccessor[0]);
-            Assert.AreEqual(entity1, entityAccessor[1]);
-            Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
-            Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
-            Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
-            Assert.AreEqual(entity2, entityAccessor[2]);
-            Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[2]);
-            Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[2]);
-            Assert.AreEqual(new ComponentC { value = 8 }, compCAccessor[2]);
+            int chunkCounter = 0;
+            foreach (EcsChunkAccessor chunk in group)
+            {
+                EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
+                EcsChunkComponentAccessor<ComponentA> compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
+                EcsChunkComponentAccessor<ComponentB> compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
+                EcsChunkComponentAccessor<ComponentC> compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
 
-            chunk = groupAccessor.GetChunk(0);
-            entityAccessor = chunk.GetEntityAccessor();
-            compAAccessor = chunk.GetComponentAccessor(compATypeHandle);
-            compBAccessor = chunk.GetComponentAccessor(compBTypeHandle);
-            compCAccessor = chunk.GetComponentAccessor(compCTypeHandle);
-            Assert.AreEqual(3, chunk.count);
-            Assert.AreEqual(entity3, entityAccessor[0]);
-            Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[0]);
-            Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[0]);
-            Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[0]);
-            Assert.AreEqual(entity4, entityAccessor[1]);
-            Assert.AreEqual(new ComponentA { value = 12 }, compAAccessor[1]);
-            Assert.AreEqual(new ComponentB { value = 13 }, compBAccessor[1]);
-            Assert.AreEqual(new ComponentC { value = 14 }, compCAccessor[1]);
-            Assert.AreEqual(entity5, entityAccessor[2]);
-            Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[2]);
-            Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[2]);
-            Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[2]);
-            groupAccessor.Dispose();
+                if (chunkCounter++ % 2 == 0)
+                {
+                    Assert.AreEqual(3, chunk.count);
+                    Assert.AreEqual(entity3, entityAccessor[0]);
+                    Assert.AreEqual(new ComponentA { value = 9 }, compAAccessor[0]);
+                    Assert.AreEqual(new ComponentB { value = 10 }, compBAccessor[0]);
+                    Assert.AreEqual(new ComponentC { value = 11 }, compCAccessor[0]);
+                    Assert.AreEqual(entity4, entityAccessor[1]);
+                    Assert.AreEqual(new ComponentA { value = 12 }, compAAccessor[1]);
+                    Assert.AreEqual(new ComponentB { value = 13 }, compBAccessor[1]);
+                    Assert.AreEqual(new ComponentC { value = 14 }, compCAccessor[1]);
+                    Assert.AreEqual(entity5, entityAccessor[2]);
+                    Assert.AreEqual(new ComponentA { value = 15 }, compAAccessor[2]);
+                    Assert.AreEqual(new ComponentB { value = 16 }, compBAccessor[2]);
+                    Assert.AreEqual(new ComponentC { value = 17 }, compCAccessor[2]);
+                }
+                else
+                {
+                    Assert.AreEqual(3, chunk.count);
+                    Assert.AreEqual(entity0, entityAccessor[0]);
+                    Assert.AreEqual(new ComponentA { value = 0 }, compAAccessor[0]);
+                    Assert.AreEqual(new ComponentB { value = 1 }, compBAccessor[0]);
+                    Assert.AreEqual(new ComponentC { value = 2 }, compCAccessor[0]);
+                    Assert.AreEqual(entity1, entityAccessor[1]);
+                    Assert.AreEqual(new ComponentA { value = 3 }, compAAccessor[1]);
+                    Assert.AreEqual(new ComponentB { value = 4 }, compBAccessor[1]);
+                    Assert.AreEqual(new ComponentC { value = 5 }, compCAccessor[1]);
+                    Assert.AreEqual(entity2, entityAccessor[2]);
+                    Assert.AreEqual(new ComponentA { value = 6 }, compAAccessor[2]);
+                    Assert.AreEqual(new ComponentB { value = 7 }, compBAccessor[2]);
+                    Assert.AreEqual(new ComponentC { value = 8 }, compCAccessor[2]);
+                }
+            }
+            
+            Assert.AreEqual(2, chunkCounter);
+
             world.Dispose();
         }
 
@@ -305,11 +335,9 @@ namespace Qwerty.ECS.Tests
             world.CreateEntity(new ComponentA { value = 15 }, new ComponentB { value = 16 }, new ComponentC {value = 17});
             
             EcsComponentTypeHandle<ComponentB> compBTypeHandle = m_world.GetComponentTypeHandle<ComponentB>();
-
-            EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
-            EcsChunkArray chunks = archetypeGroup.ToChunks();
             
-            foreach (EcsChunkAccessor chunk in chunks)
+            EcsArchetypeGroup group = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
+            foreach (EcsChunkAccessor chunk in group)
             {
                 EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor(compBTypeHandle);
                 for (int i = 0; i < chunk.count; i++)
@@ -318,7 +346,7 @@ namespace Qwerty.ECS.Tests
                 }
             }
             
-            foreach (EcsChunkAccessor chunk in chunks)
+            foreach (EcsChunkAccessor chunk in group)
             {
                 EcsChunkComponentAccessor<ComponentB> compsB = chunk.GetComponentAccessor<ComponentB>(compBTypeHandle);
                 for (int i = 0; i < chunk.count; i++)
@@ -327,7 +355,7 @@ namespace Qwerty.ECS.Tests
                 }
             }
             
-            chunks.Dispose();
+            world.Dispose();
         }
         
         [Test]
@@ -340,12 +368,11 @@ namespace Qwerty.ECS.Tests
             world.CreateEntity(new ComponentA { value = 9 }, new ComponentB { value = 10 });
             world.CreateEntity(new ComponentA { value = 12 }, new ComponentB { value = 13 }, new ComponentC {value = 14});
             world.CreateEntity(new ComponentA { value = 15 }, new ComponentB { value = 16 }, new ComponentC {value = 17});
-
+            
             EcsComponentDataFromEntity<ComponentB> compsB = m_world.GetComponentDataFromEntityAccessor<ComponentB>();
             EcsArchetypeGroup archetypeGroup = m_world.Filter(new EcsFilter().AllOf<ComponentB>());
-            EcsChunkArray chunks = archetypeGroup.ToChunks();
-            
-            foreach (EcsChunkAccessor chunk in chunks)
+
+            foreach (EcsChunkAccessor chunk in archetypeGroup)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
                 for (int i = 0; i < chunk.count; i++)
@@ -354,7 +381,7 @@ namespace Qwerty.ECS.Tests
                 }
             }
             
-            foreach (EcsChunkAccessor chunk in chunks)
+            foreach (EcsChunkAccessor chunk in archetypeGroup)
             {
                 EcsChunkEntityAccessor entityAccessor = chunk.GetEntityAccessor();
                 for (int i = 0; i < chunk.count; i++)
@@ -362,8 +389,7 @@ namespace Qwerty.ECS.Tests
                     Assert.AreEqual(int.MaxValue, compsB[entityAccessor[i]].value);
                 }
             }
-            
-            chunks.Dispose();
+            world.Dispose();
         }
     }
 }

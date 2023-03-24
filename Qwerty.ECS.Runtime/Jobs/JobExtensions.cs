@@ -12,14 +12,34 @@ namespace Qwerty.ECS.Runtime.Jobs
 {
     public static class JobExtensions
     {
-        public static void Run<T>(this T jobData, EcsArchetypeGroup archetypeGroup)
-            where T : struct, IParallelForJobChunk
+        public static void Run<T>(this T jobData, EcsArchetypeGroup archetypeGroup, int innerLoopBatchCount) where T : struct, IParallelForJobChunk
         {
 #if UNITY_EDITOR
-            EcsChunkArray chunks = archetypeGroup.ToChunks();
-            Schedule(jobData, chunks.count, 1, chunks.m_chunks).Complete();
-            chunks.Dispose();
+            int chunksCount = archetypeGroup.CalculateChunksCount();
+            IntPtr chunks = GetChunks(archetypeGroup.archetypesChunks, archetypeGroup.archetypesCount, chunksCount);
+            Schedule(jobData, chunksCount, innerLoopBatchCount, chunks).Complete();
+            MemoryUtil.Free(chunks);
 #endif
+        }
+
+        private static unsafe IntPtr GetChunks(IntPtr archetypes, int archetypesCount, int chunksCount)
+        {
+            int index = 0;
+            int archetypeIndex = 0;
+            
+            int sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
+            IntPtr chunks = MemoryUtil.Alloc((uint)(sizeOfIntPtr * chunksCount));
+            while (archetypeIndex < archetypesCount)
+            {
+                IntPtr intPtr = MemoryUtil.Read<IntPtr>(archetypes, archetypeIndex++ * sizeOfIntPtr);
+                EcsChunk* chunk = ((EcsArchetype.Chunks*)intPtr)->last;
+                while (chunk != null)
+                {
+                    MemoryUtil.Write(chunks, sizeOfIntPtr * index++, (IntPtr)chunk);
+                    chunk = chunk->prior;
+                }
+            }
+            return chunks;
         }
 
         private struct JobChunkWrapper<T> where T : struct
