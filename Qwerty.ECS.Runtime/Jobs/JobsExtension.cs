@@ -1,27 +1,28 @@
-// ReSharper disable once CheckNamespace
+// ReSharper disable once RedundantUsingDirective
 using System;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Chunks;
-using Unity.Jobs;
 
+#if UNITY_EDITOR
+using Unity.Jobs;
+#endif
 
 // ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime.Jobs
 {
     public static class JobsExtension
     {
-        public static void Run<T>(this T jobData, EcsArchetypeGroup archetypeGroup, int innerLoopBatchCount)
+        public static void Run<T>(this T jobData, EcsArchetypeGroup archetypeGroup)
             where T : struct, IParallelForJobChunk
         {
             int chunksCount = archetypeGroup.CalculateChunksCount();
             IntPtr chunks = GetChunks(archetypeGroup.archetypesChunks, archetypeGroup.archetypesCount, chunksCount);
 #if UNITY_EDITOR
-             JobHandle handle = jobData.Execute(chunksCount, innerLoopBatchCount, chunks);
+             JobHandle handle = jobData.Execute(chunksCount, 1, chunks);
              handle.Complete();
 #else
-            ThreadPoolWorker worker = new ThreadPoolWorker();
-            worker.Execute(jobData, chunksCount, innerLoopBatchCount, chunks);
-            worker.WaitComplete();
+            ThreadPoolWorker worker = new ThreadPoolWorker(chunksCount);
+            worker.Execute(jobData, chunks);
 #endif
             MemoryUtil.Free(chunks);
         }
