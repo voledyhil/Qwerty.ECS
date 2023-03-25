@@ -2,9 +2,9 @@
 using System;
 using Qwerty.ECS.Runtime.Archetypes;
 using Qwerty.ECS.Runtime.Chunks;
-using Unity.Collections.LowLevel.Unsafe;
 
 #if UNITY_EDITOR
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 #endif
