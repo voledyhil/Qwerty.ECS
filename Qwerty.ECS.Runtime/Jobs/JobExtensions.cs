@@ -50,7 +50,10 @@ namespace Qwerty.ECS.Runtime.Jobs
         private struct JobChunkWrapper<T> where T : struct
         {
             public T jobData;
-            [NativeDisableUnsafePtrRestriction] public IntPtr chunks;
+#if UNITY_EDITOR
+            [NativeDisableUnsafePtrRestriction]
+#endif
+            public IntPtr chunks;
         }
 
 #if UNITY_EDITOR
