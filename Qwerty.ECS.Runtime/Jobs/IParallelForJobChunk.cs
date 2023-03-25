@@ -4,7 +4,7 @@ using Qwerty.ECS.Runtime.Chunks;
 namespace Qwerty.ECS.Runtime.Jobs
 {
 #if UNITY_EDITOR
-    [Unity.Jobs.LowLevel.Unsafe.JobProducerType(typeof(JobExtensions.ParallelForJobChunk<>))]
+    [Unity.Jobs.LowLevel.Unsafe.JobProducerType(typeof(UnityJobsWorker.ParallelForJobChunk<>))]
 #endif
     public interface IParallelForJobChunk
     {
