@@ -12,14 +12,13 @@ namespace Qwerty.ECS.Runtime.Jobs
 {
     public static class JobsExtension
     {
-        public static void Run<T>(this T jobData, EcsArchetypeGroup archetypeGroup)
-            where T : struct, IParallelForJobChunk
+        public static void RunAsParallel<T>(this T jobData, EcsArchetypeGroup archetypeGroup) where T : struct, IParallelForJobChunk
         {
             int chunksCount = archetypeGroup.CalculateChunksCount();
             IntPtr chunks = GetChunks(archetypeGroup.archetypesChunks, archetypeGroup.archetypesCount, chunksCount);
 #if UNITY_EDITOR
-             JobHandle handle = jobData.Execute(chunksCount, 1, chunks);
-             handle.Complete();
+            JobHandle handle = jobData.Execute(chunksCount, 1, chunks);
+            handle.Complete();
 #else
             ThreadPoolWorker worker = new ThreadPoolWorker(chunksCount);
             worker.Execute(jobData, chunks);
@@ -27,6 +26,28 @@ namespace Qwerty.ECS.Runtime.Jobs
             MemoryUtil.Free(chunks);
         }
 
+        public static void RunAsSingle<T>(this T jobData, EcsArchetypeGroup archetypeGroup) where T : struct, IJobChunk
+        {
+            int chunksCount = archetypeGroup.CalculateChunksCount();
+            IntPtr chunks = GetChunks(archetypeGroup.archetypesChunks, archetypeGroup.archetypesCount, chunksCount);
+#if UNITY_EDITOR
+            JobHandle handle = jobData.Execute(chunksCount, chunks);
+            handle.Complete();
+#else
+            throw new NotImplementedException(nameof(RunAsSingle));
+#endif
+            MemoryUtil.Free(chunks);
+        }
+        
+        internal struct JobChunkWrapper<T> where T : struct
+        {
+            public T jobData;
+            public int length;
+#if UNITY_EDITOR
+            [Unity.Collections.LowLevel.Unsafe.NativeDisableUnsafePtrRestriction] public IntPtr chunks;
+#endif
+        }
+        
         private static unsafe IntPtr GetChunks(IntPtr archetypes, int archetypesCount, int chunksCount)
         {
             int index = 0;
