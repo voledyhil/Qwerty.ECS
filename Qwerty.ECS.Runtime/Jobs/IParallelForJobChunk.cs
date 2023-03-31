@@ -11,7 +11,7 @@ using Unity.Jobs.LowLevel.Unsafe;
 namespace Qwerty.ECS.Runtime.Jobs
 {
 #if UNITY_EDITOR
-    [Unity.Jobs.LowLevel.Unsafe.JobProducerType(typeof(UnityJobsWorker.ParallelForJobChunk<>))]
+    [JobProducerType(typeof(UnityJobsWorker.ParallelForJobChunk<>))]
 #endif
     public interface IParallelForJobChunk
     {
@@ -68,8 +68,7 @@ namespace Qwerty.ECS.Runtime.Jobs
                         break;
                     }
 
-                    JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData, UnsafeUtility.AddressOf(ref jobWrapper),
-                        begin, end - begin);
+                    JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData, UnsafeUtility.AddressOf(ref jobWrapper), begin, end - begin);
 
                     for (int i = begin; i < end; i++)
                     {

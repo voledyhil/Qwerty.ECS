@@ -11,7 +11,7 @@ using Unity.Jobs.LowLevel.Unsafe;
 namespace Qwerty.ECS.Runtime.Jobs
 {
 #if UNITY_EDITOR
-    [Unity.Jobs.LowLevel.Unsafe.JobProducerType(typeof(UnityJobsWorker.JobChunk<>))]
+    [JobProducerType(typeof(UnityJobsWorker.JobChunk<>))]
 #endif
     public interface IJobChunk
     {
