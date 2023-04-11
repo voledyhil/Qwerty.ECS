@@ -323,6 +323,69 @@ namespace Qwerty.ECS.Tests
             world.Dispose();
         }
 
+        // public struct float3
+        // {
+        //     public float x;
+        //     public float y;
+        //     public float z;
+        // }
+        //
+        // public struct PhysicsAABB : IEcsComponent
+        // {
+        //     public float3 min;
+        //     public float3 max;
+        // }
+        //
+        // public struct PhysicsPosition : IEcsComponent
+        // {
+        //     public float3 value;
+        // }
+        //
+        // public struct PhysicsStatic : IEcsComponent
+        // {
+        //     public bool value;
+        // }
+        //
+        // [Test]
+        // public void ChangeArchetypeAfterAddComponentTest5()
+        // {
+        //     EcsTypeManager.Register<PhysicsStatic>("static"); //2150
+        //     EcsTypeManager.Register<PhysicsAABB>("aabb"); //23841
+        //     EcsTypeManager.Register<PhysicsPosition>("position"); //24417
+        //
+        //     EcsWorld world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 1024, entitiesCapacity = 32});
+        //
+        //     EcsEntity entity = world.CreateEntity(new PhysicsPosition { value = new float3 { x = 1, y = 1, z = 1 } }, new PhysicsAABB());
+        //     world.AddComponent(entity, new PhysicsStatic { value = true });
+        //
+        //     float3 value = world.GetComponent<PhysicsPosition>(entity).value;
+        //     Assert.AreEqual(value.x, 1);
+        //     Assert.AreEqual(value.y, 1);
+        //     Assert.AreEqual(value.z, 1);
+        //     
+        //     world.Dispose();
+        // }
+        //
+        
+        [Test]
+        public void ChangeArchetypeAfterAddComponentTest2()
+        {
+            EcsWorld world = new EcsWorld(new EcsWorldSetting { archetypeChunkMaxSizeInByte = 1024, entitiesCapacity = 32 });
+
+            EcsEntity entity = world.CreateEntity(new ComponentA3 { x = 1, y = 2, z = 3 }, new ComponentC { value = 3 });
+            world.AddComponent(entity, new ComponentB { value = 2 });
+
+            ComponentA3 compA = world.GetComponent<ComponentA3>(entity);
+            Assert.AreEqual(1, compA.x);
+            Assert.AreEqual(2, compA.y);
+            Assert.AreEqual(3, compA.z);
+
+            Assert.AreEqual(2, world.GetComponent<ComponentB>(entity).value);
+            Assert.AreEqual(3, world.GetComponent<ComponentC>(entity).value);
+
+            world.Dispose();
+        }
+        
         [Test]
         public void ChangeComponentsWithChunkAccessorTest()
         {

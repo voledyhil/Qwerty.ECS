@@ -9,6 +9,13 @@ namespace Qwerty.ECS.Tests
     {
         public int value;
     }
+    
+    public struct ComponentA3 : IEcsComponent
+    {
+        public int x;
+        public int y;
+        public int z;
+    }
 
     public struct ComponentB : IEcsComponent
     {

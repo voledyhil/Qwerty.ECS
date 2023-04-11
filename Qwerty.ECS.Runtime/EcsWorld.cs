@@ -108,7 +108,7 @@ namespace Qwerty.ECS.Runtime
             MemoryUtil.Free((IntPtr)lastChunk);
         }
 
-        private static unsafe void CopyToPrior(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short componentTypeIndex)
+        private static unsafe void CopyToPrior(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short typeIndex)
         {
             EcsChunk* fromChunk = fromInfo.chunk;
             EcsChunkHeader* fromHeader = fromChunk->header;
@@ -118,7 +118,7 @@ namespace Qwerty.ECS.Runtime
             EcsChunkHeader* toHeader = toChunk->header;
             int toRowSizeInBytes = toHeader->rowSizeInBytes;
             
-            short index = fromHeader->ReadIndex(componentTypeIndex);
+            short index = fromHeader->ReadIndex(typeIndex);
             int sizeInBytes = fromHeader->ReadOffsetByIndex(index);
             if (sizeInBytes > 0)
             {
@@ -131,12 +131,13 @@ namespace Qwerty.ECS.Runtime
             {
                 void* source = (void*)(fromChunk->body + fromRowSizeInBytes * fromInfo.indexInChunk + fromHeader->ReadOffsetByIndex(index));
                 void* target = (void*)(toChunk->body + toRowSizeInBytes * toInfo.indexInChunk + sizeInBytes);
-                sizeInBytes = fromHeader->ReadOffsetByIndex(fromHeader->typesCount - 1) - sizeInBytes;
+                
+                sizeInBytes = fromHeader->entityOffset - sizeInBytes;
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
         }
         
-        private static unsafe void CopyToNext(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short componentTypeIndex)
+        private static unsafe void CopyToNext(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short typeIndex)
         {
             EcsChunk* fromChunk = fromInfo.chunk;
             EcsChunkHeader* fromHeader = fromChunk->header;
@@ -146,7 +147,7 @@ namespace Qwerty.ECS.Runtime
             EcsChunkHeader* toHeader = toChunk->header;
             int toRowSizeInBytes = toHeader->rowSizeInBytes;
             
-            short index = toHeader->ReadIndex(componentTypeIndex);
+            short index = toHeader->ReadIndex(typeIndex);
             int sizeInBytes = toHeader->ReadOffsetByIndex(index);
             if (sizeInBytes > 0)
             {
@@ -159,7 +160,7 @@ namespace Qwerty.ECS.Runtime
             {
                 void* source = (void*)(fromChunk->body + fromRowSizeInBytes * fromInfo.indexInChunk + sizeInBytes);
                 void* target = (void*)(toChunk->body + toRowSizeInBytes * toInfo.indexInChunk + toHeader->ReadOffsetByIndex(index));
-                sizeInBytes = toHeader->ReadOffsetByIndex(toHeader->typesCount - 1) - sizeInBytes;
+                sizeInBytes = fromHeader->entityOffset - sizeInBytes;
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
         }

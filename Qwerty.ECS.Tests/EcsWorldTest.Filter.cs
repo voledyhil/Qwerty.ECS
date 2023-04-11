@@ -29,6 +29,8 @@ namespace Qwerty.ECS.Tests
         public void InitWorld()
         {
             EcsTypeManager.Register<ComponentA>("comp_a");
+            EcsTypeManager.Register<ComponentA3>("comp_a_3");
+            
             EcsTypeManager.Register<ComponentB>("comp_b");
             EcsTypeManager.Register<ComponentC>("comp_c");
             EcsTypeManager.Register<ComponentD>("comp_d");
