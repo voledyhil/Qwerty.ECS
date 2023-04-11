@@ -136,7 +136,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
         
-        private static unsafe void CopyToNext(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short typeIndex)
+        private static unsafe void CopyToNext(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short componentTypeIndex)
         {
             EcsChunk* fromChunk = fromInfo.chunk;
             EcsChunkHeader* fromHeader = fromChunk->header;
@@ -146,7 +146,7 @@ namespace Qwerty.ECS.Runtime
             EcsChunkHeader* toHeader = toChunk->header;
             int toRowSizeInBytes = toHeader->rowSizeInBytes;
             
-            short index = toHeader->ReadIndex(typeIndex);
+            short index = toHeader->ReadIndex(componentTypeIndex);
             int sizeInBytes = toHeader->ReadOffsetByIndex(index);
             if (sizeInBytes > 0)
             {

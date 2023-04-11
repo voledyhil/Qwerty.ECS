@@ -34,8 +34,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         internal readonly int index;
         internal readonly short[] indices;
-        internal readonly Dictionary<short, int> next = new Dictionary<short, int>();
-        internal readonly Dictionary<short, int> prior = new Dictionary<short, int>();
+        internal readonly Dictionary<int, int> next = new Dictionary<int, int>();
+        internal readonly Dictionary<int, int> prior = new Dictionary<int, int>();
         
         internal readonly unsafe Chunks* chunks;
         internal unsafe EcsArchetype(int index, short[] indices, EcsWorldSetting setting)
