@@ -9,7 +9,7 @@ namespace Qwerty.ECS.Runtime
     {
         public bool HasComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
-            return HasComponent(entity, EcsComponentType<T>.index);
+            return HasComponent(entity, EcsTypeIndex<T>.value.index);
         }
 
         private unsafe bool HasComponent(EcsEntity entity, short index)
@@ -25,24 +25,24 @@ namespace Qwerty.ECS.Runtime
                 throw new InvalidOperationException();
             }
             EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
-            return info.chunk->ReadComponent<T>(info.indexInChunk, EcsComponentType<T>.index);
+            return info.chunk->ReadComponent<T>(info.indexInChunk, EcsTypeIndex<T>.value.index);
         }
         
         public unsafe void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            short typeIndex = EcsComponentType<T>.index;
+            short typeIndex = EcsTypeIndex<T>.value.index;
             if (!HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
             }
 
             EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
-            info.chunk->WriteComponent<T>(info.indexInChunk, EcsComponentType<T>.index, component);
+            info.chunk->WriteComponent<T>(info.indexInChunk, EcsTypeIndex<T>.value.index, component);
         }
 
         public void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
-            short typeIndex = EcsComponentType<T>.index;
+            short typeIndex = EcsTypeIndex<T>.value.index;
             if (!HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
@@ -59,7 +59,7 @@ namespace Qwerty.ECS.Runtime
         
         public unsafe void AddComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            short typeIndex = EcsComponentType<T>.index;
+            short typeIndex = EcsTypeIndex<T>.value.index;
             if (HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
@@ -78,12 +78,12 @@ namespace Qwerty.ECS.Runtime
 
         public EcsComponentDataFromEntity<T> GetComponentDataFromEntityAccessor<T>() where T : struct, IEcsComponent
         {
-            return new EcsComponentDataFromEntity<T>(m_entitiesInfo, new EcsComponentTypeHandle<T>(EcsComponentType<T>.index));
+            return new EcsComponentDataFromEntity<T>(m_entitiesInfo, new EcsComponentTypeHandle<T>(EcsTypeIndex<T>.value.index));
         }
 
         public EcsComponentTypeHandle<T> GetComponentTypeHandle<T>() where T : struct, IEcsComponent
         {
-            return new EcsComponentTypeHandle<T>(EcsComponentType<T>.index);
+            return new EcsComponentTypeHandle<T>(EcsTypeIndex<T>.value.index);
         }
     }
 }

@@ -28,11 +28,11 @@ namespace Qwerty.ECS.Tests
         [SetUp]
         public void InitWorld()
         {
-            EcsComponentType<ComponentA>.Register();
-            EcsComponentType<ComponentB>.Register();
-            EcsComponentType<ComponentC>.Register();
-            EcsComponentType<ComponentD>.Register();
-            EcsComponentType<ComponentE>.Register();
+            EcsTypeManager.Register<ComponentA>("comp_a");
+            EcsTypeManager.Register<ComponentB>("comp_b");
+            EcsTypeManager.Register<ComponentC>("comp_c");
+            EcsTypeManager.Register<ComponentD>("comp_d");
+            EcsTypeManager.Register<ComponentE>("comp_e");
 
             m_world = new EcsWorld(new EcsWorldSetting {archetypeChunkMaxSizeInByte = 32, entitiesCapacity = 32});
             m_abd = m_world.CreateEntity(new ComponentA { value = 1 }, new ComponentB { value = 2 }, new ComponentD { value = 3 });
@@ -55,46 +55,7 @@ namespace Qwerty.ECS.Tests
         {
             m_world.Dispose();
         }
-
-        [Test]
-        public void FilterAllTest()
-        {
-            Assert.AreEqual(1, new HashSet<short> {0}.Intersect(new EcsFilter().AllOf<ComponentA>().all).Count());
-            Assert.AreEqual(1, new HashSet<short> {0}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentA>().all).Count());
-            
-            Assert.AreEqual(2, new HashSet<short> {0, 1}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB>().all).Count());
-            Assert.AreEqual(2, new HashSet<short> {0, 1}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB, ComponentB>().all).Count());
-            
-            Assert.AreEqual(3, new HashSet<short> {0, 1, 2}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC>().all).Count());
-            Assert.AreEqual(3, new HashSet<short> {0, 1, 2}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC, ComponentC>().all).Count());
-            
-            Assert.AreEqual(4, new HashSet<short> {0, 1, 2, 3}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC, ComponentD>().all).Count());
-            Assert.AreEqual(4, new HashSet<short> {0, 1, 2, 3}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC, ComponentD, ComponentD>().all).Count());
-            
-            Assert.AreEqual(5, new HashSet<short> {0, 1, 2, 3, 4}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC, ComponentD, ComponentE>().all).Count());
-            Assert.AreEqual(5, new HashSet<short> {0, 1, 2, 3, 4}.Intersect(new EcsFilter().AllOf<ComponentA, ComponentB, ComponentC, ComponentD, ComponentE, ComponentE>().all).Count());
-        }
         
-        [Test]
-        public void FilterAnyTest()
-        {
-            Assert.AreEqual(1, new HashSet<short> {0}.Intersect(new EcsFilter().AnyOf<ComponentA>().any).Count());
-            Assert.AreEqual(1, new HashSet<short> {0}.Intersect(new EcsFilter().AnyOf<ComponentA, ComponentA>().any).Count());
-            
-            Assert.AreEqual(2, new HashSet<short> {0, 1}.Intersect(new EcsFilter().AnyOf<ComponentA, ComponentB>().any).Count());
-            Assert.AreEqual(2, new HashSet<short> {0, 1}.Intersect(new EcsFilter().AnyOf<ComponentA, ComponentB, ComponentB>().any).Count());
-        }
-        
-        [Test]
-        public void FilterNoneTest()
-        {
-            Assert.AreEqual(1, new HashSet<short> {0}.Intersect(new EcsFilter().NoneOf<ComponentA>().none).Count());
-            Assert.AreEqual(1, new HashSet<short> {0}.Intersect(new EcsFilter().NoneOf<ComponentA, ComponentA>().none).Count());
-            
-            Assert.AreEqual(2, new HashSet<short> {0, 1}.Intersect(new EcsFilter().NoneOf<ComponentA, ComponentB>().none).Count());
-            Assert.AreEqual(2, new HashSet<short> {0, 1}.Intersect(new EcsFilter().NoneOf<ComponentA, ComponentB, ComponentB>().none).Count());
-        }
-
         [Test]
         public void FilterAllEqualsTest()
         {

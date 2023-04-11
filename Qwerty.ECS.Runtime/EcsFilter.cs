@@ -62,7 +62,7 @@ namespace Qwerty.ECS.Runtime
 
         public EcsFilter AnyOf<T0>() where T0 : struct, IEcsComponent
         {
-            m_any.Add(EcsComponentType<T0>.index);
+            m_any.Add(EcsTypeIndex<T0>.value.index);
             m_dirty = true;
 
             return this;
@@ -70,8 +70,8 @@ namespace Qwerty.ECS.Runtime
 
         public EcsFilter AnyOf<T0, T1>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent
         {
-            m_any.Add(EcsComponentType<T0>.index);
-            m_any.Add(EcsComponentType<T1>.index);
+            m_any.Add(EcsTypeIndex<T0>.value.index);
+            m_any.Add(EcsTypeIndex<T1>.value.index);
             m_dirty = true;
 
             return this;
@@ -81,9 +81,9 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            m_any.Add(EcsComponentType<T0>.index);
-            m_any.Add(EcsComponentType<T1>.index);
-            m_any.Add(EcsComponentType<T2>.index);
+            m_any.Add(EcsTypeIndex<T0>.value.index);
+            m_any.Add(EcsTypeIndex<T1>.value.index);
+            m_any.Add(EcsTypeIndex<T2>.value.index);
             m_dirty = true;
 
             return this;
@@ -93,7 +93,7 @@ namespace Qwerty.ECS.Runtime
 
         public EcsFilter AllOf<T0>() where T0 : struct, IEcsComponent
         {
-            m_all.Add(EcsComponentType<T0>.index);
+            m_all.Add(EcsTypeIndex<T0>.value.index);
             m_dirty = true;
 
             return this;
@@ -101,8 +101,8 @@ namespace Qwerty.ECS.Runtime
 
         public EcsFilter AllOf<T0, T1>() where T0 : struct, IEcsComponent where T1 : struct, IEcsComponent
         {
-            m_all.Add(EcsComponentType<T0>.index);
-            m_all.Add(EcsComponentType<T1>.index);
+            m_all.Add(EcsTypeIndex<T0>.value.index);
+            m_all.Add(EcsTypeIndex<T1>.value.index);
             m_dirty = true;
 
             return this;
@@ -112,9 +112,9 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            m_all.Add(EcsComponentType<T0>.index);
-            m_all.Add(EcsComponentType<T1>.index);
-            m_all.Add(EcsComponentType<T2>.index);
+            m_all.Add(EcsTypeIndex<T0>.value.index);
+            m_all.Add(EcsTypeIndex<T1>.value.index);
+            m_all.Add(EcsTypeIndex<T2>.value.index);
             m_dirty = true;
 
             return this;
@@ -125,10 +125,10 @@ namespace Qwerty.ECS.Runtime
             where T2 : struct, IEcsComponent
             where T3 : struct, IEcsComponent
         {
-            m_all.Add(EcsComponentType<T0>.index);
-            m_all.Add(EcsComponentType<T1>.index);
-            m_all.Add(EcsComponentType<T2>.index);
-            m_all.Add(EcsComponentType<T3>.index);
+            m_all.Add(EcsTypeIndex<T0>.value.index);
+            m_all.Add(EcsTypeIndex<T1>.value.index);
+            m_all.Add(EcsTypeIndex<T2>.value.index);
+            m_all.Add(EcsTypeIndex<T3>.value.index);
             m_dirty = true;
 
             return this;
@@ -140,11 +140,11 @@ namespace Qwerty.ECS.Runtime
             where T3 : struct, IEcsComponent
             where T4 : struct, IEcsComponent
         {
-            m_all.Add(EcsComponentType<T0>.index);
-            m_all.Add(EcsComponentType<T1>.index);
-            m_all.Add(EcsComponentType<T2>.index);
-            m_all.Add(EcsComponentType<T3>.index);
-            m_all.Add(EcsComponentType<T4>.index);
+            m_all.Add(EcsTypeIndex<T0>.value.index);
+            m_all.Add(EcsTypeIndex<T1>.value.index);
+            m_all.Add(EcsTypeIndex<T2>.value.index);
+            m_all.Add(EcsTypeIndex<T3>.value.index);
+            m_all.Add(EcsTypeIndex<T4>.value.index);
             m_dirty = true;
 
             return this;
@@ -157,12 +157,12 @@ namespace Qwerty.ECS.Runtime
             where T4 : struct, IEcsComponent
             where T5 : struct, IEcsComponent
         {
-            m_all.Add(EcsComponentType<T0>.index);
-            m_all.Add(EcsComponentType<T1>.index);
-            m_all.Add(EcsComponentType<T2>.index);
-            m_all.Add(EcsComponentType<T3>.index);
-            m_all.Add(EcsComponentType<T4>.index);
-            m_all.Add(EcsComponentType<T5>.index);
+            m_all.Add(EcsTypeIndex<T0>.value.index);
+            m_all.Add(EcsTypeIndex<T1>.value.index);
+            m_all.Add(EcsTypeIndex<T2>.value.index);
+            m_all.Add(EcsTypeIndex<T3>.value.index);
+            m_all.Add(EcsTypeIndex<T4>.value.index);
+            m_all.Add(EcsTypeIndex<T5>.value.index);
             m_dirty = true;
 
             return this;
@@ -170,7 +170,7 @@ namespace Qwerty.ECS.Runtime
 
         public EcsFilter NoneOf<T0>() where T0 : struct, IEcsComponent
         {
-            m_none.Add(EcsComponentType<T0>.index);
+            m_none.Add(EcsTypeIndex<T0>.value.index);
             m_dirty = true;
 
             return this;
@@ -180,8 +180,8 @@ namespace Qwerty.ECS.Runtime
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            m_none.Add(EcsComponentType<T0>.index);
-            m_none.Add(EcsComponentType<T1>.index);
+            m_none.Add(EcsTypeIndex<T0>.value.index);
+            m_none.Add(EcsTypeIndex<T1>.value.index);
             m_dirty = true;
 
             return this;
@@ -192,9 +192,9 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            m_none.Add(EcsComponentType<T0>.index);
-            m_none.Add(EcsComponentType<T1>.index);
-            m_none.Add(EcsComponentType<T2>.index);
+            m_none.Add(EcsTypeIndex<T0>.value.index);
+            m_none.Add(EcsTypeIndex<T1>.value.index);
+            m_none.Add(EcsTypeIndex<T2>.value.index);
             m_dirty = true;
 
             return this;

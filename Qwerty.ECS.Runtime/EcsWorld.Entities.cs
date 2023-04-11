@@ -63,7 +63,7 @@ namespace Qwerty.ECS.Runtime
         public unsafe EcsEntity CreateEntity<T0>(T0 c0) where T0 : struct, IEcsComponent
         {
             EcsEntity entity = InstantiateEntity();
-            short typeIndex = EcsComponentType<T0>.index;
+            short typeIndex = EcsTypeIndex<T0>.value.index;
             m_indicesBuffer[0] = typeIndex;
             
             EcsArchetype archetype = m_arcManager.FindOrCreateArchetype(m_indicesBuffer, 1);
@@ -79,8 +79,8 @@ namespace Qwerty.ECS.Runtime
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            short typeIndex0 = EcsComponentType<T0>.index;
-            short typeIndex1 = EcsComponentType<T1>.index;
+            short typeIndex0 = EcsTypeIndex<T0>.value.index;
+            short typeIndex1 = EcsTypeIndex<T1>.value.index;
             
             m_indicesBuffer[0] = typeIndex0;
             m_indicesBuffer[1] = typeIndex1;
@@ -108,9 +108,9 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            short typeIndex0 = EcsComponentType<T0>.index;
-            short typeIndex1 = EcsComponentType<T1>.index;
-            short typeIndex2 = EcsComponentType<T2>.index;
+            short typeIndex0 = EcsTypeIndex<T0>.value.index;
+            short typeIndex1 = EcsTypeIndex<T1>.value.index;
+            short typeIndex2 = EcsTypeIndex<T2>.value.index;
 
             m_indicesBuffer[0] = typeIndex0;
             m_indicesBuffer[1] = typeIndex1;
@@ -141,10 +141,10 @@ namespace Qwerty.ECS.Runtime
             where T2 : struct, IEcsComponent
             where T3 : struct, IEcsComponent
         {
-            short typeIndex0 = EcsComponentType<T0>.index;
-            short typeIndex1 = EcsComponentType<T1>.index;
-            short typeIndex2 = EcsComponentType<T2>.index;
-            short typeIndex3 = EcsComponentType<T3>.index;
+            short typeIndex0 = EcsTypeIndex<T0>.value.index;
+            short typeIndex1 = EcsTypeIndex<T1>.value.index;
+            short typeIndex2 = EcsTypeIndex<T2>.value.index;
+            short typeIndex3 = EcsTypeIndex<T3>.value.index;
 
             m_indicesBuffer[0] = typeIndex0;
             m_indicesBuffer[1] = typeIndex1;
