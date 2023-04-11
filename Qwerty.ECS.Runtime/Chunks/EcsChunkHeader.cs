@@ -18,9 +18,9 @@ namespace Qwerty.ECS.Runtime.Chunks
         private const int SizeOfShort = sizeof(short);
         private const int SizeOfLong = sizeof(long);
         private const int TypeToOffset = Length * SizeOfLong;
-        private const int TypeToIndex = Length * SizeOfShort;
+        private const int TypeToIndex = Length;
         private const int IndexToOffset = Length * SizeOfShort;
-        private const int HeaderSize = TypeToOffset + TypeToIndex + IndexToOffset; // 444 bytes
+        private const int HeaderSize = TypeToOffset + TypeToIndex + IndexToOffset; // 407 bytes
         
         public void Alloc(int bodySizeInBytes, int[] indices)
         {
@@ -43,7 +43,7 @@ namespace Qwerty.ECS.Runtime.Chunks
                 }
 
                 *(long*)(m_body + SizeOfLong * hash) = ((long)tIndex << 32) | (sizeInBytes & 0xFFFFFFFF);
-                *(short*)(m_body + TypeToOffset + SizeOfShort * hash) = (short)index;
+                *(byte*)(m_body + TypeToOffset + hash) = (byte)index;
                 *(short*)(m_body + TypeToOffset + TypeToIndex + SizeOfShort * index) = (short)sizeInBytes;
 
                 sizeInBytes += EcsTypeManager.Sizes[typeIndex];
@@ -75,7 +75,7 @@ namespace Qwerty.ECS.Runtime.Chunks
 
         public int ReadIndex(int typeIndex)
         {
-            return *(short*)(m_body + TypeToOffset + SizeOfShort * GetHash(typeIndex));
+            return *(byte*)(m_body + TypeToOffset + GetHash(typeIndex));
         }
 
         public int ReadOffsetByType(int typeIndex)
