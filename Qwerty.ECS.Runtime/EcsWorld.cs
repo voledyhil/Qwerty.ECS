@@ -24,7 +24,7 @@ namespace Qwerty.ECS.Runtime
 
         private readonly Dictionary<EcsFilter, EcsArchetypeGroup> m_archGroups = new Dictionary<EcsFilter, EcsArchetypeGroup>();
 
-        private readonly short[] m_indicesBuffer;
+        private readonly int[] m_indicesBuffer;
         private readonly EcsArchetypeManager m_arcManager;
         private readonly int m_sizeOfEntity = MemoryUtil.SizeOf<EcsEntity>();
         private readonly int m_sizeOfEntityInfo = MemoryUtil.SizeOf<EcsEntityInfo>();
@@ -40,7 +40,7 @@ namespace Qwerty.ECS.Runtime
             m_entitiesInfo = MemoryUtil.Alloc((uint)(m_sizeOfEntityInfo * m_entitiesCapacity));
 
             m_arcManager = new EcsArchetypeManager(setting);
-            m_indicesBuffer = new short[EcsTypeManager.typeCount];
+            m_indicesBuffer = new int[EcsTypeManager.typeCount];
         }
         
         public void Dispose()
@@ -108,7 +108,7 @@ namespace Qwerty.ECS.Runtime
             MemoryUtil.Free((IntPtr)lastChunk);
         }
 
-        private static unsafe void CopyToPrior(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short typeIndex)
+        private static unsafe void CopyToPrior(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, int typeIndex)
         {
             EcsChunk* fromChunk = fromInfo.chunk;
             EcsChunkHeader* fromHeader = fromChunk->header;
@@ -118,7 +118,7 @@ namespace Qwerty.ECS.Runtime
             EcsChunkHeader* toHeader = toChunk->header;
             int toRowSizeInBytes = toHeader->rowSizeInBytes;
             
-            short index = fromHeader->ReadIndex(typeIndex);
+            int index = fromHeader->ReadIndex(typeIndex);
             int sizeInBytes = fromHeader->ReadOffsetByIndex(index);
             if (sizeInBytes > 0)
             {
@@ -136,7 +136,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
         
-        private static unsafe void CopyToNext(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, short typeIndex)
+        private static unsafe void CopyToNext(EcsEntityInfo fromInfo, EcsEntityInfo toInfo, int typeIndex)
         {
             EcsChunk* fromChunk = fromInfo.chunk;
             EcsChunkHeader* fromHeader = fromChunk->header;
@@ -146,7 +146,7 @@ namespace Qwerty.ECS.Runtime
             EcsChunkHeader* toHeader = toChunk->header;
             int toRowSizeInBytes = toHeader->rowSizeInBytes;
             
-            short index = toHeader->ReadIndex(typeIndex);
+            int index = toHeader->ReadIndex(typeIndex);
             int sizeInBytes = toHeader->ReadOffsetByIndex(index);
             if (sizeInBytes > 0)
             {

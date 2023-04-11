@@ -12,7 +12,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             internal unsafe EcsChunkHeader* header;
             internal unsafe EcsChunk* last;
 
-            internal unsafe void Alloc(short[] indices, int bodySize)
+            internal unsafe void Alloc(int[] indices, int bodySize)
             {
                 header = (EcsChunkHeader*)MemoryUtil.Alloc<EcsChunkHeader>();
                 header->Alloc(bodySize, indices);
@@ -33,12 +33,12 @@ namespace Qwerty.ECS.Runtime.Archetypes
         }
         
         internal readonly int index;
-        internal readonly short[] indices;
-        internal readonly Dictionary<short, int> next = new Dictionary<short, int>();
-        internal readonly Dictionary<short, int> prior = new Dictionary<short, int>();
+        internal readonly int[] indices;
+        internal readonly Dictionary<int, int> next = new Dictionary<int, int>();
+        internal readonly Dictionary<int, int> prior = new Dictionary<int, int>();
         
         internal readonly unsafe Chunks* chunks;
-        internal unsafe EcsArchetype(int index, short[] indices, EcsWorldSetting setting)
+        internal unsafe EcsArchetype(int index, int[] indices, EcsWorldSetting setting)
         {
             this.index = index;
             this.indices = indices;

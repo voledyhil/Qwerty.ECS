@@ -9,44 +9,44 @@ namespace Qwerty.ECS.Runtime.Chunks
 
         public int rowSizeInBytes;
         public int chunkCapacity;
-        public short entityOffset;
+        public int entityOffset;
         public int typesCount;
         
         private const int MaxComponentCount = 20;
         
-        private const ushort Length = 47;
+        private const ushort Length = 37;
         private const int SizeOfShort = sizeof(short);
-        private const int SizeOfInt = sizeof(int);
-        private const int TypeToOffset = Length * SizeOfInt;
+        private const int SizeOfLong = sizeof(long);
+        private const int TypeToOffset = Length * SizeOfLong;
         private const int TypeToIndex = Length * SizeOfShort;
         private const int IndexToOffset = Length * SizeOfShort;
-        private const int HeaderSize = TypeToOffset + TypeToIndex + IndexToOffset; // 376 bytes
+        private const int HeaderSize = TypeToOffset + TypeToIndex + IndexToOffset; // 444 bytes
         
-        public void Alloc(int bodySizeInBytes, short[] indices)
+        public void Alloc(int bodySizeInBytes, int[] indices)
         {
             m_body = MemoryUtil.Alloc(HeaderSize);
             typesCount = indices.Length;
             
-            short sizeInBytes = 0;
-            for (short index = 0; index < indices.Length; index++)
+            int sizeInBytes = 0;
+            for (int index = 0; index < indices.Length; index++)
             {
-                short typeIndex = indices[index];
-                short tIndex = typeIndex;
+                int typeIndex = indices[index];
+                int tIndex = typeIndex;
 
                 tIndex++;
                 int hash = tIndex % Length;
-                int curKey = *(int*)(m_body + SizeOfInt * hash) >> 16;
+                int curKey = (int)(*(long*)(m_body + SizeOfLong * hash) >> 32);
                 while (curKey > 0)
                 {
                     hash = (hash + 1) % Length;
-                    curKey = *(int*)(m_body + SizeOfInt * hash) >> 16;
+                    curKey = (int)(*(long*)(m_body + SizeOfLong * hash) >> 32);
                 }
 
-                *(int*)(m_body + SizeOfInt * hash) = (tIndex << 16) | (sizeInBytes & 0xFFFF);
-                *(short*)(m_body + TypeToOffset + SizeOfShort * hash) = index;
-                *(short*)(m_body + TypeToOffset + TypeToIndex + SizeOfShort * index) = sizeInBytes;
+                *(long*)(m_body + SizeOfLong * hash) = ((long)tIndex << 32) | (sizeInBytes & 0xFFFFFFFF);
+                *(short*)(m_body + TypeToOffset + SizeOfShort * hash) = (short)index;
+                *(short*)(m_body + TypeToOffset + TypeToIndex + SizeOfShort * index) = (short)sizeInBytes;
 
-                sizeInBytes += (short)EcsTypeManager.Sizes[typeIndex];
+                sizeInBytes += EcsTypeManager.Sizes[typeIndex];
             }
 
             entityOffset = sizeInBytes;
@@ -58,32 +58,32 @@ namespace Qwerty.ECS.Runtime.Chunks
         {
             typeIndex++;
             int hash = typeIndex % Length;
-            int t = *(int*)(m_body + SizeOfInt * hash) >> 16;
+            int t = (int)(*(long*)(m_body + SizeOfLong * hash) >> 32);
             while (t > 0)
             {
                 if (t == typeIndex) return hash;
                 hash = (hash + 1) % Length;
-                t = *(int*)(m_body + SizeOfInt * hash) >> 16;
+                t = (int)(*(long*)(m_body + SizeOfLong * hash) >> 32);
             }
             return -1;
         }
 
-        public bool ContainType(short typeIndex)
+        public bool ContainType(int typeIndex)
         {
             return GetHash(typeIndex) > -1;
         }
 
-        public short ReadIndex(short typeIndex)
+        public int ReadIndex(int typeIndex)
         {
             return *(short*)(m_body + TypeToOffset + SizeOfShort * GetHash(typeIndex));
         }
 
-        public int ReadOffsetByType(short typeIndex)
+        public int ReadOffsetByType(int typeIndex)
         {
-            return *(int*)(m_body + SizeOfInt * GetHash(typeIndex)) & 0xFFFF;
+            return (int)(*(long*)(m_body + SizeOfLong * GetHash(typeIndex)) & 0xFFFFFFFF);
         }
 
-        public short ReadOffsetByIndex(int index)
+        public int ReadOffsetByIndex(int index)
         {
             return *(short*)(m_body + TypeToOffset + TypeToIndex + SizeOfShort * index);
         }

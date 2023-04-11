@@ -8,7 +8,7 @@ namespace Qwerty.ECS.Runtime
 {
     public sealed class EcsFilter : IEquatable<EcsFilter>
     {
-        public short[] any
+        public int[] any
         {
             get
             {
@@ -17,7 +17,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
 
-        public short[] all
+        public int[] all
         {
             get
             {
@@ -26,7 +26,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
 
-        public short[] none
+        public int[] none
         {
             get
             {
@@ -35,29 +35,29 @@ namespace Qwerty.ECS.Runtime
             }
         }
 
-        private readonly HashSet<short> m_any;
-        private readonly HashSet<short> m_all;
-        private readonly HashSet<short> m_none;
+        private readonly HashSet<int> m_any;
+        private readonly HashSet<int> m_all;
+        private readonly HashSet<int> m_none;
 
-        private short[] m_anyArray;
-        private short[] m_allArray;
-        private short[] m_noneArray;
+        private int[] m_anyArray;
+        private int[] m_allArray;
+        private int[] m_noneArray;
 
         private int m_hash;
         private bool m_dirty = true;
 
         public EcsFilter()
         {
-            m_any = new HashSet<short>();
-            m_all = new HashSet<short>();
-            m_none = new HashSet<short>();
+            m_any = new HashSet<int>();
+            m_all = new HashSet<int>();
+            m_none = new HashSet<int>();
         }
 
         private EcsFilter(EcsFilter other)
         {
-            m_any = new HashSet<short>(other.m_any);
-            m_all = new HashSet<short>(other.m_all);
-            m_none = new HashSet<short>(other.m_none);
+            m_any = new HashSet<int>(other.m_any);
+            m_all = new HashSet<int>(other.m_all);
+            m_none = new HashSet<int>(other.m_none);
         }
 
         public EcsFilter AnyOf<T0>() where T0 : struct, IEcsComponent
@@ -254,9 +254,9 @@ namespace Qwerty.ECS.Runtime
             m_dirty = false;
         }
 
-        private static int CalculateHash(int hash, short[] indices, int i1, int i2)
+        private static int CalculateHash(int hash, int[] indices, int i1, int i2)
         {
-            foreach (short index in indices)
+            foreach (int index in indices)
             {
                 hash ^= index * i1;
             }

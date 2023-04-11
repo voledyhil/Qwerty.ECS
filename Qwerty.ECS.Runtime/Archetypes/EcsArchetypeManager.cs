@@ -12,26 +12,26 @@ namespace Qwerty.ECS.Runtime.Archetypes
         
         private readonly EcsArchetype m_emptyArchetype;
         private readonly List<EcsArchetype> m_archetypes = new List<EcsArchetype>();
-        private readonly short[] m_indicesBuffer;
+        private readonly int[] m_indicesBuffer;
         private readonly EcsWorldSetting m_setting;
 
         public EcsArchetypeManager(EcsWorldSetting setting)
         {
             m_setting = setting;
-            m_indicesBuffer = new short[EcsTypeManager.typeCount];
-            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<short>(), m_setting);
+            m_indicesBuffer = new int[EcsTypeManager.typeCount];
+            m_emptyArchetype = new EcsArchetype(m_archetypes.Count, Array.Empty<int>(), m_setting);
             m_archetypes.Add(m_emptyArchetype);
         }
         
-        internal EcsArchetype FindOrCreateArchetype(short[] indicesBuffer, int indicesLen)
+        internal EcsArchetype FindOrCreateArchetype(int[] indicesBuffer, int indicesLen)
         {
             EcsArchetype current = m_emptyArchetype;
             for (int i = 0; i < indicesLen; i++)
             {
-                short index = indicesBuffer[i];
+                int index = indicesBuffer[i];
                 if (!current.next.TryGetValue(index, out int nextId))
                 {
-                    short[] newIndices = new short[i + 1];
+                    int[] newIndices = new int[i + 1];
                     Array.Copy(indicesBuffer, newIndices, i + 1);
                     EcsArchetype next = new EcsArchetype(m_archetypes.Count, newIndices, m_setting);
                     m_archetypes.Add(next);
@@ -44,7 +44,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             return current;
         }
 
-        internal EcsArchetype FindOrCreateNextArchetype(EcsArchetype archetype, short nextIndex)
+        internal EcsArchetype FindOrCreateNextArchetype(EcsArchetype archetype, int nextIndex)
         {
             if (archetype.next.TryGetValue(nextIndex, out int next))
             {
@@ -54,8 +54,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
             bool added = false;
             int len = 0;
             
-            short[] typeIndices = archetype.indices;
-            foreach (short typeIndex in typeIndices)
+            int[] typeIndices = archetype.indices;
+            foreach (int typeIndex in typeIndices)
             {
                 if (nextIndex < typeIndex && !added)
                 {
@@ -72,7 +72,7 @@ namespace Qwerty.ECS.Runtime.Archetypes
             return FindOrCreateArchetype(m_indicesBuffer, len);
         }
         
-        internal EcsArchetype FindOrCreatePriorArchetype(EcsArchetype archetype, short priorIndex)
+        internal EcsArchetype FindOrCreatePriorArchetype(EcsArchetype archetype, int priorIndex)
         {
             if (archetype.prior.TryGetValue(priorIndex, out int prior))
             {
@@ -80,8 +80,8 @@ namespace Qwerty.ECS.Runtime.Archetypes
             }
             
             int len = 0;
-            short[] typeIndices = archetype.indices;
-            foreach (short typeIndex in typeIndices)
+            int[] typeIndices = archetype.indices;
+            foreach (int typeIndex in typeIndices)
             {
                 if (typeIndex != priorIndex)
                 {

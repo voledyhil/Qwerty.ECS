@@ -23,7 +23,7 @@ namespace Qwerty.ECS.Runtime
             for (int i = group.Version; i < count; i++)
             {
                 EcsArchetype archetype = m_arcManager[i];
-                short[] typeIndices = archetype.indices;
+                int[] typeIndices = archetype.indices;
                 if (None(typeIndices, filter.none) && Any(typeIndices, filter.any) && All(typeIndices, filter.all))
                 {
                     group.archetypes.Add(archetype);
@@ -35,15 +35,15 @@ namespace Qwerty.ECS.Runtime
             return group;
         }
 
-        private static bool All(short[] source, short[] target)
+        private static bool All(int[] source, int[] target)
         {
             int cnt = 0, i = 0, j = 0;
             int sourceLength = source.Length;
             int targetLength = target.Length;
             while (i < sourceLength && j < targetLength)
             {
-                short s = source[i];
-                short t = target[j];
+                int s = source[i];
+                int t = target[j];
 
                 if (s < t)
                 {
@@ -64,15 +64,15 @@ namespace Qwerty.ECS.Runtime
             return cnt == targetLength;
         }
 
-        private static bool Any(short[] source, short[] target)
+        private static bool Any(int[] source, int[] target)
         {
             int i = 0, j = 0;
             int sourceLength = source.Length;
             int targetLength = target.Length;
             while (i < sourceLength && j < targetLength)
             {
-                short s = source[i];
-                short t = target[j];
+                int s = source[i];
+                int t = target[j];
 
                 if (s < t)
                 {
@@ -92,15 +92,15 @@ namespace Qwerty.ECS.Runtime
             return targetLength == 0;
         }
 
-        private static bool None(short[] source, short[] target)
+        private static bool None(int[] source, int[] target)
         {
             int i = 0, j = 0;
             int sourceLength = source.Length;
             int targetLength = target.Length;
             while (i < sourceLength && j < targetLength)
             {
-                short s = source[i];
-                short t = target[j];
+                int s = source[i];
+                int t = target[j];
 
                 if (s < t)
                 {
