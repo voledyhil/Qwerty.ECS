@@ -5,7 +5,7 @@ namespace Qwerty.ECS.Runtime.Components
 {
     public static class EcsComponentType<T> where T : struct, IEcsComponent
     {
-        public static byte index
+        public static short index
         {
             get
             {
@@ -17,7 +17,7 @@ namespace Qwerty.ECS.Runtime.Components
             }
         }
 
-        private static byte m_index;
+        private static short m_index;
         private static bool m_isRegister;
 
         public static void Register()

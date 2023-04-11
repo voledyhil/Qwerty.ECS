@@ -63,7 +63,7 @@ namespace Qwerty.ECS.Runtime
         public unsafe EcsEntity CreateEntity<T0>(T0 c0) where T0 : struct, IEcsComponent
         {
             EcsEntity entity = InstantiateEntity();
-            byte typeIndex = EcsComponentType<T0>.index;
+            short typeIndex = EcsComponentType<T0>.index;
             m_indicesBuffer[0] = typeIndex;
             
             EcsArchetype archetype = m_arcManager.FindOrCreateArchetype(m_indicesBuffer, 1);
@@ -79,8 +79,8 @@ namespace Qwerty.ECS.Runtime
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
         {
-            byte typeIndex0 = EcsComponentType<T0>.index;
-            byte typeIndex1 = EcsComponentType<T1>.index;
+            short typeIndex0 = EcsComponentType<T0>.index;
+            short typeIndex1 = EcsComponentType<T1>.index;
             
             m_indicesBuffer[0] = typeIndex0;
             m_indicesBuffer[1] = typeIndex1;
@@ -108,9 +108,9 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            byte typeIndex0 = EcsComponentType<T0>.index;
-            byte typeIndex1 = EcsComponentType<T1>.index;
-            byte typeIndex2 = EcsComponentType<T2>.index;
+            short typeIndex0 = EcsComponentType<T0>.index;
+            short typeIndex1 = EcsComponentType<T1>.index;
+            short typeIndex2 = EcsComponentType<T2>.index;
 
             m_indicesBuffer[0] = typeIndex0;
             m_indicesBuffer[1] = typeIndex1;
@@ -141,10 +141,10 @@ namespace Qwerty.ECS.Runtime
             where T2 : struct, IEcsComponent
             where T3 : struct, IEcsComponent
         {
-            byte typeIndex0 = EcsComponentType<T0>.index;
-            byte typeIndex1 = EcsComponentType<T1>.index;
-            byte typeIndex2 = EcsComponentType<T2>.index;
-            byte typeIndex3 = EcsComponentType<T3>.index;
+            short typeIndex0 = EcsComponentType<T0>.index;
+            short typeIndex1 = EcsComponentType<T1>.index;
+            short typeIndex2 = EcsComponentType<T2>.index;
+            short typeIndex3 = EcsComponentType<T3>.index;
 
             m_indicesBuffer[0] = typeIndex0;
             m_indicesBuffer[1] = typeIndex1;
@@ -171,7 +171,7 @@ namespace Qwerty.ECS.Runtime
             return entity;
         }
 
-        private static bool ValidateIndices(byte[] indices, int len)
+        private static bool ValidateIndices(short[] indices, int len)
         {
             for (int i = 0; i < len - 1; i++)
             {

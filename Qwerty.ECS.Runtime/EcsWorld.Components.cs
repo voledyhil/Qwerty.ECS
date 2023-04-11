@@ -12,7 +12,7 @@ namespace Qwerty.ECS.Runtime
             return HasComponent(entity, EcsComponentType<T>.index);
         }
 
-        private unsafe bool HasComponent(EcsEntity entity, byte index)
+        private unsafe bool HasComponent(EcsEntity entity, short index)
         {
             EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
             return info.chunk->header->ContainType(index);
@@ -30,7 +30,7 @@ namespace Qwerty.ECS.Runtime
         
         public unsafe void SetComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            byte typeIndex = EcsComponentType<T>.index;
+            short typeIndex = EcsComponentType<T>.index;
             if (!HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
@@ -42,7 +42,7 @@ namespace Qwerty.ECS.Runtime
 
         public void RemoveComponent<T>(EcsEntity entity) where T : struct, IEcsComponent
         {
-            byte typeIndex = EcsComponentType<T>.index;
+            short typeIndex = EcsComponentType<T>.index;
             if (!HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();
@@ -59,7 +59,7 @@ namespace Qwerty.ECS.Runtime
         
         public unsafe void AddComponent<T>(EcsEntity entity, T component) where T : struct, IEcsComponent
         {
-            byte typeIndex = EcsComponentType<T>.index;
+            short typeIndex = EcsComponentType<T>.index;
             if (HasComponent(entity, typeIndex))
             {
                 throw new InvalidOperationException();

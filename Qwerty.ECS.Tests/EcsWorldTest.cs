@@ -35,9 +35,99 @@ namespace Qwerty.ECS.Tests
         public int value;
     }
 
+
+    
+    public readonly ref struct TypeIndex<T> where T : struct
+    {
+        internal static short typeIndex;
+        internal static bool isRegister;
+        static TypeIndex()
+        {
+            typeIndex = -1;
+        }
+            
+        internal static TypeIndex<T> value
+        {
+            get
+            {
+                if (!isRegister)
+                {
+                    throw new InvalidOperationException(nameof(value));
+                }
+                return new TypeIndex<T>(typeIndex);
+            }
+        }
+
+        public readonly short index;
+        private TypeIndex(short index)
+        {
+            this.index = index;
+        }
+    }
+    
+    public static class TypeManager
+    {
+        private static readonly HashSet<short> Hashes = new HashSet<short>();
+        public static void Register<T>(string key) where T : struct
+        {
+            short hash = GenerateHash(key);
+            if (Hashes.Contains(hash))
+            {
+                throw new ArgumentException(nameof(Register));
+            }
+            Hashes.Add(hash);
+            TypeIndex<T>.typeIndex = hash;
+            TypeIndex<T>.isRegister = true;
+        }
+
+        public static short GetIndex<T>() where T : struct
+        {
+            return TypeIndex<T>.value.index;
+        }
+        
+        private const int Lower31BitMask = 0x7FFFFFFF;
+        private static short GenerateHash(string key)
+        {
+            unchecked
+            {
+                int hash1 = (5381 << 16) + 5381;
+                int hash2 = hash1;
+
+                for (int i = 0; i < key.Length; i += 2)
+                {
+                    hash1 = ((hash1 << 5) + hash1) ^ key[i];
+                    if (i == key.Length - 1) break;
+                    hash2 = ((hash2 << 5) + hash2) ^ key[i + 1];
+                }
+                return (short)(((hash1 + hash2 * 1566083941) & Lower31BitMask) % short.MaxValue);
+            }
+        }
+    }
+
+    
+    public struct T1
+    {
+        
+    }
+
+    public struct T2
+    {
+        
+    }
+
     [TestFixture]
     public partial class EcsWorldTest
     {
+        [Test]
+        public void Test()
+        {
+            TypeManager.Register<T1>("t1");
+            TypeManager.Register<T2>("t2");
+            
+            Assert.AreNotEqual(TypeManager.GetIndex<T2>(), -1);
+            Assert.AreNotEqual(TypeManager.GetIndex<T1>(), -1);
+        }
+        
         [Test]
         public void RegisterComponentThrowExceptionTest()
         {

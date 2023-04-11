@@ -24,7 +24,7 @@ namespace Qwerty.ECS.Runtime
 
         private readonly Dictionary<EcsFilter, EcsArchetypeGroup> m_archGroups = new Dictionary<EcsFilter, EcsArchetypeGroup>();
 
-        private readonly byte[] m_indicesBuffer;
+        private readonly short[] m_indicesBuffer;
         private readonly EcsArchetypeManager m_arcManager;
         private readonly int m_sizeOfEntity = MemoryUtil.SizeOf<EcsEntity>();
         private readonly int m_sizeOfEntityInfo = MemoryUtil.SizeOf<EcsEntityInfo>();
@@ -40,7 +40,7 @@ namespace Qwerty.ECS.Runtime
             m_entitiesInfo = MemoryUtil.Alloc((uint)(m_sizeOfEntityInfo * m_entitiesCapacity));
 
             m_arcManager = new EcsArchetypeManager(setting);
-            m_indicesBuffer = new byte[EcsTypeManager.typeCount];
+            m_indicesBuffer = new short[EcsTypeManager.typeCount];
         }
         
         public void Dispose()

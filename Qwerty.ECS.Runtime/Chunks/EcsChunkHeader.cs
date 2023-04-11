@@ -14,16 +14,15 @@ namespace Qwerty.ECS.Runtime.Chunks
         
         private const int MaxComponentCount = 20;
         
-        private const ushort Capacity = 47;
+        private const ushort Length = 47;
         private const int SizeOfShort = sizeof(short);
         private const int SizeOfInt = sizeof(int);
-        private const int TypeToOffset = Capacity * SizeOfInt;
+        private const int TypeToOffset = Length * SizeOfInt;
+        private const int TypeToIndex = Length * SizeOfShort;
+        private const int IndexToOffset = Length * SizeOfShort;
+        private const int HeaderSize = TypeToOffset + TypeToIndex + IndexToOffset; // 376 bytes
         
-        private const int TypeToIndex = Capacity * SizeOfShort;
-        private const int IndexToOffset = Capacity * SizeOfShort;
-        private const int HeaderSize = TypeToOffset + TypeToIndex + IndexToOffset;
-        
-        public void Alloc(int bodySizeInBytes, byte[] indices)
+        public void Alloc(int bodySizeInBytes, short[] indices)
         {
             m_body = MemoryUtil.Alloc(HeaderSize);
             typesCount = indices.Length;
@@ -35,11 +34,11 @@ namespace Qwerty.ECS.Runtime.Chunks
                 short tIndex = typeIndex;
 
                 tIndex++;
-                int hash = tIndex % Capacity;
+                int hash = tIndex % Length;
                 int curKey = *(int*)(m_body + SizeOfInt * hash) >> 16;
                 while (curKey > 0)
                 {
-                    hash = (hash + 1) % Capacity;
+                    hash = (hash + 1) % Length;
                     curKey = *(int*)(m_body + SizeOfInt * hash) >> 16;
                 }
 
@@ -58,12 +57,12 @@ namespace Qwerty.ECS.Runtime.Chunks
         private int GetHash(int typeIndex)
         {
             typeIndex++;
-            int hash = typeIndex % Capacity;
+            int hash = typeIndex % Length;
             int t = *(int*)(m_body + SizeOfInt * hash) >> 16;
             while (t > 0)
             {
                 if (t == typeIndex) return hash;
-                hash = (hash + 1) % Capacity;
+                hash = (hash + 1) % Length;
                 t = *(int*)(m_body + SizeOfInt * hash) >> 16;
             }
             return -1;
@@ -79,7 +78,7 @@ namespace Qwerty.ECS.Runtime.Chunks
             return *(short*)(m_body + TypeToOffset + SizeOfShort * GetHash(typeIndex));
         }
 
-        public int ReadOffsetByType(int typeIndex)
+        public int ReadOffsetByType(short typeIndex)
         {
             return *(int*)(m_body + SizeOfInt * GetHash(typeIndex)) & 0xFFFF;
         }
