@@ -131,7 +131,6 @@ namespace Qwerty.ECS.Runtime
             {
                 void* source = (void*)(fromChunk->body + fromRowSizeInBytes * fromInfo.indexInChunk + fromHeader->ReadOffsetByIndex(index));
                 void* target = (void*)(toChunk->body + toRowSizeInBytes * toInfo.indexInChunk + sizeInBytes);
-                
                 sizeInBytes = fromHeader->entityOffset - sizeInBytes;
                 Buffer.MemoryCopy(source, target, sizeInBytes, sizeInBytes);
             }
