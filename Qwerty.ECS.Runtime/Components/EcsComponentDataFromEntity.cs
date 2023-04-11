@@ -7,7 +7,7 @@ namespace Qwerty.ECS.Runtime.Components
     public readonly struct EcsComponentDataFromEntity<T> where T : struct, IEcsComponent
     {
         private readonly IntPtr m_entities;
-        private readonly int m_typeIndex;
+        private readonly short m_typeIndex;
         private readonly int m_sizeOfEntityInfo;
 
         internal EcsComponentDataFromEntity(IntPtr entities, EcsComponentTypeHandle<T> typeHandle)

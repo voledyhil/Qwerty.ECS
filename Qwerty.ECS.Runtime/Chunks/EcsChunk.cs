@@ -30,14 +30,14 @@ namespace Qwerty.ECS.Runtime.Chunks
             MemoryUtil.Write(body, header->rowSizeInBytes * index + header->entityOffset, entity);
         }
         
-        internal unsafe T ReadComponent<T>(int index, int typeIndex) where T : struct, IEcsComponent
+        internal unsafe T ReadComponent<T>(int index, short typeIndex) where T : struct, IEcsComponent
         {
-            return MemoryUtil.Read<T>(body, header->rowSizeInBytes * index + header->ReadOffsetByType((short)typeIndex));
+            return MemoryUtil.Read<T>(body, header->rowSizeInBytes * index + header->ReadOffsetByType(typeIndex));
         }
 
-        internal unsafe void WriteComponent<T>(int index, int typeIndex, T component) where T : struct, IEcsComponent
+        internal unsafe void WriteComponent<T>(int index, short typeIndex, T component) where T : struct, IEcsComponent
         {
-            MemoryUtil.Write(body, header->rowSizeInBytes * index + header->ReadOffsetByType((short)typeIndex), component);
+            MemoryUtil.Write(body, header->rowSizeInBytes * index + header->ReadOffsetByType(typeIndex), component);
         }
 
         internal unsafe void Dispose()
