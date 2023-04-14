@@ -12,6 +12,11 @@ namespace Qwerty.ECS.Runtime
 			return Alloc((uint)SizeOf<T>());
 		}
 		
+		public static IntPtr Alloc<T>(int capacity) where T : struct
+		{
+			return Alloc((uint)(SizeOf<T>() * capacity));
+		}
+		
 		public static unsafe IntPtr Alloc(uint sizeInBytes)
 		{
 			IntPtr ptr = Marshal.AllocHGlobal((int)sizeInBytes);
@@ -34,9 +39,19 @@ namespace Qwerty.ECS.Runtime
 			return Unsafe.Read<T>((void*)(ptr + offset));
 		}
 		
+		public static unsafe T ReadElement<T>(IntPtr ptr, int index) where T : struct
+		{
+			return Unsafe.Read<T>(Unsafe.Add<T>((void*)ptr, index));
+		}
+		
 		public static unsafe void Write<T>(IntPtr ptr, int offset, T value) where T : struct
 		{
 			Unsafe.Write((void*)(ptr + offset), value);
+		}
+		
+		public static unsafe void WriteElement<T>(IntPtr ptr, int index, T value) where T : struct
+		{
+			Unsafe.Write(Unsafe.Add<T>((void*)ptr, index), value);
 		}
 	}
 }

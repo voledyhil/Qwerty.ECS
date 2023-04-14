@@ -52,15 +52,14 @@ namespace Qwerty.ECS.Runtime.Jobs
         {
             int index = 0;
             int archetypeIndex = 0;
-            int sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
-            IntPtr chunks = MemoryUtil.Alloc((uint)(sizeOfIntPtr * chunksCount));
+            IntPtr chunks = MemoryUtil.Alloc<IntPtr>(chunksCount);
             while (archetypeIndex < archetypesCount)
             {
-                IntPtr intPtr = MemoryUtil.Read<IntPtr>(archetypes, archetypeIndex++ * sizeOfIntPtr);
+                IntPtr intPtr = MemoryUtil.ReadElement<IntPtr>(archetypes, archetypeIndex++);
                 EcsChunk* chunk = ((EcsArchetype.Chunks*)intPtr)->last;
                 while (chunk != null)
                 {
-                    MemoryUtil.Write(chunks, sizeOfIntPtr * index++, (IntPtr)chunk);
+                    MemoryUtil.WriteElement(chunks, index++, (IntPtr)chunk);
                     chunk = chunk->prior;
                 }
             }

@@ -26,8 +26,6 @@ namespace Qwerty.ECS.Runtime
 
         private readonly int[] m_indicesBuffer;
         private readonly EcsArchetypeManager m_arcManager;
-        private readonly int m_sizeOfEntity = MemoryUtil.SizeOf<EcsEntity>();
-        private readonly int m_sizeOfEntityInfo = MemoryUtil.SizeOf<EcsEntityInfo>();
         private readonly int m_entitiesCapacity;
 
         public EcsWorld(EcsWorldSetting setting)
@@ -35,9 +33,9 @@ namespace Qwerty.ECS.Runtime
             m_setting = setting;
             m_entitiesCapacity = setting.entitiesCapacity;
             
-            m_freeEntities = MemoryUtil.Alloc((uint)(m_sizeOfEntity * m_entitiesCapacity));
-            m_entities = MemoryUtil.Alloc((uint)(m_sizeOfEntity * m_entitiesCapacity));
-            m_entitiesInfo = MemoryUtil.Alloc((uint)(m_sizeOfEntityInfo * m_entitiesCapacity));
+            m_freeEntities = MemoryUtil.Alloc<EcsEntity>(m_entitiesCapacity);
+            m_entities = MemoryUtil.Alloc<EcsEntity>(m_entitiesCapacity);
+            m_entitiesInfo = MemoryUtil.Alloc<EcsEntityInfo>(m_entitiesCapacity);
 
             m_arcManager = new EcsArchetypeManager(setting);
             m_indicesBuffer = new int[EcsTypeManager.typeCount];
@@ -76,7 +74,7 @@ namespace Qwerty.ECS.Runtime
             chunk->WriteEntity(indexInChunk, entity);
             
             info = new EcsEntityInfo(arch.index, indexInChunk, chunk);
-            MemoryUtil.Write(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo, info);
+            MemoryUtil.WriteElement(m_entitiesInfo, entity.Index, info);
         }
         
         private unsafe void SwapRow(EcsArchetype arch, EcsEntityInfo info)
@@ -94,7 +92,7 @@ namespace Qwerty.ECS.Runtime
                 Buffer.MemoryCopy(sourcePtr, targetPtr, rowSizeInBytes, rowSizeInBytes);
                 
                 EcsEntityInfo swapEntityInfo = new EcsEntityInfo(arch.index, info.indexInChunk, toChunk);
-                MemoryUtil.Write(m_entitiesInfo, swapEntity.Index * m_sizeOfEntityInfo, swapEntityInfo);
+                MemoryUtil.WriteElement(m_entitiesInfo, swapEntity.Index, swapEntityInfo);
             }
             
             if (--*lastChunk->count > 0)

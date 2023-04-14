@@ -13,8 +13,6 @@ namespace Qwerty.ECS.Runtime.Archetypes
         internal IntPtr archetypesChunks;
         internal int archetypesCount;
         
-        private readonly int m_sizeOfIntPtr = MemoryUtil.SizeOf<IntPtr>();
-
         internal EcsArchetypeGroup()
         {
             
@@ -27,11 +25,11 @@ namespace Qwerty.ECS.Runtime.Archetypes
                 MemoryUtil.Free(archetypesChunks);
             }
             
-            archetypesChunks = MemoryUtil.Alloc((uint)(m_sizeOfIntPtr * archetypes.Count));
+            archetypesChunks = MemoryUtil.Alloc<IntPtr>(archetypes.Count);
             archetypesCount = archetypes.Count;
-            for (int i = 0; i < archetypesCount; i++)
+            for (int index = 0; index < archetypesCount; index++)
             {
-                MemoryUtil.Write(archetypesChunks, m_sizeOfIntPtr * i, (IntPtr)archetypes[i].chunks);
+                MemoryUtil.WriteElement(archetypesChunks, index, (IntPtr)archetypes[index].chunks);
             }
             Version = newVersion;
         }

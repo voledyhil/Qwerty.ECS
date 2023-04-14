@@ -70,9 +70,9 @@ namespace Qwerty.ECS.Runtime.Jobs
 
                     JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData, UnsafeUtility.AddressOf(ref jobWrapper), begin, end - begin);
 
-                    for (int i = begin; i < end; i++)
+                    for (int index = begin; index < end; index++)
                     {
-                        EcsChunk* chunk = (EcsChunk*)MemoryUtil.Read<IntPtr>(jobWrapper.chunks, i * sizeof(IntPtr));
+                        EcsChunk* chunk = (EcsChunk*)MemoryUtil.ReadElement<IntPtr>(jobWrapper.chunks, index);
                         jobData.Execute(new EcsChunkAccessor(chunk));
                     }
                 }

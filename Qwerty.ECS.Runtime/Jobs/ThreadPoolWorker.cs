@@ -60,7 +60,7 @@ namespace Qwerty.ECS.Runtime.Jobs
             
             for (int index = from; index < to; index++)
             {
-                EcsChunk* chunk = (EcsChunk*)MemoryUtil.Read<IntPtr>(chunks, index * sizeof(IntPtr));
+                EcsChunk* chunk = (EcsChunk*)MemoryUtil.ReadElement<IntPtr>(chunks, index);
                 jobData.Execute(new EcsChunkAccessor(chunk));
             }
 

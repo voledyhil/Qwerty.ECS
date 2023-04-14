@@ -9,19 +9,16 @@ namespace Qwerty.ECS.Runtime.Chunks
         public int count { get; }
         
         private readonly unsafe EcsChunk* m_chunk;
-        private readonly int m_entitySizeOf;
-
         internal unsafe EcsChunkAccessor(EcsChunk* chunk)
         {
             m_chunk = chunk;
-            m_entitySizeOf = MemoryUtil.SizeOf<EcsEntity>();
             count = *m_chunk->count;
         }
 
         public unsafe EcsChunkEntityAccessor GetEntityAccessor()
         {
-            int rowCapacityInBytes = m_chunk->header->rowSizeInBytes;
-            return new EcsChunkEntityAccessor(m_chunk->body, rowCapacityInBytes, rowCapacityInBytes - m_entitySizeOf);
+            EcsChunkHeader* header = m_chunk->header;
+            return new EcsChunkEntityAccessor(m_chunk->body, header->rowSizeInBytes, header->entityOffset);
         }
         
         public unsafe EcsChunkComponentAccessor<T> GetComponentAccessor<T>(EcsComponentTypeHandle<T> typeHandle) where T : struct, IEcsComponent

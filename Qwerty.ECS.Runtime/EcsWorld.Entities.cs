@@ -15,7 +15,7 @@ namespace Qwerty.ECS.Runtime
             int entityVersion = 0;
             if (m_freeEntitiesLen > 0)
             {
-                EcsEntity freeEntity = MemoryUtil.Read<EcsEntity>(m_freeEntities, --m_freeEntitiesLen * m_sizeOfEntity);
+                EcsEntity freeEntity = MemoryUtil.ReadElement<EcsEntity>(m_freeEntities, --m_freeEntitiesLen);
                 entityIndex = freeEntity.Index;
                 entityVersion = freeEntity.Version;
             }
@@ -30,7 +30,7 @@ namespace Qwerty.ECS.Runtime
             }
 
             EcsEntity entity = new EcsEntity(entityIndex, entityVersion + 1);
-            MemoryUtil.Write(m_entities, entityIndex * m_sizeOfEntity, entity);
+            MemoryUtil.WriteElement(m_entities, entityIndex, entity);
             return entity;
         }
         
@@ -38,18 +38,18 @@ namespace Qwerty.ECS.Runtime
         {
             int entityIndex = entity.Index;
             
-            if (MemoryUtil.Read<EcsEntity>(m_entities, entityIndex * m_sizeOfEntity) == EcsEntity.Null)
+            if (MemoryUtil.ReadElement<EcsEntity>(m_entities, entityIndex) == EcsEntity.Null)
             {
                 throw new InvalidOperationException(nameof(entity));
             }
 
-            EcsEntityInfo info = MemoryUtil.Read<EcsEntityInfo>(m_entitiesInfo, entity.Index * m_sizeOfEntityInfo);
+            EcsEntityInfo info = MemoryUtil.ReadElement<EcsEntityInfo>(m_entitiesInfo, entity.Index);
             EcsArchetype archetype = m_arcManager[info.archetypeIndex];
             
             SwapRow(archetype, info);
             
-            MemoryUtil.Write(m_entities, entityIndex * m_sizeOfEntity, EcsEntity.Null);
-            MemoryUtil.Write(m_freeEntities, m_freeEntitiesLen++ * m_sizeOfEntity, entity);
+            MemoryUtil.WriteElement(m_entities, entityIndex, EcsEntity.Null);
+            MemoryUtil.WriteElement(m_freeEntities, m_freeEntitiesLen++, entity);
         }
         
         public EcsEntity CreateEntity()
