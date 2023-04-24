@@ -37,15 +37,15 @@ namespace Qwerty.ECS.Runtime.Jobs
         
         internal struct JobChunk<T> where T : struct, IJobChunk
         {
-            private static IntPtr jobReflectionData;
+            private static IntPtr m_jobReflectionData;
 
             public static IntPtr Initialize()
             {
-                if (jobReflectionData == IntPtr.Zero)
+                if (m_jobReflectionData == IntPtr.Zero)
                 {
-                    jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(JobsExtension.JobChunkWrapper<T>), typeof(T), (ExecuteJobFunction)Execute);
+                    m_jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(JobsExtension.JobChunkWrapper<T>), typeof(T), (ExecuteJobFunction)Execute);
                 }
-                return jobReflectionData;
+                return m_jobReflectionData;
             }
 
             private delegate void ExecuteJobFunction(ref JobsExtension.JobChunkWrapper<T> jobWrapper, IntPtr additionalPtr, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex);

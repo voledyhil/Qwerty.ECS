@@ -20,6 +20,7 @@ namespace Qwerty.ECS.Runtime
 		public static unsafe IntPtr Alloc(uint sizeInBytes)
 		{
 			IntPtr ptr = Marshal.AllocHGlobal((int)sizeInBytes);
+			//IntPtr ptr = (IntPtr)Unity.Collections.LowLevel.Unsafe.UnsafeUtility.Malloc(sizeInBytes, 4, Unity.Collections.Allocator.Persistent);
 			Unsafe.InitBlock((void*)ptr, 0, sizeInBytes);
 			return ptr;
 		}
@@ -27,6 +28,7 @@ namespace Qwerty.ECS.Runtime
 		public static void Free(IntPtr ptr)
 		{
 			Marshal.FreeHGlobal(ptr);
+			//Unity.Collections.LowLevel.Unsafe.UnsafeUtility.Free((void*)ptr, Unity.Collections.Allocator.Persistent);
 		}
 
 		public static int SizeOf<T>() where T : struct
