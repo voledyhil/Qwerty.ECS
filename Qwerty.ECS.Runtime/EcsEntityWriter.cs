@@ -1,7 +1,9 @@
-// ReSharper disable once CheckNamespace
-
+// ReSharper disable once RedundantUsingDirective
+using System;
 using Qwerty.ECS.Runtime.Components;
 
+
+// ReSharper disable once CheckNamespace
 namespace Qwerty.ECS.Runtime
 {
     public readonly unsafe struct EcsEntityWriter<T0, T1, T2> : IDisposable
@@ -16,6 +18,7 @@ namespace Qwerty.ECS.Runtime
         private readonly int m_offsetT0;
         private readonly int m_offsetT1;
         private readonly int m_offsetT2;
+        private readonly int m_entitySizeOf;
         
         private readonly IntPtr m_body;
         private readonly int* m_len;
@@ -27,6 +30,7 @@ namespace Qwerty.ECS.Runtime
             m_offsetT0 = offsetT0;
             m_offsetT1 = offsetT1;
             m_offsetT2 = offsetT2;
+            m_entitySizeOf = MemoryUtil.SizeOf<EcsEntity>();
 
             m_body = MemoryUtil.Alloc((uint)(capacity * rowSizeInBytes));
             m_len = (int*)MemoryUtil.Alloc<int>();
@@ -49,7 +53,7 @@ namespace Qwerty.ECS.Runtime
         {
             void* src = (void*)(m_body + index * m_rowSizeInBytes);
             void* dest = (void*)(to + toIndex * m_rowSizeInBytes);
-            Buffer.MemoryCopy(src, dest, m_rowSizeInBytes, m_rowSizeInBytes);
+            Buffer.MemoryCopy(src, dest, m_rowSizeInBytes - m_entitySizeOf, m_rowSizeInBytes - m_entitySizeOf);
         }
 
         public void Dispose()
