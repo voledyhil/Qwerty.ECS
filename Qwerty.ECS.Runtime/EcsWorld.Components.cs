@@ -1,5 +1,6 @@
 using System;
 using Qwerty.ECS.Runtime.Archetypes;
+using Qwerty.ECS.Runtime.Chunks;
 using Qwerty.ECS.Runtime.Components;
 
 // ReSharper disable once CheckNamespace
@@ -84,6 +85,57 @@ namespace Qwerty.ECS.Runtime
         public EcsComponentTypeHandle<T> GetComponentTypeHandle<T>() where T : struct, IEcsComponent
         {
             return new EcsComponentTypeHandle<T>(EcsTypeIndex<T>.value.index);
+        }
+        
+        public unsafe EcsEntityWriter<T0, T1, T2> InstantiateEntityWriter<T0, T1, T2>(int capacity)  
+            where T0 : struct, IEcsComponent
+            where T1 : struct, IEcsComponent
+            where T2 : struct, IEcsComponent
+        {
+            var typeIndex0 = EcsTypeIndex<T0>.value.index;
+            var typeIndex1 = EcsTypeIndex<T1>.value.index;
+            var typeIndex2 = EcsTypeIndex<T2>.value.index;
+            
+            m_indicesBuffer[0] = typeIndex0;
+            m_indicesBuffer[1] = typeIndex1;
+            m_indicesBuffer[2] = typeIndex2;
+            
+            Array.Sort(m_indicesBuffer, 0, 3);
+
+            if (!ValidateIndices(m_indicesBuffer, 3))
+            {
+                throw new ArgumentException(nameof(InstantiateEntityWriter));
+            }
+            
+            EcsArchetype archetype = m_arcManager.FindOrCreateArchetype(m_indicesBuffer, 3);
+            EcsChunkHeader* header = archetype.chunks->header;
+            
+            return new EcsEntityWriter<T0, T1, T2>(
+                capacity, 
+                header->rowSizeInBytes,
+                header->ReadOffsetByIndex(header->ReadIndex(typeIndex0)),
+                header->ReadOffsetByIndex(header->ReadIndex(typeIndex1)), 
+                header->ReadOffsetByIndex(header->ReadIndex(typeIndex2)));
+        }
+        
+        public unsafe void Write<T0, T1, T2>(EcsEntityWriter<T0, T1, T2> writer)
+            where T0 : struct, IEcsComponent
+            where T1 : struct, IEcsComponent
+            where T2 : struct, IEcsComponent
+        {
+            m_indicesBuffer[0] = EcsTypeIndex<T0>.value.index;
+            m_indicesBuffer[1] = EcsTypeIndex<T1>.value.index;
+            m_indicesBuffer[2] = EcsTypeIndex<T2>.value.index;
+            
+            Array.Sort(m_indicesBuffer, 0, 3);
+            EcsArchetype archetype = m_arcManager.FindOrCreateArchetype(m_indicesBuffer, 3);
+            
+            for (int index = 0; index < writer.length; index++)
+            {
+                PushEntity(archetype, InstantiateEntity(), out EcsEntityInfo info);
+                writer.CopyRow(index, (*info.chunk).body, info.indexInChunk);
+            }
+
         }
     }
 }

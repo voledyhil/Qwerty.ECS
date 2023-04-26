@@ -47,7 +47,7 @@ namespace Qwerty.ECS.Runtime
         }
     }
     
-    internal unsafe readonly struct EcsEntityInfo
+    internal readonly unsafe struct EcsEntityInfo
     {
         public readonly int archetypeIndex;
         public readonly int indexInChunk;
