@@ -113,9 +113,9 @@ namespace Qwerty.ECS.Runtime
             return new EcsEntityWriter<T0, T1, T2>(
                 capacity, 
                 header->rowSizeInBytes,
-                header->ReadOffsetByIndex(header->ReadIndex(typeIndex0)),
-                header->ReadOffsetByIndex(header->ReadIndex(typeIndex1)), 
-                header->ReadOffsetByIndex(header->ReadIndex(typeIndex2)));
+                header->ReadOffsetByType(typeIndex0),
+                header->ReadOffsetByType(typeIndex1), 
+                header->ReadOffsetByType(typeIndex2));
         }
         
         public unsafe void Write<T0, T1, T2>(EcsEntityWriter<T0, T1, T2> writer)
@@ -135,7 +135,6 @@ namespace Qwerty.ECS.Runtime
                 PushEntity(archetype, InstantiateEntity(), out EcsEntityInfo info);
                 writer.CopyRow(index, (*info.chunk).body, info.indexInChunk);
             }
-
         }
     }
 }
