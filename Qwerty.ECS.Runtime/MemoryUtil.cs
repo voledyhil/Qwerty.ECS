@@ -46,6 +46,11 @@ namespace Qwerty.ECS.Runtime
 			return Unsafe.Read<T>(Unsafe.Add<T>((void*)ptr, index));
 		}
 		
+		public static unsafe T ReadElement<T>(void* ptr, int index) where T : struct
+		{
+			return Unsafe.Read<T>(Unsafe.Add<T>(ptr, index));
+		}
+		
 		public static unsafe void Write<T>(IntPtr ptr, int offset, T value) where T : struct
 		{
 			Unsafe.Write((void*)(ptr + offset), value);
@@ -54,6 +59,11 @@ namespace Qwerty.ECS.Runtime
 		public static unsafe void WriteElement<T>(IntPtr ptr, int index, T value) where T : struct
 		{
 			Unsafe.Write(Unsafe.Add<T>((void*)ptr, index), value);
+		}
+		
+		public static unsafe void WriteElement<T>(void* ptr, int index, T value) where T : struct
+		{
+			Unsafe.Write(Unsafe.Add<T>(ptr, index), value);
 		}
 	}
 }

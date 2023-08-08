@@ -135,7 +135,6 @@ namespace Qwerty.ECS.Runtime
                 PushEntity(archetype, InstantiateEntity(), out EcsEntityInfo info);
                 writer.CopyRow(index, (*info.chunk).body, info.indexInChunk);
             }
-
         }
     }
 }

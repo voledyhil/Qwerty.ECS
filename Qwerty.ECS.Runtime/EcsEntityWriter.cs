@@ -53,7 +53,8 @@ namespace Qwerty.ECS.Runtime
         {
             void* src = (void*)(m_body + index * m_rowSizeInBytes);
             void* dest = (void*)(to + toIndex * m_rowSizeInBytes);
-            Buffer.MemoryCopy(src, dest, m_rowSizeInBytes - m_entitySizeOf, m_rowSizeInBytes - m_entitySizeOf);
+            int sizeInBytes = m_rowSizeInBytes - m_entitySizeOf;
+            Buffer.MemoryCopy(src, dest, sizeInBytes, sizeInBytes);
         }
 
         public void Dispose()
