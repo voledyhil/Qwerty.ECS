@@ -118,6 +118,45 @@ namespace Qwerty.ECS.Runtime
                 header->ReadOffsetByType(typeIndex2));
         }
         
+        public unsafe EcsEntityWriter<T0, T1, T2, T3, T4> InstantiateEntityWriter<T0, T1, T2, T3, T4>(int capacity)  
+            where T0 : struct, IEcsComponent
+            where T1 : struct, IEcsComponent
+            where T2 : struct, IEcsComponent
+            where T3 : struct, IEcsComponent
+            where T4 : struct, IEcsComponent
+        {
+            int typeIndex0 = EcsTypeIndex<T0>.value.index;
+            int typeIndex1 = EcsTypeIndex<T1>.value.index;
+            int typeIndex2 = EcsTypeIndex<T2>.value.index;
+            int typeIndex3 = EcsTypeIndex<T3>.value.index;
+            int typeIndex4 = EcsTypeIndex<T4>.value.index;
+            
+            m_indicesBuffer[0] = typeIndex0;
+            m_indicesBuffer[1] = typeIndex1;
+            m_indicesBuffer[2] = typeIndex2;
+            m_indicesBuffer[3] = typeIndex3;
+            m_indicesBuffer[4] = typeIndex4;
+            
+            Array.Sort(m_indicesBuffer, 0, 5);
+
+            if (!ValidateIndices(m_indicesBuffer, 5))
+            {
+                throw new ArgumentException(nameof(InstantiateEntityWriter));
+            }
+            
+            EcsArchetype archetype = m_arcManager.FindOrCreateArchetype(m_indicesBuffer, 5);
+            EcsChunkHeader* header = archetype.chunks->header;
+            
+            return new EcsEntityWriter<T0, T1, T2, T3, T4>(
+                capacity, 
+                header->rowSizeInBytes,
+                header->ReadOffsetByType(typeIndex0),
+                header->ReadOffsetByType(typeIndex1), 
+                header->ReadOffsetByType(typeIndex2), 
+                header->ReadOffsetByType(typeIndex3), 
+                header->ReadOffsetByType(typeIndex4));
+        }
+        
         public unsafe void Write<T0, T1, T2>(EcsEntityWriter<T0, T1, T2> writer)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
@@ -129,6 +168,29 @@ namespace Qwerty.ECS.Runtime
             
             Array.Sort(m_indicesBuffer, 0, 3);
             EcsArchetype archetype = m_arcManager.FindOrCreateArchetype(m_indicesBuffer, 3);
+            
+            for (int index = 0; index < writer.length; index++)
+            {
+                PushEntity(archetype, InstantiateEntity(), out EcsEntityInfo info);
+                writer.CopyRow(index, (*info.chunk).body, info.indexInChunk);
+            }
+        }
+        
+        public unsafe void Write<T0, T1, T2, T3, T4>(EcsEntityWriter<T0, T1, T2, T3, T4> writer)
+            where T0 : struct, IEcsComponent
+            where T1 : struct, IEcsComponent
+            where T2 : struct, IEcsComponent
+            where T3 : struct, IEcsComponent
+            where T4 : struct, IEcsComponent
+        {
+            m_indicesBuffer[0] = EcsTypeIndex<T0>.value.index;
+            m_indicesBuffer[1] = EcsTypeIndex<T1>.value.index;
+            m_indicesBuffer[2] = EcsTypeIndex<T2>.value.index;
+            m_indicesBuffer[3] = EcsTypeIndex<T3>.value.index;
+            m_indicesBuffer[4] = EcsTypeIndex<T4>.value.index;
+            
+            Array.Sort(m_indicesBuffer, 0, 5);
+            EcsArchetype archetype = m_arcManager.FindOrCreateArchetype(m_indicesBuffer, 5);
             
             for (int index = 0; index < writer.length; index++)
             {
