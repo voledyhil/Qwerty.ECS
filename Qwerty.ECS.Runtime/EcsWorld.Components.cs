@@ -81,7 +81,7 @@ namespace Qwerty.ECS.Runtime
         {
             return new EcsComponentDataFromEntity<T>(m_entitiesInfo, new EcsComponentTypeHandle<T>(EcsTypeIndex<T>.value.index));
         }
-
+        
         public EcsComponentTypeHandle<T> GetComponentTypeHandle<T>() where T : struct, IEcsComponent
         {
             return new EcsComponentTypeHandle<T>(EcsTypeIndex<T>.value.index);
@@ -92,9 +92,9 @@ namespace Qwerty.ECS.Runtime
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
         {
-            var typeIndex0 = EcsTypeIndex<T0>.value.index;
-            var typeIndex1 = EcsTypeIndex<T1>.value.index;
-            var typeIndex2 = EcsTypeIndex<T2>.value.index;
+            int typeIndex0 = EcsTypeIndex<T0>.value.index;
+            int typeIndex1 = EcsTypeIndex<T1>.value.index;
+            int typeIndex2 = EcsTypeIndex<T2>.value.index;
             
             m_indicesBuffer[0] = typeIndex0;
             m_indicesBuffer[1] = typeIndex1;
@@ -113,9 +113,9 @@ namespace Qwerty.ECS.Runtime
             return new EcsEntityWriter<T0, T1, T2>(
                 capacity, 
                 header->rowSizeInBytes,
-                header->ReadOffsetByIndex(header->ReadIndex(typeIndex0)),
-                header->ReadOffsetByIndex(header->ReadIndex(typeIndex1)), 
-                header->ReadOffsetByIndex(header->ReadIndex(typeIndex2)));
+                header->ReadOffsetByType(typeIndex0),
+                header->ReadOffsetByType(typeIndex1), 
+                header->ReadOffsetByType(typeIndex2));
         }
         
         public unsafe void Write<T0, T1, T2>(EcsEntityWriter<T0, T1, T2> writer)

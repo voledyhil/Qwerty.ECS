@@ -13,7 +13,7 @@ namespace Qwerty.ECS.Tests
         {
             EcsWorld world = new EcsWorld(new EcsWorldSetting());
 
-            EcsEntityWriter<ComponentC, ComponentA3, ComponentB> entityWriter = world.InstantiateEntityWriter<ComponentC, ComponentA3, ComponentB>(5);
+            EcsEntityWriter<ComponentC, ComponentA3, ComponentB> entityWriter = world.InstantiateEntityWriter<ComponentC, ComponentA3, ComponentB>(3);
             entityWriter.Write(new ComponentC { value = 1 }, new ComponentA3 { x = 2, y = 3, z = 4 }, new ComponentB { value = 5 });
             entityWriter.Write(new ComponentC { value = 6 }, new ComponentA3 { x = 7, y = 8, z = 9 }, new ComponentB { value = 10 });
             entityWriter.Write(new ComponentC { value = 11 }, new ComponentA3 { x = 12, y = 13, z = 14 }, new ComponentB { value = 15 });
