@@ -306,7 +306,7 @@ namespace Qwerty.ECS.Runtime
                 header->ReadOffsetByType(typeIndex8));
         }
         
-        public unsafe void Write<T0, T1, T2>(EcsEntityWriter<T0, T1, T2> writer)
+        public unsafe void CreateEntities<T0, T1, T2>(EcsEntityWriter<T0, T1, T2> writer)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
@@ -325,7 +325,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
         
-        public unsafe void Write<T0, T1, T2, T3, T4>(EcsEntityWriter<T0, T1, T2, T3, T4> writer)
+        public unsafe void CreateEntities<T0, T1, T2, T3, T4>(EcsEntityWriter<T0, T1, T2, T3, T4> writer)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
@@ -348,7 +348,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
         
-        public unsafe void Write<T0, T1, T2, T3, T4, T5>(EcsEntityWriter<T0, T1, T2, T3, T4, T5> writer)
+        public unsafe void CreateEntities<T0, T1, T2, T3, T4, T5>(EcsEntityWriter<T0, T1, T2, T3, T4, T5> writer)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
@@ -373,7 +373,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
         
-        public unsafe void Write<T0, T1, T2, T3, T4, T5, T6, T7>(EcsEntityWriter<T0, T1, T2, T3, T4, T5, T6, T7> writer)
+        public unsafe void CreateEntities<T0, T1, T2, T3, T4, T5, T6, T7>(EcsEntityWriter<T0, T1, T2, T3, T4, T5, T6, T7> writer)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
@@ -402,7 +402,7 @@ namespace Qwerty.ECS.Runtime
             }
         }
         
-        public unsafe void Write<T0, T1, T2, T3, T4, T5, T6, T7, T8>(EcsEntityWriter<T0, T1, T2, T3, T4, T5, T6, T7, T8> writer)
+        public unsafe void CreateEntities<T0, T1, T2, T3, T4, T5, T6, T7, T8>(EcsEntityWriter<T0, T1, T2, T3, T4, T5, T6, T7, T8> writer)
             where T0 : struct, IEcsComponent
             where T1 : struct, IEcsComponent
             where T2 : struct, IEcsComponent
